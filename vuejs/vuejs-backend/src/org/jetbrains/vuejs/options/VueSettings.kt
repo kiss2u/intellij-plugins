@@ -1,19 +1,18 @@
-// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.vuejs.options
 
 import com.intellij.javascript.nodejs.util.NodePackageRef
 import com.intellij.javascript.util.JSLogOnceService
-import com.intellij.lang.typescript.compiler.TypeScriptCompilerConfigUtil.isEffectiveUseTypesFromServer
+import com.intellij.lang.javascript.library.typings.TypeScriptPackageName
 import com.intellij.lang.typescript.compiler.TypeScriptCompilerSettings
-import com.intellij.lang.typescript.compiler.ui.TypeScriptServiceRestartService
+import com.intellij.lang.typescript.lsp.JSBundledServiceNodePackage
 import com.intellij.lang.typescript.lsp.createPackageRef
-import com.intellij.lang.typescript.lsp.defaultPackageKey
+import com.intellij.lang.typescript.lsp.extractPath
 import com.intellij.lang.typescript.lsp.extractRefText
 import com.intellij.lang.typescript.lsp.restartTypeScriptServicesAsync
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.components.BaseState
+import com.intellij.openapi.components.SerializablePersistentStateComponent
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
@@ -22,16 +21,17 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.util.text.SemVer
+import kotlinx.serialization.Serializable
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.vuejs.lang.typescript.service.VueTypeScriptPluginServiceWrapper
+import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspServerLoader
-import org.jetbrains.vuejs.lang.typescript.service.plugin.VueTSPluginLoaderFactory
-
-fun getVueSettings(project: Project): VueSettings = project.service<VueSettings>()
+import org.jetbrains.vuejs.lang.typescript.service.plugin.VueTSPluginBundledLoaderFactory.getLoader
+import org.jetbrains.vuejs.lang.typescript.service.vueTSPluginPackageName
 
 @TestOnly
-fun configureVueService(project: Project, disposable: Disposable, serviceSettings: VueServiceSettings) {
-  val vueSettings = getVueSettings(project)
+fun configureVueService(project: Project, disposable: Disposable, serviceSettings: VueLSMode) {
+  val vueSettings = VueSettings.instance(project)
   val old = vueSettings.serviceType
   vueSettings.serviceType = serviceSettings
 
@@ -41,113 +41,175 @@ fun configureVueService(project: Project, disposable: Disposable, serviceSetting
 }
 
 @Service(Service.Level.PROJECT)
-@State(name = "VueSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
-class VueSettings(val project: Project) : SimplePersistentStateComponent<VueSettingsState>(VueSettingsState()) {
-
-  companion object {
-    private val LOG = logger<VueSettings>()
-  }
-
-  var serviceType: VueServiceSettings
-    get() = state.innerServiceType
+@State(
+  name = "VueSettings",
+  storages = [Storage(StoragePathMacros.WORKSPACE_FILE)],
+)
+class VueSettings(private val project: Project) :
+  SerializablePersistentStateComponent<VueSettings.State>(State()) {
+  var serviceType: VueLSMode
+    get() = state.serviceType
     set(value) {
-      val prevServiceType = state.innerServiceType
-      state.innerServiceType = value
-      if (prevServiceType != value && !project.isDisposed) {
-        project.service<TypeScriptServiceRestartService>().restartServices(
-          isEffectiveUseTypesFromServer(prevServiceType.isEnabled(), state.useTypesFromServer)
-            != isEffectiveUseTypesFromServer(serviceType.isEnabled(), state.useTypesFromServer))
-      }
-    }
+      if (value == state.serviceType)
+        return
 
-  var packageRef: NodePackageRef
-    get() = createPackageRef(state.packageName, VueLspServerLoader.packageDescriptor.serverPackage)
-    set(value) {
-      val refText = extractRefText(value)
-      val changed = state.packageName != refText
-      state.packageName = refText
-      if (changed) restartTypeScriptServicesAsync(project)
-    }
-
-  var tsPluginPackageRef: NodePackageRef
-    get() = createPackageRef(
-      ref = state.tsPluginPackageName,
-      defaultPackage = VueTSPluginLoaderFactory.getLoader(tsPluginVersion).packageDescriptor.serverPackage,
-    )
-    set(value) {
-      val refText = extractRefText(value)
-      val changed = state.tsPluginPackageName != refText
-      state.tsPluginPackageName = refText
-      if (changed) restartTypeScriptServicesAsync(project)
+      restartTypeScriptServicesAsync(project)
+      updateState { state -> state.copy(serviceType = value) }
     }
 
   var useTypesFromServer: Boolean
     get() {
-      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer).also {
+      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: false).also {
         with(project.service<JSLogOnceService>()) {
           LOG.infoOnce { "'Service-powered type engine' option of VueSettings: $it" }
         }
       }
     }
-    set(value) {
-      val prevUseTypesFromServer = state.useTypesFromServer
-      state.useTypesFromServer = value
-      if (prevUseTypesFromServer != value) {
-        project.service<TypeScriptServiceRestartService>().restartServices(
-          isEffectiveUseTypesFromServer(serviceType.isEnabled(), prevUseTypesFromServer)
-            != isEffectiveUseTypesFromServer(serviceType.isEnabled(), state.useTypesFromServer))
-      }
-    }
+    set(_) {}
 
-  var tsPluginPreviewEnabled: Boolean
-    get() {
-      return state.tsPluginPreviewEnabled
-    }
-    set(value) {
-      val prevTsPluginPreviewEnabled = state.tsPluginPreviewEnabled
-      state.tsPluginPreviewEnabled = value
-      if (prevTsPluginPreviewEnabled != value) {
-        project.service<TypeScriptServiceRestartService>().restartServices(false)
-      }
-    }
+  val manualSettings: ManualSettings = ManualSettings()
 
-  var tsPluginVersion: VueTSPluginVersion
-    get() {
-      return state.tsPluginVersion
-    }
-    set(value) {
-      val prevTsPluginVersion = state.tsPluginVersion
-      state.tsPluginVersion = value
-      if (prevTsPluginVersion != value) {
-        project.service<VueTypeScriptPluginServiceWrapper>().refreshService(project)
-        project.service<TypeScriptServiceRestartService>().restartServices(false)
+  inner class ManualSettings {
+    var mode: ManualMode
+      get() = state.manual.mode
+      set(value) {
+        if (value == state.manual.mode)
+          return
+
+        restartTypeScriptServicesAsync(project)
+        updateState { state -> state.copy(manual = state.manual.copy(mode = value)) }
       }
-    }
+
+    var lspServerPackageRef: NodePackageRef
+      get() {
+        return createPackageRef(
+          ref = state.manual.lspServerPackagePath,
+          defaultPackage = VueLspServerLoader.packageDescriptor.serverPackage,
+        )
+      }
+      set(value) {
+        val refText = extractRefText(value)
+        if (refText == state.manual.lspServerPackagePath)
+          return
+
+        restartTypeScriptServicesAsync(project)
+        updateState { state ->
+          state.copy(
+            manual = state.manual.copy(lspServerPackagePath = refText)
+          )
+        }
+      }
+
+    var tsPluginPackageRef: NodePackageRef
+      get() {
+        val tsPluginPackage = state.manual.tsPluginPackage
+        return when (tsPluginPackage) {
+          is ManualPackageBundled -> createBundledPackageRef(
+            versionString = tsPluginPackage.version,
+            project = project,
+          )
+
+          is ManualPackageFS -> createPackageRef(
+            ref = tsPluginPackage.path,
+            defaultPackage = getDefaultTsPluginPackage(),
+          )
+
+          null -> createBundledPackageRef(
+            versionString = VueTSPluginVersion.defaultTSPlugin.versionString,
+            project = project,
+          )
+        }
+      }
+      set(value) {
+        val newTSPluginPackage = when (value.constantPackage) {
+          is JSBundledServiceNodePackage -> ManualPackageBundled(
+            version = value.constantPackage?.version.toString(),
+          )
+
+          else -> ManualPackageFS(
+            path = extractPath(value, project) ?: "",
+          )
+        }
+
+        if (newTSPluginPackage == state.manual.tsPluginPackage)
+          return
+
+        restartTypeScriptServicesAsync(project)
+        updateState { state ->
+          state.copy(
+            manual = state.manual.copy(tsPluginPackage = newTSPluginPackage)
+          )
+        }
+      }
+  }
+
+  companion object {
+    private val LOG = logger<VueSettings>()
+    fun instance(project: Project): VueSettings = project.service()
+  }
+
+  @Serializable
+  data class State(
+    val serviceType: VueLSMode = VueLSMode.AUTO,
+    val manual: ManualSettingsState = ManualSettingsState(),
+  )
+
+  @Serializable
+  data class ManualSettingsState(
+    val mode: ManualMode = ManualMode.ONLY_TS_PLUGIN,
+    val lspServerPackagePath: String? = null,
+    val tsPluginPackage: ManualServicePackage? = null,
+  )
+
+  @Serializable
+  enum class ManualMode(
+    @param:NlsSafe
+    val displayName: String,
+  ) {
+    ONLY_TS_PLUGIN("TypeScript plugin"),
+    ONLY_LSP_SERVER("Language server"),
+
+    ;
+  }
+
+  @Serializable
+  sealed interface ManualServicePackage
+
+  @Serializable
+  data class ManualPackageBundled(
+    val version: String,
+  ) : ManualServicePackage
+
+  @Serializable
+  data class ManualPackageFS(
+    val path: String,
+  ) : ManualServicePackage
 }
 
-class VueSettingsState : BaseState() {
-  var innerServiceType: VueServiceSettings by enum(VueServiceSettings.AUTO)
-  var packageName: String? by string(defaultPackageKey)
+private fun createBundledPackageRef(
+  versionString: String,
+  project: Project,
+): NodePackageRef {
+  val path = getLoader(versionString).getAbsolutePath(project)
 
-  // TODO: Restore in WEB-74847
-  // var useTypesFromServer: Boolean by property(false)
-  var useTypesFromServer: Boolean; get() = false; set(_) {}
-  var tsPluginPackageName: String? by string(defaultPackageKey)
-  var tsPluginPreviewEnabled: Boolean by property(true)
-  var tsPluginVersion: VueTSPluginVersion by enum(VueTSPluginVersion.V3_0_10)
+  return NodePackageRef.create(JSBundledServiceNodePackage(
+    packageName = vueTSPluginPackageName,
+    packageVersion = SemVer.parseFromText(versionString),
+    path = path,
+  ))
 }
 
-enum class VueTSPluginVersion(
-  @param:NlsSafe val versionString: String,
-) {
-  V3_0_10("3.0.10"),
-  V3_2_4("3.2.4"),
-
-  ;
+private fun getDefaultTsPluginPackage(): TypeScriptPackageName {
+  val latest = VueTSPluginVersion.defaultTSPlugin
+  return getLoader(latest)
+    .packageDescriptor
+    .serverPackage
 }
 
-enum class VueServiceSettings {
+@Serializable
+enum class VueLSMode {
   AUTO,
+  MANUAL,
   DISABLED,
 
   ;

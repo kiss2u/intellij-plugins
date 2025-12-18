@@ -8,10 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.vuejs.lang.html.isVueFile
 import org.jetbrains.vuejs.lang.typescript.service.isVueServiceContext
-import org.jetbrains.vuejs.options.VueServiceSettings
-import org.jetbrains.vuejs.options.getVueSettings
+import org.jetbrains.vuejs.options.VueLSMode
+import org.jetbrains.vuejs.options.VueSettings
 
-object VueLspServerActivationRule : LspServerActivationRule(VueLspServerLoader, VueLspActivationHelper) {
+object VueLspServerActivationRule : LspServerActivationRule(
+  lspServerLoader = VueLspServerLoader,
+  activationRule = VueLspActivationHelper,
+) {
   override fun isFileAcceptable(file: VirtualFile): Boolean {
     if (!TypeScriptLanguageServiceUtil.IS_VALID_FILE_FOR_SERVICE.value(file)) return false
 
@@ -25,12 +28,8 @@ private object VueLspActivationHelper : ServiceActivationHelper {
   }
 
   override fun isEnabledInSettings(project: Project): Boolean {
-    if (getVueSettings(project).tsPluginPreviewEnabled)
-      return false
-
-    return when (getVueSettings(project).serviceType) {
-      VueServiceSettings.AUTO -> true
-      VueServiceSettings.DISABLED -> false
-    }
+    val settings = VueSettings.instance(project)
+    return settings.serviceType == VueLSMode.MANUAL
+           && settings.manualSettings.mode == VueSettings.ManualMode.ONLY_LSP_SERVER
   }
 }

@@ -11,10 +11,11 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.platform.lsp.tests.checkLspHighlighting
 import com.intellij.platform.lsp.tests.waitForDiagnosticsFromLspServer
 import com.intellij.util.text.SemVer
+import com.intellij.util.xmlb.SettingsInternalApi
 import org.jetbrains.vuejs.lang.VueInspectionsProvider
 import org.jetbrains.vuejs.lang.VueTestModule
 import org.jetbrains.vuejs.lang.configureVueDependencies
-import org.jetbrains.vuejs.options.getVueSettings
+import org.jetbrains.vuejs.options.VueSettings
 import org.junit.Test
 
 class VolarServiceTest : VueLspServiceTestBase() {
@@ -234,6 +235,7 @@ class VolarServiceTest : VueLspServiceTestBase() {
     assertHasServiceItems(elements, true)
   }
 
+  @OptIn(SettingsInternalApi::class)
   @Test
   fun testSimpleCustomVersionVue() {
     myFixture.enableInspections(VueInspectionsProvider())
@@ -241,12 +243,19 @@ class VolarServiceTest : VueLspServiceTestBase() {
     myFixture.configureVueDependencies(VueTestModule.VUE_3_0_0, additionalDependencies = mapOf("@vue/language-server" to version.toString()))
     myFixture.configureByText("tsconfig.json", tsconfig)
     performNpmInstallForPackageJson("package.json")
-    val state = getVueSettings(project).state
-    val old = state.packageName
-    disposeOnTearDown(Disposable { state.packageName = old })
+    val settings = VueSettings.instance(project)
+    val state = settings.state
+    val old = state.manual.lspServerPackagePath
+    disposeOnTearDown(Disposable {
+      settings.state = state.copy(
+        manual = state.manual.copy(lspServerPackagePath = old)
+      )
+    })
     val path = myFixture.findFileInTempDir("node_modules/@vue/language-server").path
     assertNotNull(path)
-    state.packageName = path
+    settings.state = state.copy(
+      manual = state.manual.copy(lspServerPackagePath = path)
+    )
 
     myFixture.configureByText("Simple.vue", """
       <script setup lang="ts">

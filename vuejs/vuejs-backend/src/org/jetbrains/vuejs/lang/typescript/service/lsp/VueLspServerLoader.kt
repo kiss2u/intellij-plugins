@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.vuejs.lang.typescript.service.vuePluginPath
-import org.jetbrains.vuejs.options.getVueSettings
+import org.jetbrains.vuejs.options.VueSettings
 
 private val vueLspServerPackageVersion = PackageVersion.bundled<VueLspServerPackageDescriptor>(
   version = "2.2.10",
@@ -29,6 +29,7 @@ private object VueLspServerPackageDescriptor : LspServerPackageDescriptor(
 @ApiStatus.Experimental
 object VueLspServerLoader : LspServerLoader(VueLspServerPackageDescriptor) {
   override fun getSelectedPackageRef(project: Project): NodePackageRef {
-    return getVueSettings(project).packageRef
+    val settings = VueSettings.instance(project)
+    return settings.manualSettings.lspServerPackageRef
   }
 }

@@ -74,6 +74,21 @@ fun isVue3(context: PsiElement): Boolean =
     it == null || it >= VERSION_3_0_0
   }
 
+/**
+ * Determines if the given context corresponds to a Vue 2 project.
+ *
+ * @return `true` if the Vue version was identified and is 2, `false` otherwise.
+ */
+fun isVue2(
+  project: Project,
+  context: VirtualFile,
+): Boolean {
+  val version = detectPkgVersion(context, VUE_MODULE)
+  return isVueContext(context, project)
+         && version != null
+         && version.major == 2
+}
+
 fun supportsScriptSetup(context: PsiElement?): Boolean =
   supportsScriptAttribute(context, SETUP_ATTRIBUTE_NAME)
 
@@ -96,6 +111,7 @@ private fun supportsScriptAttribute(
     ?.firstOrNull() != null
 
 
+private val VERSION_2_0_0 = SemVer("2.0.0", 2, 0, 0)
 private val VERSION_2_7_0 = SemVer("2.7.0", 2, 7, 0)
 private val VERSION_3_0_0 = SemVer("3.0.0", 3, 0, 0)
 private val VERSION_8_0_0 = SemVer("8.0.0", 8, 0, 0)
@@ -104,6 +120,10 @@ private fun detectPkgVersion(context: PsiElement, packageName: String): SemVer? 
   val vf = context.containingFile?.originalFile?.virtualFile
            ?: context.asSafely<PsiDirectory>()?.virtualFile
            ?: return null
+  return detectPkgVersion(vf, packageName)
+}
+
+private fun detectPkgVersion(vf: VirtualFile, packageName: String): SemVer? {
   var fromRange: SemVer? = null
   var exact: SemVer? = null
   PackageJsonUtil.processUpPackageJsonFilesInAllScope(vf) { pkgJson ->

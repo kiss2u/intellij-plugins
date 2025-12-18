@@ -1,5 +1,18 @@
 ### auto-generated section `build intellij.vuejs.backend` start
+load("@community//build:compiler-options.bzl", "create_kotlinc_options")
 load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+create_kotlinc_options(
+  name = "custom_backend",
+  opt_in = [
+    "kotlin.uuid.ExperimentalUuidApi",
+    "com.intellij.openapi.util.IntellijInternalApi",
+    "org.jetbrains.kotlin.utils.addToStdlib.UnsafeCastFunction",
+    "org.jetbrains.kotlin.analysis.api.KaIdeApi",
+    "org.jetbrains.kotlin.analysis.api.KaNonPublicApi",
+  ],
+  x_context_parameters = True
+)
 
 resourcegroup(
   name = "backend_resources",
@@ -22,6 +35,7 @@ jvm_library(
     ":backend_resources",
     ":backend_resources_1",
   ],
+  kotlinc_opts = ":custom_backend",
   deps = [
     "@community//platform/analysis-api:analysis",
     "@community//platform/code-style-api:codeStyle",
@@ -83,8 +97,10 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-plugin",
     "@community//xml/xml-analysis-api:analysis",
     "@community//platform/execution",
+    "@community//libraries/kotlinx/serialization/core",
     "//plugins/JavaScriptLanguage/javascript-codeinsight",
     "//plugins/JavaScriptLanguage/javascript-ultimate",
+    "@community//libraries/kotlinx/serialization/json",
   ]
 )
 ### auto-generated section `build intellij.vuejs.backend` end

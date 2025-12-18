@@ -13,6 +13,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.vuejs.lang.html.isVueFile
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspTypeScriptService
 import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptService
+import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceBundled
+import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceManual
 
 internal class VueLanguageServiceProvider(project: Project) : TypeScriptServiceProvider() {
   private val lspLanguageService by lazy(LazyThreadSafetyMode.PUBLICATION) { project.service<VueLspServiceWrapper>() }
@@ -20,7 +22,7 @@ internal class VueLanguageServiceProvider(project: Project) : TypeScriptServiceP
 
   override val allServices: List<TypeScriptService>
     get() {
-      return listOf(lspLanguageService.service, tsPluginService.service)
+      return listOf(lspLanguageService.service) + tsPluginService.services
     }
 
   override fun isHighlightingCandidate(file: VirtualFile): Boolean {
@@ -31,16 +33,20 @@ internal class VueLanguageServiceProvider(project: Project) : TypeScriptServiceP
 
 @Service(Service.Level.PROJECT)
 internal class VueTypeScriptPluginServiceWrapper(project: Project) : Disposable {
-  var service = VuePluginTypeScriptService(project)
+  var services: List<VuePluginTypeScriptService> =
+    getServices(project)
     private set
 
-  fun refreshService(project: Project) {
-    Disposer.dispose(service)
-    service = VuePluginTypeScriptService(project)
+  private fun getServices(project: Project): List<VuePluginTypeScriptService> {
+    val bundledServices = VueTSPluginVersion.entries.map {
+      VuePluginTypeScriptServiceBundled(project, it)
+    }
+
+    return bundledServices + VuePluginTypeScriptServiceManual(project)
   }
 
   override fun dispose() {
-    Disposer.dispose(service)
+    services.forEach(Disposer::dispose)
   }
 }
 

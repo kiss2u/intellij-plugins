@@ -23,24 +23,38 @@ import org.jetbrains.vuejs.VuejsIcons
 import org.jetbrains.vuejs.lang.expr.VueJSLanguage
 import org.jetbrains.vuejs.lang.expr.VueTSLanguage
 import org.jetbrains.vuejs.lang.html.isVueFile
+import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.VueTypeScriptServiceProtocol
 import org.jetbrains.vuejs.options.VueConfigurable
-import org.jetbrains.vuejs.options.VueTSPluginVersion
-import org.jetbrains.vuejs.options.getVueSettings
+import org.jetbrains.vuejs.options.VueSettings
 
-private fun getVueTypeScriptPlugin(
-  version: VueTSPluginVersion,
-): DownloadableTypeScriptServicePlugin =
-  DownloadableTypeScriptServicePlugin(
-    shortLabel = "Vue",
-    activationRule = VueTSPluginLoaderFactory.getActivationRule(version),
-  )
-
-class VuePluginTypeScriptService(
+class VuePluginTypeScriptServiceBundled(
   project: Project,
+  val version: VueTSPluginVersion,
+) : VuePluginTypeScriptService(
+  project = project,
+  servicePlugin = DownloadableTypeScriptServicePlugin(
+    shortLabel = "Vue",
+    activationRule = VueTSPluginBundledActivationRule(version),
+  ),
+)
+
+class VuePluginTypeScriptServiceManual(
+  project: Project,
+) : VuePluginTypeScriptService(
+  project = project,
+  servicePlugin = DownloadableTypeScriptServicePlugin(
+    shortLabel = "Vue",
+    activationRule = VueTSPluginManualActivationRule,
+  ),
+)
+
+abstract class VuePluginTypeScriptService(
+  project: Project,
+  servicePlugin: DownloadableTypeScriptServicePlugin,
 ) : PluggableTypeScriptService(
   project = project,
-  servicePlugin = getVueTypeScriptPlugin(getVueSettings(project).tsPluginVersion)
+  servicePlugin = servicePlugin,
 ) {
   override fun createProtocol(
     tsServicePath: String,
@@ -51,7 +65,7 @@ class VuePluginTypeScriptService(
       eventConsumer = createEventConsumer(),
       serviceName = serviceName,
       tsServicePath = tsServicePath,
-      servicePlugin = servicePlugin,
+      servicePlugin = this@VuePluginTypeScriptService.servicePlugin,
     )
   }
 
@@ -100,7 +114,7 @@ class VuePluginTypeScriptService(
     "Vue + TypeScript"
 
   override fun isTypeEvaluationEnabled(): Boolean =
-    getVueSettings(project).useTypesFromServer
+    VueSettings.instance(project).useTypesFromServer
 
   override val typeEvaluationSupport: TypeScriptServiceEvaluationSupport =
     VueCompilerServiceEvaluationSupport(project)

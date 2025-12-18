@@ -8,8 +8,8 @@ import com.intellij.lang.typescript.library.download.TypeScriptDefinitionFilesDi
 import com.intellij.util.text.SemVer
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspServerLoader
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspTypeScriptService
-import org.jetbrains.vuejs.options.VueServiceSettings
-import org.jetbrains.vuejs.options.getVueSettings
+import org.jetbrains.vuejs.options.VueLSMode
+import org.jetbrains.vuejs.options.VueSettings
 
 abstract class VueLspServiceTestBase : BaseLspTypeScriptServiceTest() {
   protected val tsconfig = """
@@ -24,11 +24,11 @@ abstract class VueLspServiceTestBase : BaseLspTypeScriptServiceTest() {
 
   override fun setUp() {
     super.setUp()
-    val vueSettings = getVueSettings(project)
+    val vueSettings = VueSettings.instance(project)
     TypeScriptLanguageServiceUtil.setUseService(true)
     TypeScriptExternalDefinitionsRegistry.testTypingsRootPath = TypeScriptDefinitionFilesDirectory.getGlobalAutoDownloadTypesDirectoryPath()
-    vueSettings.serviceType = VueServiceSettings.AUTO
-    vueSettings.tsPluginPreviewEnabled = false
+    vueSettings.serviceType = VueLSMode.MANUAL
+    vueSettings.manualSettings.mode = VueSettings.ManualMode.ONLY_LSP_SERVER
 
     ensureServerDownloaded(VueLspServerLoader)
   }

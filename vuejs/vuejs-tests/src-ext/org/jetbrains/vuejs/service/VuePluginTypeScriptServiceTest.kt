@@ -9,7 +9,7 @@ import org.jetbrains.vuejs.VueTsConfigFile
 import org.jetbrains.vuejs.lang.VueInspectionsProvider
 import org.jetbrains.vuejs.lang.VueTestModule
 import org.jetbrains.vuejs.lang.configureVueDependencies
-import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptService
+import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceBundled
 import org.jetbrains.vuejs.lang.vueRelativeTestDataPath
 import java.io.File
 
@@ -24,8 +24,8 @@ class VuePluginTypeScriptServiceTest :
     return "vue"
   }
 
-  override val service: VuePluginTypeScriptService
-    get() = TypeScriptServiceHolder.getForFile(project, file.virtualFile) as VuePluginTypeScriptService
+  override val service: VuePluginTypeScriptServiceBundled
+    get() = TypeScriptServiceHolder.getForFile(project, file.virtualFile) as VuePluginTypeScriptServiceBundled
 
   override fun setUp() {
     super.setUp()

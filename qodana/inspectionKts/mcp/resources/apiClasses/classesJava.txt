@@ -1,0 +1,143 @@
+package com.intellij.codeInspection {
+
+    // Interfaces
+    interface CommonProblemDescriptor
+    interface GlobalInspectionContext : UserDataHolder
+    interface InspectionProfile : Comparable
+    interface InspectionSuppressor : PossiblyDumbAware
+    interface LocalQuickFix : QuickFix, FileModifier
+    interface LocalQuickFixProvider
+    interface ProblemDescriptionsProcessor
+    interface ProblemDescriptor : CommonProblemDescriptor
+    interface QuickFix<D> : WriteActionAware
+    interface RedundantSuppressionDetector : PossiblyDumbAware
+    interface RefactoringQuickFix : LocalQuickFix
+    interface SuppressQuickFix : LocalQuickFix
+
+    // Enums
+    final enum ProblemHighlightType : Enum
+
+    // Classes
+    class AbstractBaseJavaLocalInspectionTool : LocalInspectionTool
+    class AbstractBaseUastLocalInspectionTool : LocalInspectionTool
+    class InspectionManager
+    class InspectionProfileEntry : BatchSuppressableTool, OptionContainer
+    final class InspectionsBundle
+    class IntentionWrapper : LocalQuickFix, IntentionAction, ActionClassHolder, CustomizableIntentionActionDelegate
+    final class LanguageInspectionSuppressors : LanguageExtension
+    class LocalInspectionTool : InspectionProfileEntry, PossiblyDumbAware
+    final class LocalInspectionToolSession : UserDataHolderBase
+    class ProblemsHolder
+
+}
+
+package com.intellij.codeInspection.ProblemsHolder {
+
+    // Classes
+    final class ProblemBuilder
+
+}
+
+package com.intellij.psi {
+
+    // Interfaces
+    interface JavaTokenType : TokenType
+    interface PsiAnnotation : PsiAnnotationMemberValue, JvmAnnotation
+    interface PsiAnnotationParameterList : PsiElement
+    interface PsiAssignmentExpression : PsiExpression
+    interface PsiCall : PsiElement
+    interface PsiClass : PsiNameIdentifierOwner, PsiModifierListOwner, PsiDocCommentOwner, PsiTypeParameterListOwner, PsiQualifiedNamedElement, PsiTarget, PomRenameableTarget, JvmClass
+    interface PsiComment : PsiElement, UrlReferenceHost
+    interface PsiElement : UserDataHolder, Iconable
+    interface PsiExpression : PsiAnnotationMemberValue, PsiCaseLabelElement
+    interface PsiExpressionList : PsiElement
+    interface PsiField : PsiJvmMember, PsiVariable, PsiDocCommentOwner, JvmField
+    interface PsiFile : PsiFileSystemItem
+    interface PsiImportStaticReferenceElement : PsiJavaCodeReferenceElement
+    interface PsiImportStaticStatement : PsiImportStatementBase
+    interface PsiJavaCodeReferenceElement : PsiJavaReference, PsiQualifiedReferenceElement
+    interface PsiMember : PsiModifierListOwner, NavigatablePsiElement
+    interface PsiMethod : PsiMember, PsiNameIdentifierOwner, PsiModifierListOwner, PsiDocCommentOwner, PsiTypeParameterListOwner, PomRenameableTarget, PsiTarget, PsiParameterListOwner, JvmMethod
+    interface PsiMethodCallExpression : PsiCallExpression
+    interface PsiNameIdentifierOwner : PsiNamedElement
+    interface PsiNameValuePair : PsiElement, JvmAnnotationAttribute
+    interface PsiNamedElement : PsiElement
+    interface PsiQualifiedReference : PsiReference
+    interface PsiReference
+    interface PsiSwitchLabelStatementBase : PsiStatement
+    interface PsiVariable : PsiModifierListOwner, PsiNameIdentifierOwner, PsiTarget, PomRenameableTarget
+    interface SmartPsiElementPointer<E> : Pointer
+
+    // Classes
+    class JavaElementVisitor : PsiElementVisitor
+    class PsiDocumentManager
+    class PsiElementVisitor
+    class PsiPolyVariantReferenceBase<T> : PsiReferenceBase, PsiPolyVariantReference
+    class PsiReferenceBase<T> : PsiReference
+    class PsiReferenceService
+    class PsiType : PsiAnnotationOwner, Cloneable, JvmType
+    final class PsiTypes
+
+}
+
+package com.intellij.psi.impl.source.tree {
+
+    // Classes
+    class LeafPsiElement : LeafElement, PsiElement, NavigationItem
+    final class SharedImplUtil
+    class TreeElement : ElementBase, ASTNode, ReparseableASTNode, Cloneable, LighterASTNode
+
+}
+
+package com.intellij.psi.search {
+
+    // Interfaces
+    interface PsiSearchHelper
+
+    // Classes
+    class GlobalSearchScope : SearchScope, ProjectAwareFileFilter
+    class LocalSearchScope : SearchScope
+
+}
+
+package com.intellij.psi.tree {
+
+    // Classes
+    class IElementType
+    final class TokenSet
+
+}
+
+package com.intellij.psi.util {
+
+    // Interfaces
+    interface PsiEditorUtil
+    interface PsiElementFilter
+
+    // Classes
+    class PropertyUtilBase
+    class PsiTreeUtil
+    final class PsiUtil : PsiUtilCore
+
+}
+
+package com.siyeh {
+
+    // Classes
+    final class InspectionGadgetsBundle
+
+}
+
+package com.siyeh.ig {
+
+    // Classes
+    class BaseInspection : AbstractBaseJavaLocalInspectionTool
+
+}
+
+package com.siyeh.ig.psiutils {
+
+    // Classes
+    final class TestUtils
+
+}

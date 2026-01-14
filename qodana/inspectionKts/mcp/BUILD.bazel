@@ -1,0 +1,28 @@
+### auto-generated section `build intellij.qodana.inspectionKts.mcp` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "mcp_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "mcp",
+  module_name = "intellij.qodana.inspectionKts.mcp",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":mcp_resources"],
+  deps = [
+    "@lib//:kotlin-stdlib",
+    "@community//plugins/mcp-server:mcpserver",
+    "//contrib/qodana/inspectionKts/core:qodana-inspectionKts",
+    "@community//libraries/kotlinx/serialization/core",
+    "@community//libraries/kotlinx/serialization/json",
+    "@community//platform/core-api:core",
+    "@community//platform/lang-api:lang",
+    "@community//platform/util",
+    "@community//libraries/kotlinx/coroutines/core",
+  ]
+)
+### auto-generated section `build intellij.qodana.inspectionKts.mcp` end

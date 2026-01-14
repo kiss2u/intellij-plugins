@@ -1,0 +1,10 @@
+<idea-plugin>
+  <dependencies>
+    <plugin id="com.intellij.mcpServer"/>
+    <module name="intellij.qodana.inspectionKts"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij.mcpServer">
+    <mcpToolset implementation="org.jetbrains.qodana.inspectionKts.mcp.InspectionKtsMcpToolset"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,233 @@
+package com.intellij.codeInspection {
+
+    // Interfaces
+    interface CommonProblemDescriptor
+    interface GlobalInspectionContext : UserDataHolder
+    interface LocalQuickFix : QuickFix, FileModifier
+    interface ProblemDescriptionsProcessor
+    interface ProblemDescriptor : CommonProblemDescriptor
+    interface QuickFix<D> : WriteActionAware
+
+    // Enums
+    final enum ProblemHighlightType : Enum
+
+    // Classes
+    class InspectionManager
+    class InspectionProfileEntry : BatchSuppressableTool, OptionContainer
+    final class InspectionsBundle
+    class IntentionWrapper : LocalQuickFix, IntentionAction, ActionClassHolder, CustomizableIntentionActionDelegate
+    final class LanguageInspectionSuppressors : LanguageExtension
+    class LocalInspectionTool : InspectionProfileEntry, PossiblyDumbAware
+    final class LocalInspectionToolSession : UserDataHolderBase
+    class ProblemsHolder
+
+}
+
+package com.intellij.codeInspection.ProblemsHolder {
+
+    // Classes
+    final class ProblemBuilder
+
+}
+
+package com.intellij.psi {
+
+    // Interfaces
+    interface PsiElement : UserDataHolder, Iconable
+    interface PsiFile : PsiFileSystemItem
+    interface PsiNamedElement : PsiElement
+    interface PsiReference
+    interface SmartPsiElementPointer<E> : Pointer
+
+    // Classes
+    class PsiDocumentManager
+    class PsiElementVisitor
+
+}
+
+package com.intellij.psi.impl.source.tree {
+
+    // Classes
+    class LeafPsiElement : LeafElement, PsiElement, NavigationItem
+
+}
+
+package com.intellij.psi.search {
+
+    // Classes
+    class GlobalSearchScope : SearchScope, ProjectAwareFileFilter
+    class LocalSearchScope : SearchScope
+
+}
+
+package com.intellij.psi.tree {
+
+    // Classes
+    class IElementType
+    final class TokenSet
+
+}
+
+package com.intellij.psi.util {
+
+    // Classes
+    class PsiTreeUtil
+
+}
+
+package org.jetbrains.kotlin.analysis.api {
+
+    // Interfaces
+    interface KaSession : KaLifetimeOwner, KaResolver, KaSymbolRelationProvider, KaDiagnosticProvider, KaScopeProvider, KaCompletionCandidateChecker, KaExpressionTypeProvider, KaTypeProvider, KaTypeInformationProvider, KaSymbolProvider, KaJavaInteroperabilityComponent, KaSymbolInformationProvider, KaTypeRelationChecker, KaExpressionInformationProvider, KaEvaluator, KaReferenceShortener, KaImportOptimizer, KaRenderer, KaVisibilityChecker, KaOriginalPsiProvider, KaTypeCreator, KaAnalysisScopeProvider, KaSignatureSubstitutor, KaResolveExtensionInfoProvider, KaCompilerPluginGeneratedDeclarationsProvider, KaCompilerFacility, KaSubstitutorProvider, KaDataFlowProvider, KaSourceProvider
+
+}
+
+package org.jetbrains.kotlin.analysis.api.annotations {
+
+    // Interfaces
+    interface KaAnnotated
+    interface KaAnnotation : KaLifetimeOwner
+
+}
+
+package org.jetbrains.kotlin.analysis.api.components {
+
+    // Interfaces
+    interface KaDiagnosticProvider : KaSessionComponent
+    interface KaExpressionTypeProvider : KaSessionComponent
+    interface KaResolver : KaSessionComponent
+    interface KaScopeProvider : KaSessionComponent
+    interface KaSymbolRelationProvider : KaSessionComponent
+    interface KaTypeProvider : KaSessionComponent
+
+    // Enums
+    final enum KaDiagnosticCheckerFilter : Enum
+
+    // Classes
+    class KaBuiltinTypes : KaLifetimeOwner
+
+}
+
+package org.jetbrains.kotlin.analysis.api.diagnostics {
+
+    // Interfaces
+    interface KaDiagnostic : KaLifetimeOwner
+    interface KaDiagnosticWithPsi<PSI> : KaDiagnostic
+
+    // Enums
+    final enum KaSeverity : Enum
+
+}
+
+package org.jetbrains.kotlin.analysis.api.resolution {
+
+    // Interfaces
+    interface KaCallableMemberCall<S, C> : KaCall
+    interface KaFunctionCall<S> : KaCallableMemberCall
+    interface KaReceiverValue : KaLifetimeOwner
+
+}
+
+package org.jetbrains.kotlin.analysis.api.symbols {
+
+    // Interfaces
+    interface KaDeclarationSymbol : KaSymbol, KaAnnotatedSymbol
+    interface KaSymbol : KaLifetimeOwner
+    interface KaSymbolProvider : KaSessionComponent
+
+    // Enums
+    final enum KaClassKind : Enum
+    final enum KaSymbolModality : Enum
+    final enum KaSymbolVisibility : Enum
+
+    // Classes
+    class KaCallableSymbol : KaDeclarationSymbol, KaContextReceiversOwner
+    class KaClassSymbol : KaClassLikeSymbol, KaDeclarationContainerSymbol
+    class KaFunctionSymbol : KaCallableSymbol
+    class KaNamedClassSymbol : KaClassSymbol, KaTypeParameterOwnerSymbol, KaNamedSymbol, KaContextReceiversOwner
+    class KaNamedFunctionSymbol : KaFunctionSymbol, KaNamedSymbol, KaTypeParameterOwnerSymbol, KaContextParameterOwnerSymbol
+    class KaPropertySymbol : KaVariableSymbol, KaTypeParameterOwnerSymbol
+    class KaTypeParameterSymbol : KaClassifierSymbol, KaNamedSymbol
+    class KaValueParameterSymbol : KaParameterSymbol
+    class KaVariableSymbol : KaCallableSymbol, KaNamedSymbol
+
+}
+
+package org.jetbrains.kotlin.analysis.api.symbols.markers {
+
+    // Interfaces
+    interface KaNamedSymbol : KaSymbol
+
+}
+
+package org.jetbrains.kotlin.analysis.api.types {
+
+    // Interfaces
+    interface KaType : KaLifetimeOwner, KaAnnotated
+    interface KaTypeProjection : KaLifetimeOwner
+
+    // Enums
+    final enum KaTypeNullability : Enum
+
+    // Classes
+    class KaClassType : KaType
+    class KaFunctionType : KaClassType, KaContextReceiversOwner
+    class KaTypeParameterType : KaType
+
+}
+
+package org.jetbrains.kotlin.psi {
+
+    // Interfaces
+    interface KtAnnotated : KtElement
+    interface KtCallElement : KtElement
+    interface KtCallableDeclaration : KtNamedDeclaration, KtTypeParameterListOwner
+    interface KtDeclarationWithBody : KtDeclaration
+    interface KtElement : NavigatablePsiElement, KtPureElement
+    interface KtFunction : KtCallableDeclaration, KtDeclarationWithBody
+    interface KtModifierListOwner : PsiElement, KtAnnotated
+    interface KtNamedDeclaration : PsiNameIdentifierOwner, KtDeclaration, KtNamed, KtStatementExpression
+    interface KtQualifiedExpression : KtExpression
+    interface KtSimpleNameExpression : KtReferenceExpression
+    interface KtVariableDeclaration : KtCallableDeclaration, KtDeclarationWithInitializer, KtValVarKeywordOwner
+
+    // Classes
+    class KtAnnotationEntry : KtElementImplStub, KtCallElement
+    class KtBinaryExpression : KtExpressionImpl, KtOperationExpression
+    class KtBlockExpression : LazyParseablePsiElement, KtElement, KtExpression, KtStatementExpression
+    class KtCallExpression : KtExpressionImpl, KtCallElement, KtReferenceExpression
+    class KtClass : KtClassOrObject
+    final class KtClassBody : KtElementImplStub, KtDeclarationContainer
+    class KtClassOrObject : KtTypeParameterListOwnerStub, KtClassLikeDeclaration, KtDeclarationContainer, KtNamedDeclaration, KtPureClassOrObject
+    class KtConstantExpression : KtElementImplStub, KtExpression
+    final class KtDotQualifiedExpression : KtExpressionImplStub, KtQualifiedExpression
+    class KtElementImpl : ASTWrapperPsiElement, KtElement
+    class KtExpressionImpl : KtElementImpl, KtExpression
+    class KtForExpression : KtLoopExpression
+    class KtFunctionLiteral : KtFunctionNotStubbed
+    class KtIfExpression : KtExpressionImpl
+    class KtImportDirective : KtElementImplStub, KtImportInfo
+    class KtLambdaExpression : LazyParseablePsiElement, KtExpression
+    class KtLoopExpression : KtExpressionImpl, KtStatementExpression
+    class KtModifierList : KtElementImplStub, KtAnnotationsContainer
+    final class KtNameReferenceExpression : KtExpressionImplStub, KtSimpleNameExpression
+    class KtNamedFunction : KtTypeParameterListOwnerStub, KtDeclarationWithInitializer, KtFunction
+    final class KtObjectDeclaration : KtClassOrObject
+    class KtParameter : KtNamedDeclarationStub, KtCallableDeclaration, KtValVarKeywordOwner
+    class KtParameterList : KtElementImplStub
+    class KtProperty : KtTypeParameterListOwnerStub, KtVariableDeclaration
+    class KtPropertyAccessor : KtDeclarationStub, KtDeclarationWithBody, KtDeclarationWithInitializer, KtModifierListOwner
+    final class KtPsiFactory
+    class KtPsiUtil
+    class KtReturnExpression : KtExpressionWithLabel, KtStatementExpression
+    class KtStringTemplateExpression : KtElementImplStub, ContributedReferenceHost, PsiLanguageInjectionHost, KtExpression
+    final class KtTypeReference : KtModifierListOwnerStub, KtAnnotated, KtAnnotationsContainer
+    class KtUserType : KtElementImplStub, KtTypeElement
+    class KtValueArgument : KtElementImplStub, ValueArgument
+    class KtValueArgumentList : KtElementImplStub
+    class KtVisitor<R, D> : PsiElementVisitor
+    class KtVisitorVoid : KtVisitor
+    class KtWhenExpression : KtExpressionImpl
+    class KtWhileExpressionBase : KtLoopExpression
+
+}

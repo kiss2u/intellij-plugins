@@ -1,5 +1,4 @@
-@file:Suppress("FunctionName", "unused")
-@file:OptIn(ExperimentalSerializationApi::class)
+@file:Suppress("FunctionName", "unused", "RedundantSuspendModifier")
 
 package org.jetbrains.qodana.inspectionKts.mcp
 
@@ -7,24 +6,12 @@ import com.intellij.mcpserver.McpToolset
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
-import com.intellij.openapi.application.readAction
-import com.intellij.openapi.application.writeAction
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.elementType
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.serialization.ExperimentalSerializationApi
-import org.jetbrains.qodana.inspectionKts.examples.InspectionKtsExample
-import org.jetbrains.qodana.inspectionKts.templates.InspectionKtsTemplate
-
-private val ANY_LANGUAGE_TEMPLATES = setOf(
-  "ANY_LANGUAGE_GLOBAL",
-  "ANY_LANGUAGE",
-)
-
-private val IGNORED_EXAMPLES = setOf(
-  "JSON and YAML"
-)
+import kotlinx.serialization.Serializable
+import org.jetbrains.qodana.inspectionKts.mcp.impl.generateInspectionKtsApiImpl
+import org.jetbrains.qodana.inspectionKts.mcp.impl.generateInspectionKtsExamplesImpl
+import org.jetbrains.qodana.inspectionKts.mcp.impl.generatePsiTreeImpl
+import org.jetbrains.qodana.inspectionKts.mcp.impl.runInspectionKtsImpl
 
 /**
  * MCP Toolset for InspectionKts-related tools.
@@ -47,20 +34,7 @@ class InspectionKtsMcpToolset : McpToolset {
     language: String,
   ): String {
     val project = currentCoroutineContext().project
-    val fileExtension = when (language.lowercase()) {
-      "java" -> "java"
-      "kotlin", "kt" -> "kt"
-      else -> return "Error: Unsupported language '$language'. Supported: Java, Kotlin"
-    }
-
-    val psiFile = writeAction {
-      PsiFileFactory.getInstance(project).createFileFromText(
-        "Placeholder.$fileExtension",
-        code
-      )
-    }
-
-    return generatePsiTreeText(psiFile)
+    return generatePsiTreeImpl(project, code, language)
   }
 
   @McpTool
@@ -76,46 +50,7 @@ class InspectionKtsMcpToolset : McpToolset {
     @McpDescription("If true, includes additional curated examples besides templates")
     includeAdditionalExamples: Boolean = true,
   ): String {
-    val languageUpper = language.uppercase()
-    val languageTemplates = ANY_LANGUAGE_TEMPLATES + languageUpper
-
-    val templateBlocks = InspectionKtsTemplate.Provider.templates()
-      .filter { it.uiDescriptor.id in languageTemplates }
-      .map { it.templateContent("AnExampleFileName.ReplaceMe") }
-      .joinToString(separator = "\n") { content ->
-        """
-        <Example>
-        $content
-        </Example>
-        """.trimIndent()
-      }
-
-    val additionalBlocks = if (includeAdditionalExamples) {
-      InspectionKtsExample.Provider
-        .examples()
-        .filter { it.text !in IGNORED_EXAMPLES }
-        .map {
-          val content = it.resourceUrl.readText()
-          val comment = "// Only Code of localInspection { ... }\n"
-          comment + content
-        }
-        .joinToString("\n") { content ->
-          """
-          <Example>
-          $content
-          </Example>
-          """.trimIndent()
-        }
-    } else ""
-
-    return buildString {
-      appendLine("<Examples>")
-      appendLine(templateBlocks)
-      if (additionalBlocks.isNotBlank()) {
-        appendLine(additionalBlocks)
-      }
-      append("</Examples>")
-    }
+    return generateInspectionKtsExamplesImpl(language, includeAdditionalExamples)
   }
 
   @McpTool
@@ -131,67 +66,45 @@ class InspectionKtsMcpToolset : McpToolset {
     @McpDescription("If true, wraps the API content in <API> and <api.kt> tags")
     wrapInTags: Boolean = true,
   ): String {
-    val langName = when (language.lowercase()) {
-      "java" -> "Java"
-      "kotlin", "kt" -> "Kotlin"
-      else -> return "Error: Unsupported language '$language'. Supported: Java, Kotlin"
-    }
-
-    val resourcePath = "apiClasses/classes$langName.txt"
-    val classes = this::class.java.classLoader.getResource(resourcePath)?.readText()
-                  ?: return "Error: Cannot find API documentation for $langName at $resourcePath"
-
-    return if (wrapInTags) {
-      """
-      <API>
-      <api.kt>
-      $classes
-      </api.kt>
-      </API>
-      """.trimIndent()
-    } else {
-      classes
-    }
+    return generateInspectionKtsApiImpl(language, wrapInTags)
   }
 
-  private suspend fun generatePsiTreeText(element: PsiElement, level: Int = 0): String {
-    val nodeType = getNodeTypeDescription(element) ?: return ""
-    val childrenInfo = getChildrenInfo(element)
-    val indentation = "  ".repeat(level)
-
-    val currentLine = "$indentation$nodeType$childrenInfo\n"
-
-    return buildString {
-      append(currentLine)
-
-      val children = readAction { element.children.toList() }
-      for (child in children) {
-        append(generatePsiTreeText(child, level + 1))
-      }
-    }
-  }
-
-  private suspend fun getNodeTypeDescription(element: PsiElement): String? {
-    return readAction {
-      when {
-        element.javaClass.simpleName == "LeafPsiElement" -> {
-          val elementType = element.elementType
-          "${elementType?.javaClass?.simpleName}($elementType)"
-        }
-        else -> element.javaClass.simpleName
-      }
-    }
-  }
-
-  private suspend fun getChildrenInfo(element: PsiElement): String {
-    val hasChildren = readAction { element.children.isNotEmpty() }
-    val firstChild = readAction { element.firstChild }
-    val hasDirectChildren = firstChild != null
-
-    return if (!hasDirectChildren && hasChildren) {
-      " -> children retrieved with node.children()"
-    } else {
-      ""
-    }
+  @McpTool
+  @McpDescription(
+    """
+    Compiles an inspection.kts script and runs it against a target file.
+    Returns compilation errors if any, or the list of problems found by the inspection.
+    Use this tool to test inspection.kts scripts during development.
+    """
+  )
+  suspend fun run_inspection_kts(
+    @McpDescription("The inspection.kts script content to compile and run")
+    inspectionKtsCode: String,
+    @McpDescription("Relative path of the target file inside project to analyze (e.g., 'src/my/package/Example.kt'")
+    contextPath: String,
+    @McpDescription("The content of the target file to analyze. If not provided, the file must exist in the project.")
+    targetFileContent: String? = null,
+  ): InspectionKtsRunResult {
+    val project = currentCoroutineContext().project
+    return runInspectionKtsImpl(project, inspectionKtsCode, contextPath, targetFileContent)
   }
 }
+
+@Serializable
+data class InspectionKtsRunResult(
+  val success: Boolean,
+  val compilationError: String? = null,
+  val compilationErrorDetails: String? = null,
+  val problems: List<InspectionProblem> = emptyList(),
+  val problemCount: Int = 0,
+)
+
+@Serializable
+data class InspectionProblem(
+  val message: String,
+  val lineNumber: Int,
+  val highlightType: String,
+  val startOffset: Int?,
+  val endOffset: Int?,
+  val elementText: String?,
+)

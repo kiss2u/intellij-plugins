@@ -1,0 +1,66 @@
+### auto-generated section `build intellij.qodana.inspectionKts.mcp.tests` start
+load("@community//build:compiler-options.bzl", "create_kotlinc_options")
+load("@rules_jvm//:jvm.bzl", "jvm_library")
+
+create_kotlinc_options(
+  name = "custom_tests",
+  progressive = False
+)
+
+jvm_library(
+  name = "tests",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True)
+)
+
+jvm_library(
+  name = "tests_test_lib",
+  visibility = ["//visibility:public"],
+  srcs = glob(["testSrc/**/*.kt", "testSrc/**/*.java", "testSrc/**/*.form"], allow_empty = True),
+  kotlinc_opts = ":custom_tests",
+  associates = ["//contrib/qodana/inspectionKts/mcp"],
+  deps = [
+    "@community//libraries/junit5",
+    "@community//libraries/junit5-params",
+    "@community//libraries/kotlin/test:libraries-kotlinTest",
+    "@community//libraries/kotlin/test-assertions-core-jvm:libraries-kotlinTestAssertionsCoreJvm",
+    "@community//libraries/kotlinx/coroutines/core",
+    "@community//libraries/io",
+    "@community//libraries/kotlinx/serialization/core",
+    "@community//libraries/kotlinx/serialization/json",
+    "@community//libraries/ktor/client",
+    "@community//plugins/mcp-server:mcpserver",
+    "@community//plugins/mcp-server/mcpserver.stdio",
+    "@community//plugins/mcp-server/tests:tests_test_lib",
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/core-api:core",
+    "@community//platform/core-impl",
+    "@community//platform/platform-util-io:ide-util-io",
+    "@community//platform/lang-impl",
+    "@community//platform/projectModel-api:projectModel",
+    "@community//platform/testFramework",
+    "@community//platform/testFramework:testFramework_test_lib",
+    "@community//platform/testFramework/junit5",
+    "@community//platform/testFramework/junit5:junit5_test_lib",
+    "//contrib/qodana",
+    "//contrib/qodana:qodana_test_lib",
+    "@community//plugins/kotlin:kotlin-plugin-community-main",
+    "@community//java/testFramework",
+    "//contrib/qodana/inspectionKts/java",
+    "//contrib/qodana/inspectionKts/js",
+    "//contrib/qodana/inspectionKts/js:js_test_lib",
+    "//contrib/qodana/inspectionKts/kotlin",
+    "//contrib/qodana/inspectionKts/mcp/kotlin",
+  ],
+  runtime_deps = [":tests"]
+)
+### auto-generated section `build intellij.qodana.inspectionKts.mcp.tests` end
+
+### auto-generated section `test intellij.qodana.inspectionKts.mcp.tests` start
+load("@community//build:tests-options.bzl", "jps_test")
+
+jps_test(
+  name = "tests_test",
+  runtime_deps = [":tests_test_lib"]
+)
+### auto-generated section `test intellij.qodana.inspectionKts.mcp.tests` end

@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin visibility="public">
   <dependencies>
     <plugin id="com.intellij.mcpServer"/>
     <module name="intellij.qodana.inspectionKts"/>

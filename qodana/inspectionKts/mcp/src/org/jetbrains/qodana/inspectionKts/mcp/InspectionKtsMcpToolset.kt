@@ -92,11 +92,11 @@ class InspectionKtsMcpToolset : McpToolset {
 
 @Serializable
 data class InspectionKtsRunResult(
-  val success: Boolean,
-  val compilationError: String? = null,
+  val compilationSuccess: Boolean,
+  val compilationStatus: String? = null,
   val compilationErrorDetails: String? = null,
-  val problems: List<InspectionProblem> = emptyList(),
-  val problemCount: Int = 0,
+  val inspectionResultMessage: String? = null,
+  val foundProblems: List<InspectionProblem> = emptyList(),
 )
 
 @Serializable

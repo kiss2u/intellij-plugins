@@ -2,16 +2,7 @@
 
 package org.jetbrains.qodana.inspectionKts.mcp.impl
 
-import com.intellij.codeInspection.GlobalInspectionContext
-import com.intellij.codeInspection.InspectionEngine
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.InspectionManagerBase
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.codeInspection.QuickFix
+import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ex.DynamicInspectionDescriptor
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lang.annotation.ProblemGroup
@@ -35,7 +26,6 @@ import org.jetbrains.qodana.inspectionKts.mcp.InspectionKtsRunResult
 import org.jetbrains.qodana.inspectionKts.mcp.InspectionProblem
 import org.jetbrains.qodana.inspectionKts.mcp.McpPsiFileFactory
 import org.jetbrains.qodana.inspectionKts.templates.InspectionKtsTemplate
-import java.nio.file.Path
 import kotlin.io.path.createTempFile
 import kotlin.io.path.writeText
 
@@ -147,20 +137,20 @@ internal suspend fun runInspectionKtsImpl(
   when (compiledFile) {
     is InspectionKtsFileStatus.Cancelled -> {
       return InspectionKtsRunResult(
-        success = false,
-        compilationError = "Inspection compilation was cancelled"
+        compilationSuccess = false,
+        compilationStatus = "Inspection compilation was cancelled"
       )
     }
     is InspectionKtsFileStatus.Compiling -> {
       return InspectionKtsRunResult(
-        success = false,
-        compilationError = "Inspection is still compiling (unexpected state)"
+        compilationSuccess = false,
+        compilationStatus = "Inspection is still compiling (unexpected state)"
       )
     }
     is InspectionKtsFileStatus.Error -> {
       return InspectionKtsRunResult(
-        success = false,
-        compilationError = compiledFile.exception.message ?: "Unknown compilation error",
+        compilationSuccess = false,
+        compilationStatus = compiledFile.exception.message ?: "Unknown compilation error",
         compilationErrorDetails = compiledFile.exception.stackTraceToString()
       )
     }
@@ -168,16 +158,16 @@ internal suspend fun runInspectionKtsImpl(
       val inspection = compiledFile.inspections.inspections.firstOrNull()
       if (inspection == null) {
         return InspectionKtsRunResult(
-          success = false,
-          compilationError = "No inspection created after compilation"
+          compilationSuccess = false,
+          compilationStatus = "No inspection created after compilation"
         )
       }
 
       val localTool = (inspection as? DynamicInspectionDescriptor.Local)?.tool
       if (localTool == null) {
         return InspectionKtsRunResult(
-          success = false,
-          compilationError = "Compiled inspection is not a local inspection tool"
+          compilationSuccess = false,
+          compilationStatus = "Compiled inspection is not a local inspection tool"
         )
       }
 
@@ -187,14 +177,14 @@ internal suspend fun runInspectionKtsImpl(
       val psiFile = if (targetFileContent == null) {
         val virtualFile = LocalFileSystem.getInstance().findFileByNioFile(filePath)
                           ?: return InspectionKtsRunResult(
-                            success = false,
-                            compilationError = "File not found at path: $contextPath"
+                            compilationSuccess = false,
+                            compilationStatus = "File not found at path: $contextPath"
                           )
         readAction {
           PsiManager.getInstance(project).findFile(virtualFile)
         } ?: return InspectionKtsRunResult(
-          success = false,
-          compilationError = "File not found at path: $contextPath"
+          compilationSuccess = false,
+          compilationStatus = "File not found at path: $contextPath"
         )
       }
       else {
@@ -205,7 +195,7 @@ internal suspend fun runInspectionKtsImpl(
   }
 }
 
-internal suspend fun runInspectionOnPsiFile(
+suspend fun runInspectionOnPsiFile(
   tool: LocalInspectionTool,
   psiFile: PsiFile,
 ): InspectionKtsRunResult {
@@ -232,10 +222,13 @@ internal suspend fun runInspectionOnPsiFile(
     }
   }
 
+  val inspectionResultMessage = if (problems.isEmpty()) "Inspection found no problems"
+  else "Inspection found ${problems.size} problems"
+
   return InspectionKtsRunResult(
-    success = true,
-    problems = problems,
-    problemCount = problems.size
+    compilationSuccess = true,
+    inspectionResultMessage = inspectionResultMessage,
+    foundProblems = problems,
   )
 }
 
@@ -306,7 +299,6 @@ private fun computeLineNumber(psiFile: PsiElement, element: PsiElement?): Int {
 }
 
 
-
 class VerificationInspectionManager(project: Project) : InspectionManagerBase(project) {
   @Suppress("OVERRIDE_DEPRECATION", "removal")
   override fun createNewGlobalContext(reuse: Boolean): GlobalInspectionContext {
@@ -333,7 +325,13 @@ class VerificationInspectionManager(project: Project) : InspectionManagerBase(pr
     )
   }
 
-  override fun createProblemDescriptor(psiElement: PsiElement, descriptionTemplate: String, onTheFly: Boolean, fixes: Array<out LocalQuickFix>?, highlightType: ProblemHighlightType): ProblemDescriptor {
+  override fun createProblemDescriptor(
+    psiElement: PsiElement,
+    descriptionTemplate: String,
+    onTheFly: Boolean,
+    fixes: Array<out LocalQuickFix>?,
+    highlightType: ProblemHighlightType,
+  ): ProblemDescriptor {
     return VerificationProblemDescriptor(
       element = psiElement,
       description = descriptionTemplate,

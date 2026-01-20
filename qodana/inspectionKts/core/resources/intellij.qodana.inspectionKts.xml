@@ -38,6 +38,9 @@
     <extensionPoint qualifiedName="org.jetbrains.qodana.inspectionKts.customPluginsForKtsClasspathProvider"
                     interface="org.jetbrains.qodana.inspectionKts.CustomPluginsForKtsClasspathProvider"
                     dynamic="true"/>
+    <extensionPoint qualifiedName="org.jetbrains.qodana.inspectionKts.customPsiFileFactory"
+                    interface="org.jetbrains.qodana.inspectionKts.fileFactory.CustomPsiFileFactory"
+                    dynamic="true"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="org.intellij.qodana">

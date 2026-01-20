@@ -39,6 +39,7 @@ jvm_library(
     "@community//platform/platform-impl:ide-impl",
     "@community//platform/backend/workspace",
     "@community//plugins/kotlin/base/scripting/scripting.shared",
+    "@community//platform/indexing-api:indexing",
   ],
   runtime_deps = ["@community//plugins/kotlin:kotlin-plugin-community-main"]
 )

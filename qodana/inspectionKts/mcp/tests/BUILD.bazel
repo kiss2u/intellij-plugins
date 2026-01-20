@@ -50,7 +50,6 @@ jvm_library(
     "//contrib/qodana/inspectionKts/js",
     "//contrib/qodana/inspectionKts/js:js_test_lib",
     "//contrib/qodana/inspectionKts/kotlin",
-    "//contrib/qodana/inspectionKts/mcp/kotlin",
   ],
   runtime_deps = [":tests"]
 )

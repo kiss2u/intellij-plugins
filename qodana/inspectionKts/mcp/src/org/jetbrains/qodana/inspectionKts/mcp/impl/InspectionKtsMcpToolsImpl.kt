@@ -2,29 +2,22 @@
 
 package org.jetbrains.qodana.inspectionKts.mcp.impl
 
-import com.intellij.codeInspection.*
 import com.intellij.codeInspection.ex.DynamicInspectionDescriptor
-import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.lang.annotation.ProblemGroup
 import com.intellij.mcpserver.util.resolveInProject
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
-import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.PsiManager
 import com.intellij.psi.util.elementType
 import org.jetbrains.qodana.inspectionKts.InspectionKtsFileStatus
 import org.jetbrains.qodana.inspectionKts.KtsInspectionsManager
 import org.jetbrains.qodana.inspectionKts.examples.InspectionKtsExample
+import org.jetbrains.qodana.inspectionKts.fileFactory.CustomPsiFileFactory
 import org.jetbrains.qodana.inspectionKts.mcp.InspectionKtsRunResult
 import org.jetbrains.qodana.inspectionKts.mcp.InspectionProblem
-import org.jetbrains.qodana.inspectionKts.mcp.McpPsiFileFactory
+import org.jetbrains.qodana.inspectionKts.runInspectionOnPsiFile
 import org.jetbrains.qodana.inspectionKts.templates.InspectionKtsTemplate
 import kotlin.io.path.createTempFile
 import kotlin.io.path.writeText
@@ -173,64 +166,39 @@ internal suspend fun runInspectionKtsImpl(
 
 
       val filePath = project.resolveInProject(contextPath, true)
-      // Step 2: Run the inspection on the target file
-      val psiFile = if (targetFileContent == null) {
-        val virtualFile = LocalFileSystem.getInstance().findFileByNioFile(filePath)
-                          ?: return InspectionKtsRunResult(
-                            compilationSuccess = false,
-                            compilationStatus = "File not found at path: $contextPath"
-                          )
-        readAction {
-          PsiManager.getInstance(project).findFile(virtualFile)
-        } ?: return InspectionKtsRunResult(
-          compilationSuccess = false,
-          compilationStatus = "File not found at path: $contextPath"
-        )
+      val psiFile = CustomPsiFileFactory.createOrFindPsiFile(project, filePath, targetFileContent)
+                    ?: return InspectionKtsRunResult(
+                      compilationSuccess = true,
+                      inspectionResultMessage = "No PSI file found for $contextPath"
+                    )
+      val problemDescriptors = runInspectionOnPsiFile(localTool, psiFile)
+
+      val problems = readAction {
+        problemDescriptors.map { descriptor ->
+          val lineNumber = computeLineNumber(psiFile, descriptor.psiElement)
+          InspectionProblem(
+            message = descriptor.descriptionTemplate,
+            lineNumber = lineNumber,
+            highlightType = descriptor.highlightType.name,
+            startOffset = descriptor.psiElement?.textRange?.startOffset,
+            endOffset = descriptor.psiElement?.textRange?.endOffset,
+            elementText = descriptor.psiElement?.text?.take(100)
+          )
+        }
       }
-      else {
-        McpPsiFileFactory.createPsiFile(project, filePath, targetFileContent)
-      }
-      return runInspectionOnPsiFile(localTool, psiFile)
-    }
-  }
-}
 
-suspend fun runInspectionOnPsiFile(
-  tool: LocalInspectionTool,
-  psiFile: PsiFile,
-): InspectionKtsRunResult {
-  val holder = ProblemsHolder(VerificationInspectionManager(psiFile.getProject()), psiFile, false)
+      val inspectionResultMessage = if (problems.isEmpty()) "Inspection found no problems"
+      else "Inspection found ${problems.size} problems"
 
-  readAction {
-    InspectionEngine.withSession(psiFile, psiFile.textRange, psiFile.textRange, HighlightSeverity.INFORMATION, false, null) { session ->
-      val visitor = tool.buildVisitor(holder, false, session)
-      visitor.visitFile(psiFile)
-    }
-  }
-
-  val problems = readAction {
-    holder.results.mapNotNull { descriptor ->
-      val lineNumber = computeLineNumber(psiFile, descriptor.psiElement)
-      InspectionProblem(
-        message = descriptor.descriptionTemplate,
-        lineNumber = lineNumber,
-        highlightType = descriptor.highlightType.name,
-        startOffset = descriptor.psiElement?.textRange?.startOffset,
-        endOffset = descriptor.psiElement?.textRange?.endOffset,
-        elementText = descriptor.psiElement?.text?.take(100)
+      return InspectionKtsRunResult(
+        compilationSuccess = true,
+        inspectionResultMessage = inspectionResultMessage,
+        foundProblems = problems
       )
     }
   }
-
-  val inspectionResultMessage = if (problems.isEmpty()) "Inspection found no problems"
-  else "Inspection found ${problems.size} problems"
-
-  return InspectionKtsRunResult(
-    compilationSuccess = true,
-    inspectionResultMessage = inspectionResultMessage,
-    foundProblems = problems,
-  )
 }
+
 
 private suspend fun generatePsiTreeText(element: PsiElement, level: Int = 0): String {
   return readAction {
@@ -296,92 +264,4 @@ private fun computeLineNumber(psiFile: PsiElement, element: PsiElement?): Int {
   val start = element.textRange?.startOffset ?: return -1
   val zeroBased = doc.getLineNumber(start)
   return zeroBased + 1
-}
-
-
-class VerificationInspectionManager(project: Project) : InspectionManagerBase(project) {
-  @Suppress("OVERRIDE_DEPRECATION", "removal")
-  override fun createNewGlobalContext(reuse: Boolean): GlobalInspectionContext {
-    throw IllegalStateException("Not supported")
-  }
-
-  override fun createNewGlobalContext(): GlobalInspectionContext {
-    throw IllegalStateException("Not supported")
-  }
-
-  override fun createProblemDescriptor(
-    psiElement: PsiElement,
-    descriptionTemplate: String,
-    fix: LocalQuickFix?,
-    highlightType: ProblemHighlightType,
-    onTheFly: Boolean,
-  ): ProblemDescriptor {
-    return VerificationProblemDescriptor(
-      element = psiElement,
-      description = descriptionTemplate,
-      highlight = highlightType,
-      fixes = listOfNotNull(fix),
-      lineNumber = computeOneBasedLine(psiElement),
-    )
-  }
-
-  override fun createProblemDescriptor(
-    psiElement: PsiElement,
-    descriptionTemplate: String,
-    onTheFly: Boolean,
-    fixes: Array<out LocalQuickFix>?,
-    highlightType: ProblemHighlightType,
-  ): ProblemDescriptor {
-    return VerificationProblemDescriptor(
-      element = psiElement,
-      description = descriptionTemplate,
-      highlight = highlightType,
-      fixes = fixes.orEmpty().toList(),
-      lineNumber = computeOneBasedLine(psiElement),
-    )
-  }
-
-  private fun computeOneBasedLine(element: PsiElement): Int {
-    val doc = element.containingFile?.viewProvider?.document
-    val start = element.textRange?.startOffset ?: return -1
-    val zeroBased = doc?.getLineNumber(start) ?: return -1
-    return zeroBased + 1
-  }
-}
-
-private class VerificationProblemDescriptor(
-  private val element: PsiElement,
-  private val description: String,
-  private val highlight: ProblemHighlightType,
-  private val fixes: List<LocalQuickFix>?,
-  private val lineNumber: Int,
-) : ProblemDescriptor {
-
-  override fun getPsiElement(): PsiElement = element
-
-  override fun getStartElement(): PsiElement = element
-
-  override fun getEndElement(): PsiElement = element
-
-  override fun getTextRangeInElement(): TextRange? = null
-
-  override fun getLineNumber(): Int = lineNumber
-
-  override fun getHighlightType(): ProblemHighlightType = highlight
-
-  override fun isAfterEndOfLine(): Boolean = false
-
-  override fun setTextAttributes(key: TextAttributesKey?) {}
-
-  override fun getProblemGroup(): ProblemGroup? = null
-
-  override fun setProblemGroup(problemGroup: ProblemGroup?) {}
-
-  override fun showTooltip(): Boolean = false
-
-  @Suppress("HardCodedStringLiteral")
-  override fun getDescriptionTemplate(): String = description
-
-  @Suppress("UNCHECKED_CAST")
-  override fun getFixes(): Array<QuickFix<*>> = fixes.orEmpty().toTypedArray() as Array<QuickFix<*>>
 }

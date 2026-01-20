@@ -20,5 +20,6 @@
     <defaultImportProvider implementation="org.jetbrains.qodana.inspectionKts.kotlin.KotlinInspectionKtsDefaultImportsProvider"/>
     <templates.provider implementation="org.jetbrains.qodana.inspectionKts.kotlin.KotlinInspectionKtsTemplateProvider"/>
     <examples.provider implementation="org.jetbrains.qodana.inspectionKts.kotlin.KotlinInspectionKtsExampleProvider"/>
+      <customPsiFileFactory implementation="org.jetbrains.qodana.inspectionKts.kotlin.fileFactory.KotlinCustomPsiFileFactory"/>
   </extensions>
 </idea-plugin>

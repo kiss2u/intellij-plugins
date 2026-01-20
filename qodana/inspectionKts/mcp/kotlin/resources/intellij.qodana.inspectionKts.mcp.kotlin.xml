@@ -1,9 +1,0 @@
-<idea-plugin>
-  <dependencies>
-    <module name="intellij.qodana.inspectionKts.mcp"/>
-  </dependencies>
-
-  <extensions defaultExtensionNs="org.jetbrains.qodana.inspectionKts.mcp">
-    <customPsiFileFactory implementation="org.jetbrains.qodana.inspectionKts.mcp.kotlin.KotlinMcpPsiFileFactory"/>
-  </extensions>
-</idea-plugin>

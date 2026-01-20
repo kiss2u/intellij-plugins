@@ -41,7 +41,6 @@
     <module name="intellij.qodana.jvm.coverage"/>
     <module name="intellij.qodana.util" loading="embedded"/>
     <module name="intellij.qodana.inspectionKts.mcp"/>
-    <module name="intellij.qodana.inspectionKts.mcp.kotlin"/>
   </content>
 
   <dependencies>

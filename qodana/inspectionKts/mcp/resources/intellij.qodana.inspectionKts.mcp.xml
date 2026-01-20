@@ -4,12 +4,6 @@
     <module name="intellij.qodana.inspectionKts"/>
   </dependencies>
 
-  <extensionPoints>
-    <extensionPoint qualifiedName="org.jetbrains.qodana.inspectionKts.mcp.customPsiFileFactory"
-                    interface="org.jetbrains.qodana.inspectionKts.mcp.McpPsiFileFactory"
-                    dynamic="true"/>
-  </extensionPoints>
-
   <extensions defaultExtensionNs="com.intellij.mcpServer">
     <mcpToolset implementation="org.jetbrains.qodana.inspectionKts.mcp.InspectionKtsMcpToolset"/>
   </extensions>

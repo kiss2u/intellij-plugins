@@ -41,9 +41,12 @@ import org.jetbrains.qodana.util.appearedFilePath
 import org.jetbrains.qodana.util.disappearedFilePath
 import org.jetbrains.qodana.util.documentChangesFlow
 import org.jetbrains.qodana.util.vfsChangesMapFlow
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
+import kotlin.io.path.createTempFile
+import kotlin.io.path.writeText
 
 const val FORCE_DISABLE_INSPECTION_KTS: String = "inspection.kts.disabled"
 

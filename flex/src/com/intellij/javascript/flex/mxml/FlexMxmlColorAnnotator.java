@@ -3,6 +3,8 @@ package com.intellij.javascript.flex.mxml;
 
 import com.intellij.codeInsight.FileModificationService;
 import com.intellij.codeInsight.daemon.LineMarkerSettings;
+import com.intellij.css.util.color.CssColor;
+import com.intellij.css.util.color.CssColorTextUtilKt;
 import com.intellij.javascript.flex.css.FlexCssPropertyDescriptor;
 import com.intellij.javascript.flex.mxml.schema.AnnotationBackedDescriptorImpl;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -20,7 +22,6 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.css.impl.util.CssPsiColorUtil;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.ui.ColorChooserService;
@@ -171,7 +172,7 @@ public final class FlexMxmlColorAnnotator implements Annotator {
               final PsiFile psiFile = myAttribute.getContainingFile();
               if (!FileModificationService.getInstance().prepareFileForWrite(psiFile)) return;
 
-              final String hex = CssPsiColorUtil.toHexColor(color);
+              final String hex = CssColorTextUtilKt.toHexString(CssColor.fromJavaAwtColor(color));
               final String mxmlStyleHex = toCanonicalHex(hex, false);
               ApplicationManager.getApplication().runWriteAction(() -> myAttribute.setValue(mxmlStyleHex));
             }

@@ -42,6 +42,7 @@
     <orderEntry type="library" scope="TEST" name="cucumber-core-2" level="project" />
     <orderEntry type="library" scope="TEST" name="easymock" level="project" />
     <orderEntry type="module" module-name="intellij.gradle.common" scope="TEST" />
+    <orderEntry type="module" module-name="intellij.gradle.plugin" scope="TEST" />
     <orderEntry type="module" module-name="intellij.gradle.java.tests" scope="TEST" />
     <orderEntry type="module" module-name="intellij.gradle.tests" scope="TEST" />
     <orderEntry type="module" module-name="intellij.java.testFramework" scope="TEST" />

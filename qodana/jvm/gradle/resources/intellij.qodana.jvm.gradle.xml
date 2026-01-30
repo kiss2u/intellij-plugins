@@ -1,6 +1,6 @@
 <idea-plugin package="org.jetbrains.qodana.jvm.gradle">
   <dependencies>
-    <plugin id="com.intellij.gradle"/>
+    <module name="intellij.gradle" />
     <module name="intellij.qodana.jvm.java"/>
   </dependencies>
   <extensions defaultExtensionNs="org.intellij.qodana">

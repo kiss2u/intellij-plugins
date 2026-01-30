@@ -92,6 +92,7 @@ jvm_library(
     "@lib//:cucumber-core-2",
     "@lib//:easymock",
     "@community//plugins/gradle:gradle-common",
+    "@community//plugins/gradle/plugin",
     "@community//plugins/gradle/java:java-tests_test_lib",
     "@community//plugins/gradle:gradle-tests_test_lib",
     "@community//java/testFramework",

@@ -35,7 +35,7 @@ sealed interface InspectionKtsFileStatus {
   data class Cancelled(override val file: Path) : InspectionKtsFileStatus
 
 
-  fun getToolOrThrow(): LocalInspectionTool {
+  fun getToolOrThrow(): Pair<LocalInspectionTool, StateFlow<Exception?>> {
     return when (this) {
       is Cancelled -> {
         throw CompilationException("Inspection compilation was cancelled")
@@ -54,7 +54,7 @@ sealed interface InspectionKtsFileStatus {
 
         val localTool = (inspection as? DynamicInspectionDescriptor.Local)?.tool
         if (localTool == null) throw CompilationException("Compiled inspection is not a local inspection tool")
-        localTool
+        localTool to exceptionDuringAnalysis
       }
     }
   }

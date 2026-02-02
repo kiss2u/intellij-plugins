@@ -45,7 +45,8 @@ interface CustomPsiFileFactory {
         }
       }
 
-      return createPsiFile(project, contextPath, content)
+      val psiFile = createPsiFile(project, contextPath, content)
+      return psiFile
     }
 
   }

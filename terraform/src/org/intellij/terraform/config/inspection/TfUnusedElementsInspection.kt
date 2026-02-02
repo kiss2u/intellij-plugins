@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.inspection
 
 import com.intellij.codeInspection.LocalInspectionTool
@@ -9,9 +9,10 @@ import com.intellij.modcommand.ModCommandAction
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiSearchHelper
 import com.intellij.psi.search.searches.ReferencesSearch
-import org.intellij.terraform.config.model.getTerraformModule
+import org.intellij.terraform.config.model.restrictToTerraformFiles
 import org.intellij.terraform.config.patterns.TfPsiPatterns
 import org.intellij.terraform.hcl.HCLBundle
 import org.intellij.terraform.hcl.psi.HCLBlock
@@ -59,10 +60,10 @@ internal class TfUnusedElementsInspection : LocalInspectionTool() {
 
   private fun isElementUnused(element: HCLElement, name: String): Boolean {
     ProgressIndicatorProvider.checkCanceled()
-    val module = element.getTerraformModule()
-    val searchScope = module.getTerraformModuleScope()
+    val project = element.project
+    val searchScope = GlobalSearchScope.projectScope(project).restrictToTerraformFiles(project)
 
-    val costSearch = PsiSearchHelper.getInstance(element.project).isCheapEnoughToSearch(name, searchScope, element.containingFile)
+    val costSearch = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(name, searchScope, element.containingFile)
     if (costSearch != PsiSearchHelper.SearchCostResult.ZERO_OCCURRENCES) {
       return false
     }

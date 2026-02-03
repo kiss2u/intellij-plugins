@@ -120,6 +120,10 @@
 
     <vcs name="Perforce" vcsClass="org.jetbrains.idea.perforce.application.PerforceVcs" displayName="Perforce"/>
     <checkoutProvider implementation="org.jetbrains.idea.perforce.checkout.PerforceCheckoutProvider"/>
+    <openapi.vcs.ui.cloneDialog.VcsCloneDialogExtension
+      id="org.jetbrains.idea.perforce.checkout.PerforceCloneDialogExtension"
+      implementation="org.jetbrains.idea.perforce.checkout.PerforceCloneDialogExtension"
+      order="after org.jetbrains.plugins.gitlab.ui.clone.GitLabCloneDialogExtension"/>
     <projectConfigurable id="vcs.Perforce" key="settings.perforce.option.group" instance="org.jetbrains.idea.perforce.perforce.PerforceConfigurable"
                          parentId="project.propVCSSupport.Mappings" groupWeight="-500"/>
     <vcs.changeListDecorator implementation="org.jetbrains.idea.perforce.application.PerforceLocalChangeListDecorator"/>

@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "prettier": "latest"
-  },
-  "prettier": {
-    "endOfLine": "auto"
-  }
-}

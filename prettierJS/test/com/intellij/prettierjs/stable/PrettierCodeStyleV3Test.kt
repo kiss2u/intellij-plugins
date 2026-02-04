@@ -15,7 +15,7 @@ import com.intellij.psi.formatter.xml.HtmlCodeStyleSettings
 import com.intellij.testFramework.common.timeoutRunBlocking
 import com.intellij.testFramework.utils.vfs.getPsiFile
 
-@TestNpmPackage("prettier@3.2.5")
+@TestNpmPackage(PRETTIER_3_TEST_PACKAGE_SPEC)
 class PrettierCodeStyleV3Test : PrettierPackageLockTest() {
 
   var originalSettings: CodeStyleSettings? = null

@@ -5,7 +5,7 @@ import com.intellij.javascript.debugger.NodeJsAppRule
 import com.intellij.javascript.debugger.NodeJsAppRule.Companion.LATEST_23
 import com.intellij.lang.javascript.modules.TestNpmPackage
 
-@TestNpmPackage("prettier@3.2.5")
+@TestNpmPackage(PRETTIER_3_TEST_PACKAGE_SPEC)
 class ReformatWithPrettierTypeScriptConfigV3Test : PrettierPackageLockTest() {
   override fun configureInterpreterVersion(): NodeJsAppRule {
     return LATEST_23

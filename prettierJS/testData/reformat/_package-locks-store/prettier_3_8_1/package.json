@@ -1,5 +1,5 @@
 {
-  "name": "prettier_3_2_5",
+  "name": "prettier_3_8_1",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "prettier": "3.2.5"
+    "prettier": "3.8.1"
   }
 }

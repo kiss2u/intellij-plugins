@@ -10,7 +10,7 @@ import com.intellij.prettierjs.PrettierConfiguration.ConfigurationMode
 import com.intellij.prettierjs.PrettierJSTestUtil
 import java.awt.datatransfer.StringSelection
 
-@TestNpmPackage("prettier@3.2.5")
+@TestNpmPackage(PRETTIER_3_TEST_PACKAGE_SPEC)
 class PasteWithPrettierV3Test : PrettierPackageLockTest() {
 
   override fun setUp() {

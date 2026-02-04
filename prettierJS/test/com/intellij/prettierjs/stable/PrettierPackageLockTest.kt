@@ -34,7 +34,7 @@ import java.nio.file.Path
  * If you change a version number, please sync the stored lock files for the corresponding version here:
  * $PROJECT_ROOT/contrib/prettierJS/testData/reformat/_package-locks-store
  */
-const val PRETTIER_3_TEST_PACKAGE_SPEC: String = "prettier@3.2.5"
+const val PRETTIER_3_TEST_PACKAGE_SPEC: String = "prettier@3.8.1"
 
 // next versions
 const val PRETTIER_LATEST_TEST_PACKAGE_SPEC: String = "prettier@latest"

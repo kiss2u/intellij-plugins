@@ -5,17 +5,16 @@ package com.intellij.prettierjs.stable
 import com.intellij.javascript.nodejs.util.NodePackage
 import com.intellij.javascript.nodejs.util.NodePackageRef
 import com.intellij.lang.javascript.linter.ActionsOnSaveTestUtil
-import com.intellij.lang.javascript.linter.JSLinterUtil
 import com.intellij.lang.javascript.modules.JSTempDirWithNodeInterpreterTest
 import com.intellij.lang.javascript.modules.NodeModuleUtil
 import com.intellij.lang.javascript.modules.TestNpmPackage
 import com.intellij.lang.javascript.modules.TestNpmPackageInstaller
-import com.intellij.lang.javascript.service.JSLanguageServiceQueue
 import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.diagnostic.LogLevel
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.util.Condition
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.prettierjs.PrettierConfiguration
 import com.intellij.prettierjs.PrettierJSTestUtil
@@ -38,6 +37,12 @@ const val PRETTIER_3_TEST_PACKAGE_SPEC: String = "prettier@3.8.1"
 
 // next versions
 const val PRETTIER_LATEST_TEST_PACKAGE_SPEC: String = "prettier@latest"
+
+/**
+ * Placeholder for prettier version in package.json files.
+ * This placeholder will be replaced with the actual version from @TestNpmPackage annotation at test runtime.
+ */
+const val PRETTIER_VERSION_PLACEHOLDER: String = "\$PRETTIER_VERSION\$"
 
 /**
  * Base class for Prettier tests using cached package-lock.json files.
@@ -98,10 +103,10 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
   }
 
   /**
-   * Creates a package.json file in the temp project directory from the @TestNpmPackage annotation.
-   * This is needed for AUTOMATIC mode to detect prettier as a dependency.
+   * Replaces [PRETTIER_VERSION_PLACEHOLDER] in all package.json files under the given directory
+   * with the actual prettier version from the @TestNpmPackage annotation.
    */
-  private fun createPackageJsonFromAnnotation() {
+  protected fun replacePrettierVersionPlaceholders(rootDir: VirtualFile) {
     val annotation = this::class.java.getAnnotation(TestNpmPackage::class.java)
                      ?: error("Test class must be annotated with @TestNpmPackage")
 
@@ -109,15 +114,26 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     // Extract version from spec like "prettier@3.2.5"
     val version = packageSpec.substringAfter('@', "latest")
 
-    val packageJsonContent = """
-      {
-        "devDependencies": {
-          "prettier": "$version"
+    val filesToUpdate = mutableListOf<Pair<VirtualFile, String>>()
+
+    VfsUtil.processFileRecursivelyWithoutIgnored(rootDir) { file ->
+      if (file.name == "package.json" && !file.path.contains("node_modules")) {
+        val content = VfsUtil.loadText(file)
+        if (content.contains(PRETTIER_VERSION_PLACEHOLDER)) {
+          val newContent = content.replace(PRETTIER_VERSION_PLACEHOLDER, version)
+          filesToUpdate.add(file to newContent)
         }
       }
-    """.trimIndent()
+      true
+    }
 
-    myFixture.addFileToProject("package.json", packageJsonContent)
+    if (filesToUpdate.isNotEmpty()) {
+      runWriteAction {
+        for ((file, newContent) in filesToUpdate) {
+          VfsUtil.saveText(file, newContent)
+        }
+      }
+    }
   }
 
   // Helper methods from ReformatWithPrettierBaseTest
@@ -137,6 +153,11 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
   ) {
     val dirName = getTestName(true)
     myFixture.copyDirectoryToProject(dirName, "")
+
+    // Replace version placeholder in package.json files before any npm operations
+    val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
+    replacePrettierVersionPlaceholders(projectDir)
+
     val extensionWithDot = if (StringUtil.isEmpty(extension)) "" else ".$extension"
     myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir(fileNamePrefix + extensionWithDot))
     configureFixture?.run()
@@ -175,8 +196,10 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
       myFixture.copyDirectoryToProject(dirName, "")
       myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "node_modules/prettier")
 
-      // Create package.json automatically from @TestNpmPackage annotation
-      createPackageJsonFromAnnotation()
+      // Replace version placeholder in package.json files
+      val projectDir = myFixture.tempDirFixture.getFile(".")
+                       ?: error("Project directory not found")
+      replacePrettierVersionPlaceholders(projectDir)
 
       runnable.run()
     }
@@ -214,8 +237,10 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
       myFixture.copyDirectoryToProject(dirName, "")
       myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "node_modules/prettier")
 
-      // Create package.json automatically from @TestNpmPackage annotation
-      createPackageJsonFromAnnotation()
+      // Replace version placeholder in package.json files
+      val projectDir = myFixture.tempDirFixture.getFile(".")
+                       ?: error("Project directory not found")
+      replacePrettierVersionPlaceholders(projectDir)
 
       runnable.run()
     }

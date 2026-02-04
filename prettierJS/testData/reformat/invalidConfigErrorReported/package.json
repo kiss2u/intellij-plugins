@@ -1,9 +1,8 @@
 {
-  "name": "pnp-prettier-example",
   "dependencies": {
     "prettier": "$PRETTIER_VERSION$"
   },
   "prettier": {
-    "singleQuote": true
+    "tabWidth": "invalid"
   }
 }

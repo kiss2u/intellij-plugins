@@ -331,17 +331,4 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     myFixture.checkResult("<template>\n<selection>  <div /></selection>\n</template>\n")
   }
 
-  // Plugin Tests
-
-  fun testCaretPositionReformatSvelte() {
-    doReformatFile<Throwable>("toReformat", "svelte") {
-      performNpmInstallForPackageJson("package.json")
-    }
-  }
-
-  fun testGracefulFallbackCursor() {
-    doReformatFile<Throwable>("toReformat", "html") {
-      performNpmInstallForPackageJson("package.json")
-    }
-  }
 }

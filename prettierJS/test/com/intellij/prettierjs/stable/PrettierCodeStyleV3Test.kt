@@ -15,7 +15,7 @@ import com.intellij.psi.formatter.xml.HtmlCodeStyleSettings
 import com.intellij.testFramework.common.timeoutRunBlocking
 import com.intellij.testFramework.utils.vfs.getPsiFile
 
-@TestNpmPackage(PRETTIER_3_TEST_PACKAGE_SPEC)
+@TestNpmPackage(PRETTIER_3_8_1_TEST_PACKAGE_SPEC)
 class PrettierCodeStyleV3Test : PrettierPackageLockTest() {
 
   var originalSettings: CodeStyleSettings? = null
@@ -235,7 +235,7 @@ class PrettierCodeStyleV3Test : PrettierPackageLockTest() {
     }
   }
 
-  fun testNoDependencyFormatOutOfScope() = withInstallation {
+  fun testNoDependencyFormatOutOfScope() = withSubdirInstallation("noDependencyFormatOutOfScope", "subdir") {
     configurePrettierForCodeStyle {
       val settings = getCodeStyleSettingsForFile("index.js")
       val indentOptions = settings.getCommonSettings(JavascriptLanguage).indentOptions
@@ -243,7 +243,7 @@ class PrettierCodeStyleV3Test : PrettierPackageLockTest() {
     }
   }
 
-  fun testNoDependency() = withInstallation {
+  fun testNoDependency() = withSubdirInstallation("noDependency", "subdir") {
     configurePrettierForCodeStyle {
       try {
         PrettierConfiguration.getInstance(project).state.formatFilesOutsideDependencyScope = false
@@ -296,11 +296,22 @@ class PrettierCodeStyleV3Test : PrettierPackageLockTest() {
     val state = PrettierConfiguration.getInstance(project)
       .withLinterPackage(NodePackageRef.create(getNodePackage()))
       .state
+    val filesPattern = state.filesPattern
+    val configurationMode = state.configurationMode
+    val codeStyleSettingsModifierEnabled = state.codeStyleSettingsModifierEnabled
+
     state.filesPattern = "**/*"
     state.configurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
     state.codeStyleSettingsModifierEnabled = true
 
-    block()
+    try {
+     block()
+    }
+    finally {
+        state.filesPattern = filesPattern
+        state.configurationMode = configurationMode
+        state.codeStyleSettingsModifierEnabled = codeStyleSettingsModifierEnabled
+    }
   }
 
   private fun getInfoForFile(fileName: String): Pair<Language, CodeStyleSettings> {

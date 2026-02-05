@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.prettierjs.PrettierConfiguration
 import com.intellij.util.LineSeparator
 
-@TestNpmPackage(PRETTIER_3_TEST_PACKAGE_SPEC)
+@TestNpmPackage(PRETTIER_3_8_1_TEST_PACKAGE_SPEC)
 class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Additional Basic Formatting Tests
@@ -267,15 +267,17 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
   // Special Cases
 
   fun testAutoconfigured() = withSubdirInstallation("autoconfigured", "subdir") {
-    // Test that file in subdir (with package.json) is formatted
-    myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("subdir/formatted.js"))
-    runReformatAction()
-    myFixture.checkResultByFile("autoconfigured/subdir/formatted_after.js")
+    configureMode(PrettierConfiguration.ConfigurationMode.AUTOMATIC) {
+      // Test that file in subdir (with package.json) is formatted
+      myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("subdir/formatted.js"))
+      runReformatAction()
+      myFixture.checkResultByFile("autoconfigured/subdir/formatted_after.js")
 
-    // Test that file at root (outside prettier scope) is NOT formatted
-    myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("ignored.js"))
-    runReformatAction()
-    myFixture.checkResultByFile("autoconfigured/ignored_after.js")
+      // Test that file at root (outside prettier scope) is NOT formatted
+      myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("ignored.js"))
+      runReformatAction()
+      myFixture.checkResultByFile("autoconfigured/ignored_after.js")
+    }
   }
 
   fun testChangeConfig() = withInstallation {
@@ -329,4 +331,11 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     doReformatFile("foo", "vue")
   }
 
+  fun testGracefulFallbackCursor() = withInstallation {
+    doReformatFile("toReformat", "html")
+  }
+
+  fun testCaretPositionReformatSvelte() = withInstallation {
+    doReformatFile("toReformat", "svelte")
+  }
 }

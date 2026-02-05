@@ -1,5 +1,5 @@
 {
-  "name": "prettier_3_4_2_svelte",
+  "name": "prettier_3_8_1_svelte",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "prettier": "3.4.2",
+    "prettier": "3.8.1",
     "prettier-plugin-svelte": "3.3.3",
     "svelte": "5.25.0"
   }

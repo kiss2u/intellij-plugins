@@ -5,6 +5,7 @@ import com.intellij.lang.javascript.JSTestUtils
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtilCore
+import com.intellij.prettierjs.PrettierJSTestUtil
 import com.intellij.util.LineSeparator
 
 /**
@@ -13,6 +14,10 @@ import com.intellij.util.LineSeparator
  * Subclasses must be annotated with [@TestNpmPackage][com.intellij.lang.javascript.modules.TestNpmPackage].
  */
 abstract class ReformatWithPrettierGenericTest : PrettierPackageLockTest() {
+  override fun setUp() {
+    super.setUp()
+    myFixture.testDataPath = PrettierJSTestUtil.getTestDataPath() + "reformat"
+  }
 
   // Basic Formatting Tests - Most likely to catch version incompatibilities
 

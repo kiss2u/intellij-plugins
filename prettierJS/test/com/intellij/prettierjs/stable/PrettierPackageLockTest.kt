@@ -10,7 +10,7 @@ import com.intellij.lang.javascript.modules.NodeModuleUtil
 import com.intellij.lang.javascript.modules.TestNpmPackage
 import com.intellij.lang.javascript.modules.TestNpmPackageInstaller
 import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
@@ -33,7 +33,7 @@ import java.nio.file.Path
  * If you change a version number, please sync the stored lock files for the corresponding version here:
  * $PROJECT_ROOT/contrib/prettierJS/testData/reformat/_package-locks-store
  */
-const val PRETTIER_3_TEST_PACKAGE_SPEC: String = "prettier@3.8.1"
+const val PRETTIER_3_8_1_TEST_PACKAGE_SPEC: String = "prettier@3.8.1"
 
 // next versions
 const val PRETTIER_LATEST_TEST_PACKAGE_SPEC: String = "prettier@latest"
@@ -69,7 +69,7 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
 
 
   /**
-   * Wrapper for tests that need default installation (packages at root, MANUAL mode).
+   * Wrapper for tests that need default installation (packages at root).
    * Most tests should use this wrapper.
    *
    * This wrapper:
@@ -92,19 +92,16 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     // Replace version placeholders in package.json files before installation
     val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
     replacePrettierVersionPlaceholders(projectDir)
-    
-    // Install packages
-    installPackagesAndConfigurePrettier()
+    installPackages()
     
     return block()
   }
 
   /**
-   * Wrapper for tests that need subdirectory installation (packages in subdir, typically AUTOMATIC mode).
+   * Wrapper for tests that need subdirectory installation (packages in subdir).
    *
    * @param testDataSubdir Name of the test data directory to copy (usually getTestName(true))
    * @param installSubdir Name of the subdirectory where packages should be installed
-   * @param configurationMode Configuration mode to use (default: AUTOMATIC)
    *
    * Example:
    * ```
@@ -118,7 +115,6 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
   protected fun <T> withSubdirInstallation(
     testDataSubdir: String,
     installSubdir: String,
-    configurationMode: PrettierConfiguration.ConfigurationMode = PrettierConfiguration.ConfigurationMode.AUTOMATIC,
     block: () -> T
   ): T {
     // Copy test data first so subdirectory exists
@@ -128,9 +124,7 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
     val subdir = projectDir.findChild(installSubdir) ?: error("Subdirectory not found: $installSubdir")
     replacePrettierVersionPlaceholders(subdir)
-
-    // Install packages in subdirectory
-    installPackagesAndConfigurePrettier(installSubdir, configurationMode)
+    installPackages(installSubdir)
 
     return block()
   }
@@ -140,12 +134,8 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
    * This is called automatically by test wrapper functions, or can be called manually if needed.
    * 
    * @param installSubdir Optional subdirectory where packages should be installed (relative to project root)
-   * @param configurationMode Configuration mode to use (MANUAL or AUTOMATIC)
    */
-  private fun installPackagesAndConfigurePrettier(
-    installSubdir: String? = null,
-    configurationMode: PrettierConfiguration.ConfigurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
-  ) {
+  private fun installPackages(installSubdir: String? = null) {
     if (packagesInstalled) {
       error("Packages already installed. Call this only once per test.")
     }
@@ -180,7 +170,6 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     // Configure Prettier to use the locally installed package
     PrettierConfiguration.getInstance(project)
       .withLinterPackage(NodePackageRef.create(nodePackage))
-      .state.configurationMode = configurationMode
   }
 
   override fun tearDown() {
@@ -218,7 +207,7 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     }
 
     if (filesToUpdate.isNotEmpty()) {
-      runWriteAction {
+      WriteAction.run<Throwable> {
         for ((file, newContent) in filesToUpdate) {
           VfsUtil.saveText(file, newContent)
         }
@@ -316,6 +305,20 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     }
     finally {
       configuration.state.runOnReformat = origRunOnReformat
+      configuration.state.configurationMode = configurationMode
+    }
+  }
+
+  protected fun configureMode(mode: PrettierConfiguration.ConfigurationMode, runnable: Runnable) {
+    val configuration = PrettierConfiguration.getInstance(project)
+    val configurationMode = configuration.state.configurationMode
+
+    configuration.state.configurationMode = mode
+
+    try {
+      runnable.run()
+    }
+    finally {
       configuration.state.configurationMode = configurationMode
     }
   }

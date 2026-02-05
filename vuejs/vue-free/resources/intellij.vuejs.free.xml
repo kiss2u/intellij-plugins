@@ -1,0 +1,13 @@
+<idea-plugin>
+  <dependencies>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <plugin id="com.intellij.platform.images"/>
+    <module name="intellij.platform.trialPromotion.common"/>
+    <module name="intellij.vuejs.common"/>
+    <!-- endregion -->
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <pluginWithFreeTierEditorNotificationProvider implementation="org.jetbrains.vuejs.editor.VueFreeTierEditorNotificationProvider"/>
+    <polySymbols.webTypes source="web-types/vue-context@0.0.0.web-types.json" enableByDefault="true"/>
+  </extensions>
+</idea-plugin>

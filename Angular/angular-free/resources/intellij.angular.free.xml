@@ -1,2 +1,10 @@
 <idea-plugin>
+  <dependencies>
+    <plugin id="com.intellij.platform.images"/>
+    <module name="intellij.platform.trialPromotion.common"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <pluginWithFreeTierEditorNotificationProvider implementation="org.angular2.editor.AngularFreeTierEditorNotificationProvider"/>
+    <polySymbols.webTypes source="web-types/angular-context@0.0.0.web-types.json" enableByDefault="true"/>
+  </extensions>
 </idea-plugin>

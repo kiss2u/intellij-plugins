@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../../community/platform/polySymbols/web-types-gen/resources/web-types.json",
+  "name": "@vue@context",
+  "framework": "vue",
+  "version": "0.0.0",
+  "default-icon": "icons/vue.svg",
+  "framework-config": {
+    "enable-when": {
+      "node-packages": [
+        "vue",
+        "@vue/cli"
+      ],
+      "file-extensions": [
+        "vue"
+      ],
+      "ide-libraries": [
+        "vue"
+      ]
+    }
+  }
+}

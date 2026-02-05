@@ -2,6 +2,8 @@
   <dependencies>
     <module name="intellij.platform.backend"/>
     <module name="intellij.vuejs.common"/>
+    <module name="intellij.vuejs.free"/>
+    <plugin id="com.intellij.modules.ultimate"/>
     <plugin id="com.intellij.modules.xml"/>
     <plugin id="JavaScript"/>
     <plugin id="com.intellij.css"/>

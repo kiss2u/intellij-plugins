@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../community/platform/polySymbols/web-types-gen/resources/web-types.json",
+  "name": "@angular/context",
+  "framework": "angular",
+  "version": "0.0.0",
+  "default-icon": "icons/angular2.svg",
+  "framework-config": {
+    "enable-when": {
+      "node-packages": [
+        "@angular/core"
+      ]
+    }
+  }
+}

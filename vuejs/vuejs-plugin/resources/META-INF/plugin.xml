@@ -24,8 +24,9 @@
   <category>JavaScript Frameworks and Tools</category>
 
   <dependencies>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <plugin id="JavaScript"/>
-    <plugin id="com.intellij.modules.ultimate"/>
+    <!-- endregion -->
   </dependencies>
 
   <content namespace="jetbrains">
@@ -34,6 +35,7 @@
     <module name="intellij.vuejs.debugger"/>
     <module name="intellij.vuejs.markdown"/>
 
+    <module name="intellij.vuejs.free"/>
     <module name="intellij.vuejs.common" loading="required"/>
     <module name="intellij.vuejs.backend"/>
   </content>

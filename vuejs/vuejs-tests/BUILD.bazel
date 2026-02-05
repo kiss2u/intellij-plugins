@@ -89,6 +89,7 @@ jvm_library(
     "//plugins/sass/backend",
     "//plugins/sass",
     "//contrib/vuejs/vuejs-common:common",
+    "//contrib/vuejs/vue-free:free",
     "//contrib/vuejs/vuejs-backend:backend",
     "//contrib/vuejs/vuejs-plugin:plugin",
     "@community//platform/lang-api:lang",

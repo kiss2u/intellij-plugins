@@ -78,6 +78,7 @@ jvm_library(
     "@community//platform/backend/workspace",
     "@community//platform/workspace/storage",
     "@community//xml/xml-analysis-api:analysis",
+    "//contrib/Angular/angular-free",
   ]
 )
 ### auto-generated section `build intellij.angular.backend` end

@@ -1,18 +1,18 @@
-### auto-generated section `build intellij.angular.free` start
+### auto-generated section `build intellij.vuejs.free` start
 load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
 
 resourcegroup(
-  name = "angular-free_resources",
+  name = "free_resources",
   srcs = glob(["resources/**/*"]),
   strip_prefix = "resources"
 )
 
 jvm_library(
-  name = "angular-free",
-  module_name = "intellij.angular.free",
+  name = "free",
+  module_name = "intellij.vuejs.free",
   visibility = ["//visibility:public"],
   srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
-  resources = [":angular-free_resources"],
+  resources = [":free_resources"],
   deps = [
     "@community//platform/analysis-api:analysis",
     "@community//platform/core-api:core",
@@ -23,7 +23,6 @@ jvm_library(
     "@community//libraries/stream",
     "@community//platform/core-ui",
     "@community//platform/platform-util-io:ide-util-io",
-    "@community//libraries/icu4j",
     "@community//platform/util/jdom",
     "@community//platform/polySymbols",
     "@community//libraries/fastutil",
@@ -34,6 +33,7 @@ jvm_library(
     "@community//platform/workspace/storage",
     "//platform/trialPromotion/common",
     "@community//platform/core-impl",
+    "//contrib/vuejs/vuejs-common:common",
   ]
 )
-### auto-generated section `build intellij.angular.free` end
+### auto-generated section `build intellij.vuejs.free` end

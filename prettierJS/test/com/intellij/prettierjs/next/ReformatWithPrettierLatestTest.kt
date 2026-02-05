@@ -19,7 +19,7 @@ import com.intellij.prettierjs.stable.ReformatWithPrettierGenericTest
  */
 @TestNpmPackage(PRETTIER_LATEST_TEST_PACKAGE_SPEC)
 class ReformatWithPrettierLatestTest : ReformatWithPrettierGenericTest() {
-  fun testNextVersion() {
+  fun testNextVersion() = withInstallation {
     doReformatFile<Throwable>("toReformat", "js") {
       performNpmInstallForPackageJson("package.json")
       val nextPrettier = NodePackage(myFixture.tempDirPath + "/node_modules/prettier")
@@ -31,7 +31,7 @@ class ReformatWithPrettierLatestTest : ReformatWithPrettierGenericTest() {
    * Tests Prettier integration with Yarn Berry PnP (Plug'n'Play).
    * Installs Yarn globally, configures Yarn Berry, and uses YarnPnpNodePackage for resolution.
    */
-  fun testYarnPrettierBasicExample() {
+  fun testYarnPrettierBasicExample() = withInstallation {
     doReformatFile<Throwable>("toReformat", "js") {
       val file = myFixture.findFileInTempDir("toReformat.js")
       val root = file.parent

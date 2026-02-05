@@ -10,8 +10,5 @@
     "package-a",
     "package-b"
   ],
-  "private": true,
-  "dependencies": {
-    "lodash": "latest"
-  }
+  "private": true
 }

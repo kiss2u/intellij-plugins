@@ -11,7 +11,7 @@ class ReformatWithPrettierTypeScriptConfigV3Test : PrettierPackageLockTest() {
     return LATEST_23
   }
 
-  fun testTypeScriptConfig() {
+  fun testTypeScriptConfig() = withInstallation {
     doReformatFile("ts")
   }
 }

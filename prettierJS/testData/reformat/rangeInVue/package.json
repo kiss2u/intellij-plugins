@@ -1,6 +1,4 @@
 {
-  "name": "ignoredFile",
-  "version": "1.0.0",
   "dependencies": {
     "prettier": "$PRETTIER_VERSION$"
   }

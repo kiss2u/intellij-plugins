@@ -11,7 +11,7 @@ const val PRETTIER_3_5_3_MULTI_PLUGINS_SPEC: String = "prettier@3.5.3"
 @TestNpmPackage(PRETTIER_3_5_3_MULTI_PLUGINS_SPEC)
 class ReformatWithPrettierMultiPluginTest : PrettierPackageLockTest() {
 
-  fun testGracefulFallbackCursor() {
+  fun testGracefulFallbackCursor() = withInstallation {
     doReformatFile("toReformat", "html")
   }
 }

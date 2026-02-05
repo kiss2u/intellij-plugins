@@ -18,14 +18,14 @@ class PasteWithPrettierV3Test : PrettierPackageLockTest() {
     myFixture.testDataPath = PrettierJSTestUtil.getTestDataPath() + "paste"
   }
 
-  fun testRunPrettierOnPaste() {
+  fun testRunPrettierOnPaste() = withInstallation {
     configureRunOnPaste({
                           val configuration = PrettierConfiguration.getInstance(project)
                           configuration.state.configurationMode = ConfigurationMode.AUTOMATIC
                         }) { doTestPasteAction() }
   }
 
-  fun testRunPrettierOnPasteManual() {
+  fun testRunPrettierOnPasteManual() = withInstallation {
     configureRunOnPaste({
                           val configuration = PrettierConfiguration.getInstance(project)
                           configuration.state.configurationMode = ConfigurationMode.MANUAL
@@ -33,7 +33,7 @@ class PasteWithPrettierV3Test : PrettierPackageLockTest() {
                         }) { doTestPasteAction() }
   }
 
-  fun testRunPrettierOnPasteWithAutoImport() {
+  fun testRunPrettierOnPasteWithAutoImport() = withInstallation {
     configureRunOnPaste({
                           val configuration = PrettierConfiguration.getInstance(project)
                           configuration.state.configurationMode = ConfigurationMode.AUTOMATIC
@@ -56,8 +56,7 @@ class PasteWithPrettierV3Test : PrettierPackageLockTest() {
     configure.run()
 
     try {
-      val dirName = getTestName(true)
-      myFixture.copyDirectoryToProject(dirName, "")
+      // Test data already copied by withInstallation
       myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "node_modules/prettier")
 
       runnable.run()

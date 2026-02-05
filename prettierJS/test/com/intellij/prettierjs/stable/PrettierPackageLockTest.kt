@@ -51,31 +51,121 @@ const val PRETTIER_VERSION_PLACEHOLDER: String = "\$PRETTIER_VERSION\$"
  */
 abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
 
-  private var localNodePackage: NodePackage? = null
+  protected var localNodePackage: NodePackage? = null
+  protected var packagesInstalled: Boolean = false
 
   override fun getGlobalPackageVersionsToInstall(): Map<String, String> = emptyMap()
 
   override fun setUpForTempRoot(rootDir: Path) {
     // Skip parent implementation that installs global packages
-    // We'll install packages locally in setUp() after project directory is available
+    // We'll install packages locally on-demand in tests
   }
 
   override fun setUp() {
     super.setUp()
-
     myFixture.testDataPath = PrettierJSTestUtil.getTestDataPath() + "reformat"
+    packagesInstalled = false
+  }
+
+
+  /**
+   * Wrapper for tests that need default installation (packages at root, MANUAL mode).
+   * Most tests should use this wrapper.
+   *
+   * This wrapper:
+   * 1. Copies test data directory (using getTestName(true))
+   * 2. Installs packages at root
+   * 3. Replaces version placeholders
+   *
+   * Example:
+   * ```
+   * fun testWithoutConfig() = withInstallation {
+   *   doReformatFile("js")
+   * }
+   * ```
+   */
+  protected fun <T> withInstallation(block: () -> T): T {
+    // Copy test data first
+    val dirName = getTestName(true)
+    myFixture.copyDirectoryToProject(dirName, "")
+    
+    // Replace version placeholders in package.json files before installation
+    val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
+    replacePrettierVersionPlaceholders(projectDir)
+    
+    // Install packages
+    installPackagesAndConfigurePrettier()
+    
+    return block()
+  }
+
+  /**
+   * Wrapper for tests that need subdirectory installation (packages in subdir, typically AUTOMATIC mode).
+   *
+   * @param testDataSubdir Name of the test data directory to copy (usually getTestName(true))
+   * @param installSubdir Name of the subdirectory where packages should be installed
+   * @param configurationMode Configuration mode to use (default: AUTOMATIC)
+   *
+   * Example:
+   * ```
+   * fun testAutoconfigured() = withSubdirInstallation("autoconfigured", "subdir") {
+   *   myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("subdir/formatted.js"))
+   *   runReformatAction()
+   *   myFixture.checkResultByFile("autoconfigured/subdir/formatted_after.js")
+   * }
+   * ```
+   */
+  protected fun <T> withSubdirInstallation(
+    testDataSubdir: String,
+    installSubdir: String,
+    configurationMode: PrettierConfiguration.ConfigurationMode = PrettierConfiguration.ConfigurationMode.AUTOMATIC,
+    block: () -> T
+  ): T {
+    // Copy test data first so subdirectory exists
+    myFixture.copyDirectoryToProject(testDataSubdir, "")
+
+    // Replace version placeholders in the subdirectory before installation
+    val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
+    val subdir = projectDir.findChild(installSubdir) ?: error("Subdirectory not found: $installSubdir")
+    replacePrettierVersionPlaceholders(subdir)
+
+    // Install packages in subdirectory
+    installPackagesAndConfigurePrettier(installSubdir, configurationMode)
+
+    return block()
+  }
+
+  /**
+   * Installs prettier packages and configures the Prettier plugin.
+   * This is called automatically by test wrapper functions, or can be called manually if needed.
+   * 
+   * @param installSubdir Optional subdirectory where packages should be installed (relative to project root)
+   * @param configurationMode Configuration mode to use (MANUAL or AUTOMATIC)
+   */
+  private fun installPackagesAndConfigurePrettier(
+    installSubdir: String? = null,
+    configurationMode: PrettierConfiguration.ConfigurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
+  ) {
+    if (packagesInstalled) {
+      error("Packages already installed. Call this only once per test.")
+    }
+    packagesInstalled = true
 
     val projectDir = myFixture.tempDirFixture.getFile(".")
                      ?: error("Project directory not found")
 
-    // Install packages using TestNpmPackageInstaller
-    withBatchChange {
-      TestNpmPackageInstaller(project, myFixture, nodeJsAppRule)
-        .installForTest(this::class.java, projectDir)
+    TestNpmPackageInstaller(project, myFixture, nodeJsAppRule, copyPackageJson = false)
+      .installForTest(this::class.java, projectDir, installSubdir)
+
+    // Determine where prettier was installed
+    val installDir = if (installSubdir != null) {
+      projectDir.findChild(installSubdir) ?: error("Install subdirectory not found: $installSubdir")
+    } else {
+      projectDir
     }
 
     // Set up NodePackage from locally installed prettier
-    val prettierPath = projectDir.toNioPath()
+    val prettierPath = installDir.toNioPath()
       .resolve(NodeModuleUtil.NODE_MODULES)
       .resolve(PrettierUtil.PACKAGE_NAME)
 
@@ -90,7 +180,7 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     // Configure Prettier to use the locally installed package
     PrettierConfiguration.getInstance(project)
       .withLinterPackage(NodePackageRef.create(nodePackage))
-      .state.configurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
+      .state.configurationMode = configurationMode
   }
 
   override fun tearDown() {
@@ -136,8 +226,6 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     }
   }
 
-  // Helper methods from ReformatWithPrettierBaseTest
-
   protected fun doReformatFile(extension: String) {
     doReformatFile("toReformat", extension)
   }
@@ -152,12 +240,6 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     configureFixture: ThrowableRunnable<T>?,
   ) {
     val dirName = getTestName(true)
-    myFixture.copyDirectoryToProject(dirName, "")
-
-    // Replace version placeholder in package.json files before any npm operations
-    val projectDir = myFixture.tempDirFixture.getFile(".") ?: error("Project directory not found")
-    replacePrettierVersionPlaceholders(projectDir)
-
     val extensionWithDot = if (StringUtil.isEmpty(extension)) "" else ".$extension"
     myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir(fileNamePrefix + extensionWithDot))
     configureFixture?.run()
@@ -192,14 +274,8 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     configuration.state.configurationMode = PrettierConfiguration.ConfigurationMode.AUTOMATIC
 
     try {
-      val dirName = getTestName(true)
-      myFixture.copyDirectoryToProject(dirName, "")
+      // Copy prettier to node_modules (test data already copied by withInstallation)
       myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "node_modules/prettier")
-
-      // Replace version placeholder in package.json files
-      val projectDir = myFixture.tempDirFixture.getFile(".")
-                       ?: error("Project directory not found")
-      replacePrettierVersionPlaceholders(projectDir)
 
       runnable.run()
     }
@@ -233,14 +309,8 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     configuration.state.configurationMode = PrettierConfiguration.ConfigurationMode.AUTOMATIC
 
     try {
-      val dirName = getTestName(true)
-      myFixture.copyDirectoryToProject(dirName, "")
+      // Copy prettier to node_modules (test data already copied by withInstallation)
       myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "node_modules/prettier")
-
-      // Replace version placeholder in package.json files
-      val projectDir = myFixture.tempDirFixture.getFile(".")
-                       ?: error("Project directory not found")
-      replacePrettierVersionPlaceholders(projectDir)
 
       runnable.run()
     }
@@ -275,9 +345,7 @@ abstract class PrettierPackageLockTest : JSTempDirWithNodeInterpreterTest() {
     configuration.state.formatFilesOutsideDependencyScope = enabled
 
     try {
-      val dirName = getTestName(true)
-      myFixture.copyDirectoryToProject(dirName, "")
-
+      // Test data already copied by withInstallation
       runnable.run()
     }
     finally {

@@ -7,8 +7,5 @@
     "package-b",
     "package-c"
   ],
-  "private": true,
-  "dependencies": {
-    "lodash": "latest"
-  }
+  "private": true
 }

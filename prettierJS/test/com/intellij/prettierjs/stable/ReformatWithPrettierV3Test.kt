@@ -15,42 +15,42 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Additional Basic Formatting Tests
 
-  fun testTypeScriptWithEmptyConfig() {
+  fun testTypeScriptWithEmptyConfig() = withInstallation {
     doReformatFile("ts")
   }
 
-  fun testJsFileWithSelection() {
+  fun testJsFileWithSelection() = withInstallation {
     doReformatFile("js")
   }
 
   // Additional File Detection Tests
 
-  fun testJsonFileDetectedByName() {
+  fun testJsonFileDetectedByName() = withInstallation {
     doReformatFile(".babelrc", "")
   }
 
   // Additional Ignored File Tests
 
-  fun testSubFolderIgnoredFileInRoot() {
+  fun testSubFolderIgnoredFileInRoot() = withInstallation {
     doReformatFile("package/toReformat", "js")
   }
 
-  fun testSubFolderIgnoredFileInsidePackage() {
+  fun testSubFolderIgnoredFileInsidePackage() = withInstallation {
     doReformatFile("package/toReformat", "js")
   }
 
-  fun testSubFolderIgnoredFileInsideSubDir() {
+  fun testSubFolderIgnoredFileInsideSubDir() = withInstallation {
     doReformatFile("package/subdir/toReformat", "js")
   }
 
-  fun testSubFolderIgnoredFileManual() {
+  fun testSubFolderIgnoredFileManual() = withInstallation {
     doReformatFile<Throwable>("package/toReformat", "js") {
       PrettierConfiguration.getInstance(project).state.configurationMode =
         PrettierConfiguration.ConfigurationMode.MANUAL
     }
   }
 
-  fun testSubFolderIgnoredFileManualSubDir() {
+  fun testSubFolderIgnoredFileManualSubDir() = withInstallation {
     doReformatFile<Throwable>("package/toReformat", "js") {
       val config = PrettierConfiguration.getInstance(project)
       config.state.configurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
@@ -60,7 +60,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testSubFolderIgnoredManualFormat() {
+  fun testSubFolderIgnoredManualFormat() = withInstallation {
     doReformatFile<Throwable>("package/toReformat", "js") {
       val config = PrettierConfiguration.getInstance(project)
       config.state.configurationMode = PrettierConfiguration.ConfigurationMode.MANUAL
@@ -72,7 +72,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Additional Line Separator Tests
 
-  fun testWithUpdatingLfToCrlf() {
+  fun testWithUpdatingLfToCrlf() = withInstallation {
     doReformatFile("toReformat", "js")
     FileDocumentManager.getInstance().saveAllDocuments()
     assertEquals(LineSeparator.CRLF, StringUtil.detectSeparators(VfsUtilCore.loadText(getFile().virtualFile)))
@@ -80,22 +80,22 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Additional Caret Position Tests
 
-  fun testCaretPosition() {
+  fun testCaretPosition() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
       doTestSaveAction(actionId, "")
     }
   }
 
-  fun testCaretPositionEndFileReformat() {
+  fun testCaretPositionEndFileReformat() = withInstallation {
     configureRunOnReformat { doTestEditorReformat("") }
   }
 
-  fun testCaretPositionReformatParenthesis() {
+  fun testCaretPositionReformatParenthesis() = withInstallation {
     configureRunOnReformat { doTestEditorReformat("") }
   }
 
-  fun testCrlfCaretPosition() {
+  fun testCrlfCaretPosition() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
       doTestSaveAction(actionId, "") {
@@ -104,7 +104,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testCrlfCaretPositionReformat() {
+  fun testCrlfCaretPositionReformat() = withInstallation {
     configureRunOnReformat {
       doTestEditorReformat("") {
         JSTestUtils.ensureLineSeparators(myFixture.file, LineSeparator.CRLF)
@@ -114,7 +114,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Patch Tests
 
-  fun testPatchApplied() {
+  fun testPatchApplied() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
       doTestSaveAction(actionId, "first/")
@@ -122,33 +122,33 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testPatchAppliedDeletion() {
+  fun testPatchAppliedDeletion() = withInstallation {
     doReformatFile("js")
   }
 
-  fun testPatchAppliedEndline() {
+  fun testPatchAppliedEndline() = withInstallation {
     doReformatFile("js")
   }
 
   // Additional On-Save Tests
 
-  fun testRunPrettierOnSaveAll() {
+  fun testRunPrettierOnSaveAll() = withInstallation {
     configureRunOnSave { doTestSaveAction("SaveAll", "") }
   }
 
   // Additional On-Reformat Tests
 
-  fun testCommentAfterImports() {
+  fun testCommentAfterImports() = withInstallation {
     configureRunOnReformat { doTestEditorReformat("") }
   }
 
-  fun testCommentAfterStatement() {
+  fun testCommentAfterStatement() = withInstallation {
     configureRunOnReformat { doTestEditorReformat("") }
   }
 
   // Monorepo Tests
 
-  fun testMonorepoIndirectDependency() {
+  fun testMonorepoIndirectDependency() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
 
@@ -166,7 +166,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoManualScopeOnSave() {
+  fun testMonorepoManualScopeOnSave() = withInstallation {
     configureFormatFilesOutsideDependencyScope(false) {
       val actionId = "SaveDocument"
 
@@ -181,7 +181,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoManualScopeReformat() {
+  fun testMonorepoManualScopeReformat() = withInstallation {
     configureFormatFilesOutsideDependencyScope(false) {
       //file in the root without prettier
       doTestEditorReformat("")
@@ -194,7 +194,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoManualWithoutScope() {
+  fun testMonorepoManualWithoutScope() = withInstallation {
     configureFormatFilesOutsideDependencyScope(true) {
       val actionId = "SaveDocument"
 
@@ -212,7 +212,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoOnSave() {
+  fun testMonorepoOnSave() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
 
@@ -227,7 +227,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoSubDirEditorReformat() {
+  fun testMonorepoSubDirEditorReformat() = withInstallation {
     configureRunOnReformat {
       //file in the root without prettier
       doTestEditorReformat("")
@@ -240,7 +240,7 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoSubDirOnSave() {
+  fun testMonorepoSubDirOnSave() = withInstallation {
     configureRunOnSave {
       val actionId = "SaveDocument"
 
@@ -255,10 +255,10 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testMonorepoSubDirReformatAction() {
+  fun testMonorepoSubDirReformatAction() = withInstallation {
     // file in the root without prettier but it should be formatted via reformat action
     val dirName = getTestName(true)
-    myFixture.copyDirectoryToProject(dirName, "")
+    // Test data already copied by withInstallation
     myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("toReformat.js"))
     runReformatAction()
     myFixture.checkResultByFile("$dirName/toReformat_after.js")
@@ -266,21 +266,21 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
 
   // Special Cases
 
-  fun testAutoconfigured() {
-    PrettierConfiguration.getInstance(project).state.configurationMode =
-      PrettierConfiguration.ConfigurationMode.AUTOMATIC
-    doReformatFile<Throwable>("subdir/formatted", "js") {
-      myFixture.tempDirFixture.copyAll(getNodePackage().systemIndependentPath, "subdir/node_modules/prettier")
-    }
+  fun testAutoconfigured() = withSubdirInstallation("autoconfigured", "subdir") {
+    // Test that file in subdir (with package.json) is formatted
+    myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("subdir/formatted.js"))
+    runReformatAction()
+    myFixture.checkResultByFile("autoconfigured/subdir/formatted_after.js")
 
+    // Test that file at root (outside prettier scope) is NOT formatted
     myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("ignored.js"))
     runReformatAction()
-    myFixture.checkResultByFile(getTestName(true) + "/ignored_after.js")
+    myFixture.checkResultByFile("autoconfigured/ignored_after.js")
   }
 
-  fun testChangeConfig() {
+  fun testChangeConfig() = withInstallation {
     val dirName = getTestName(true)
-    myFixture.copyDirectoryToProject(dirName, "")
+    // Test data already copied by withInstallation
     myFixture.configureFromExistingVirtualFile(myFixture.findFileInTempDir("toReformat_after.js"))
 
     // set singleQuote to true
@@ -306,13 +306,13 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     myFixture.checkResultByFile("$dirName/toReformat_after_1.js")
   }
 
-  fun testIncompleteBlock() {
+  fun testIncompleteBlock() = withInstallation {
     val configuration = PrettierConfiguration.getInstance(project)
     val origRunOnReformat = configuration.state.runOnReformat
     configuration.state.runOnReformat = true
     try {
       val dirName = getTestName(true)
-      myFixture.copyDirectoryToProject(dirName, "")
+      // Test data already copied by withInstallation
       myFixture.configureFromTempProjectFile("toReformat.js")
       // should be used exactly ACTION_EDITOR_REFORMAT instead of ReformatWithPrettierAction
       // to check a default formatter behavior combined with Prettier
@@ -323,12 +323,10 @@ class ReformatWithPrettierV3Test : ReformatWithPrettierGenericTest() {
     }
   }
 
-  fun testRangeInVue() {
+  fun testRangeInVue() = withInstallation {
     // Prettier doesn't support range formatting in Vue (WEB-52196, https://github.com/prettier/prettier/issues/13399),
     // and even removes line break at the end of the file. This test checks IDE's workaround of Prettier bug.
-    myFixture.configureByText("foo.vue", "<template>\n<selection><div/></selection>\n</template>\n")
-    runReformatAction()
-    myFixture.checkResult("<template>\n<selection>  <div /></selection>\n</template>\n")
+    doReformatFile("foo", "vue")
   }
 
 }

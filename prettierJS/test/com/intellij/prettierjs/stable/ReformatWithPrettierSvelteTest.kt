@@ -11,7 +11,7 @@ const val PRETTIER_3_4_2_SVELTE_SPEC: String = "prettier@3.4.2"
 @TestNpmPackage(PRETTIER_3_4_2_SVELTE_SPEC)
 class ReformatWithPrettierSvelteTest : PrettierPackageLockTest() {
 
-  fun testCaretPositionReformatSvelte() {
+  fun testCaretPositionReformatSvelte() = withInstallation {
     doReformatFile("toReformat", "svelte")
   }
 }

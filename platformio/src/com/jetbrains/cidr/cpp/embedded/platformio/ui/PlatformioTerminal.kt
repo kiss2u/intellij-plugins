@@ -41,7 +41,7 @@ private fun settingsProvider() = object : JBTerminalSystemSettingsProviderBase()
 }
 
 fun doRun(service: PlatformioService,
-          @TabTitle text: String,
+          text: @TabTitle String,
           commandLine: GeneralCommandLine,
           reloadProject: Boolean) {
   val project = service.project

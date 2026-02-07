@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiSearchHelper
+import com.intellij.psi.search.PsiSearchHelper.SearchCostResult
 import com.intellij.psi.search.searches.ReferencesSearch
 import org.intellij.terraform.config.model.restrictToTerraformFiles
 import org.intellij.terraform.config.patterns.TfPsiPatterns
@@ -64,7 +65,7 @@ internal class TfUnusedElementsInspection : LocalInspectionTool() {
     val searchScope = GlobalSearchScope.projectScope(project).restrictToTerraformFiles(project)
 
     val costSearch = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(name, searchScope, element.containingFile)
-    if (costSearch != PsiSearchHelper.SearchCostResult.ZERO_OCCURRENCES) {
+    if (costSearch == SearchCostResult.TOO_MANY_OCCURRENCES) {
       return false
     }
 

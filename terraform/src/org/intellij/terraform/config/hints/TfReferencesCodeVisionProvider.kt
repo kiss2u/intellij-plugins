@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.hints
 
 import com.intellij.codeInsight.codeVision.CodeVisionAnchorKind
@@ -39,8 +39,10 @@ internal class TfReferencesCodeVisionProvider : ReferencesCodeVisionProvider() {
       return null
 
     val elementName = element.getElementName() ?: return null
-    val scope = GlobalSearchScope.projectScope(element.project).restrictToTerraformFiles(element.project)
-    val costSearch = PsiSearchHelper.getInstance(element.project).isCheapEnoughToSearch(elementName, scope, file)
+
+    val project = element.project
+    val scope = GlobalSearchScope.projectScope(project).restrictToTerraformFiles(project)
+    val costSearch = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(elementName, scope, file)
     if (costSearch == SearchCostResult.TOO_MANY_OCCURRENCES)
       return HCLBundle.message("terraform.inlay.hints.indefinite.usages.text")
 

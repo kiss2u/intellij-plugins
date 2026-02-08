@@ -5,6 +5,7 @@ import com.intellij.ide.util.gotoByName.GotoSymbolModel2
 import com.intellij.javascript.testFramework.web.WebFrameworkTestModule
 import com.intellij.navigation.NavigationItem
 import com.intellij.polySymbols.testFramework.checkListByFile
+import com.intellij.testFramework.TestFrameworkUtil
 import com.intellij.testFramework.TestIndexingModeSupporter
 import com.intellij.testFramework.TestIndexingModeSupporter.IndexingMode
 import junit.framework.Test
@@ -19,7 +20,7 @@ class Angular2GotoSymbolTest : Angular2TestCase("navigation/symbol/", false), Te
       val suite = TestSuite()
       suite.addTestSuite(Angular2GotoSymbolTest::class.java)
       TestIndexingModeSupporter.addTest(Angular2GotoSymbolTest::class.java, TestIndexingModeSupporter.FullIndexSuite(), suite);
-      return suite
+      return TestFrameworkUtil.flattenSuite(suite)
     }
   }
 

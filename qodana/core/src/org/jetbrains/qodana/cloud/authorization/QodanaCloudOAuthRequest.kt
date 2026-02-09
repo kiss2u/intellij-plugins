@@ -19,6 +19,7 @@ class QodanaCloudOAuthRequest(
   val port: Int,
   val frontendUrl: String,
   private val cloudClient: QDCloudClient,
+  private val backendVersion: Int,
   authUrl: Url
 ) : OAuthRequest<QodanaCloudCredentials> {
 
@@ -26,7 +27,11 @@ class QodanaCloudOAuthRequest(
 
   private val codeChallenge: String = PkceUtils.generateShaCodeChallenge(codeVerifier, Base64.getUrlEncoder().withoutPadding())
 
-  private val stateWithEmbeddedPortAndChallenge = "idea-$port-${DigestUtil.randomToken()}|pkce:method:$CODE_CHALLENGE_METHOD_SHA256;code:$codeChallenge"
+  private val stateWithEmbeddedPortAndChallenge: String
+    get() {
+      val pkceParameters = if (backendVersion >= 37) "|pkce:method:$CODE_CHALLENGE_METHOD_SHA256;code:$codeChallenge" else ""
+      return "idea-$port-${DigestUtil.randomToken()}$pkceParameters"
+    }
 
   override val authUrlWithParameters: Url = authUrl.addParameters(mapOf(
     "state" to stateWithEmbeddedPortAndChallenge,
@@ -34,10 +39,6 @@ class QodanaCloudOAuthRequest(
 
   override val authorizationCodeUrl: Url
     get() {
-      println(codeVerifier)
-      println(codeChallenge)
-      println(stateWithEmbeddedPortAndChallenge)
-      println(authUrlWithParameters)
       return Urls.newFromEncoded("http://localhost:$port/${RestService.PREFIX}/${service<QodanaCloudOAuthService>().name}/authorization_code/")
     }
 

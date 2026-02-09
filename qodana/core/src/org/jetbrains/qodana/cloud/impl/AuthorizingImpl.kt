@@ -55,23 +55,25 @@ internal class AuthorizingImpl(
     try {
       val cloudClient = IjQDCloudClient(frontendUrlString)
       val port = BuiltInServerManager.getInstance().port
-      val oauthData = qodanaCloudResponse {
-        cloudClient.v1().value()
-          .notAuthorizedApi().getOAuthProviderData().value()
+      val oauthDataWithBackendVersion = qodanaCloudResponse {
+        val client = cloudClient.v1().value()
+        client.notAuthorizedApi().getOAuthProviderData().value() to client.minorVersion
       }
-      when(oauthData) {
+      val (oauthData, backendVersion) = when(oauthDataWithBackendVersion) {
         is QDCloudResponse.Error -> {
-          oauthData.getErrorNotification(QodanaBundle.message("notification.title.cloud.failed.to.authorize")).notify(null)
+          oauthDataWithBackendVersion.getErrorNotification(QodanaBundle.message("notification.title.cloud.failed.to.authorize")).notify(null)
           return
         }
-        is QDCloudResponse.Success -> {}
+        is QDCloudResponse.Success -> {
+          oauthDataWithBackendVersion.value
+        }
       }
       val oauthUrl = try {
-        Urls.newFromEncoded(oauthData.value.oauthUrl)
+        Urls.newFromEncoded(oauthData.oauthUrl)
       } catch (e: MalformedURLException) {
         QodanaNotifications.General.notification(
           QodanaBundle.message("notification.title.cloud.failed.to.authorize"),
-          QodanaBundle.message("notification.content.cloud.incorrect.oauth.url", frontendUrlString, oauthData.value.oauthUrl),
+          QodanaBundle.message("notification.content.cloud.incorrect.oauth.url", frontendUrlString, oauthData.oauthUrl),
           NotificationType.ERROR,
           withQodanaIcon = true
         ).notify(null)
@@ -81,6 +83,7 @@ internal class AuthorizingImpl(
         port,
         frontendUrl = frontendUrlString,
         cloudClient,
+        backendVersion,
         authUrl = oauthUrl
       )
 

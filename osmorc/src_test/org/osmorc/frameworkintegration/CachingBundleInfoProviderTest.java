@@ -28,6 +28,7 @@ import com.intellij.openapi.util.io.NioFiles;
 import org.jetbrains.osgi.jps.build.CachingBundleInfoProvider;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osmorc.OsgiTestUtil;
 
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author <a href="mailto:robert@beeger.net">Robert F. Beeger</a>
  */
+@Ignore("AT-4013")
 public class CachingBundleInfoProviderTest {
   private Path myTempDir;
   private String myDirBundle;

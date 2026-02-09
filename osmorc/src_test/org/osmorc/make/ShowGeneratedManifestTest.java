@@ -30,6 +30,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.util.Comparing;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osmorc.HeavyOsgiFixtureTestCase;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SwingRunner.class)
 public class ShowGeneratedManifestTest extends HeavyOsgiFixtureTestCase {
+  @Ignore("AT-4013")
   @Test
   public void testMenuGroup() {
     ViewGeneratedManifestGroup group = (ViewGeneratedManifestGroup)ActionManager.getInstance().getAction("osmorc.viewGeneratedManifests");

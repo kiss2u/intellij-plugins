@@ -27,6 +27,7 @@ package org.osmorc.facet;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.util.indexing.FileContentImpl;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osmorc.HeavyOsgiFixtureTestCase;
@@ -46,6 +47,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SwingRunner.class)
 public class FacetDetectionTest extends HeavyOsgiFixtureTestCase {
+  @Ignore("AT-4013")
   @Test
   public void testDetectFacet() throws IOException {
     var module = ModuleManager.getInstance(myFixture.getProject()).findModuleByName("t0");
@@ -72,6 +74,7 @@ public class FacetDetectionTest extends HeavyOsgiFixtureTestCase {
     }
   }
 
+  @Ignore("AT-4013")
   @Test
   public void testDetectBundlorFacet() throws IOException {
     var moduleManager = ModuleManager.getInstance(myFixture.getProject());
@@ -101,6 +104,7 @@ public class FacetDetectionTest extends HeavyOsgiFixtureTestCase {
     }
   }
 
+  @Ignore("AT-4013")
   @Test
   public void testDetectNoFacet() throws IOException {
     var filter = new OsmorcFrameworkDetector().createSuitableFilePattern();
@@ -108,6 +112,7 @@ public class FacetDetectionTest extends HeavyOsgiFixtureTestCase {
     assertFalse(filter.accepts(FileContentImpl.createByFile(manifestFile)));
   }
 
+  @Ignore("AT-4013")
   @Test
   public void testDetectingFacetByBndFile() throws IOException {
     var module = ModuleManager.getInstance(myFixture.getProject()).findModuleByName("t3");

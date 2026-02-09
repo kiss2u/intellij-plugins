@@ -2109,7 +2109,9 @@ public class ActionScriptHighlightingTest extends ActionScriptDaemonAnalyzerTest
   }
 
   public void testUnusedVariableValues() {
-    enableInspectionTool(new JSUnusedAssignmentInspection());
+    JSUnusedAssignmentInspection tool = new JSUnusedAssignmentInspection();
+    tool.myReportNotInitialized = true;
+    enableInspectionTool(tool);
     enableInspectionTool(new JSUnusedGlobalSymbolsInspection());
 
     defaultTest();

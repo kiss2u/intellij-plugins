@@ -203,7 +203,7 @@ private fun contributeCustomProperties(
   resolveSymbolPropertiesFromAugmentations(source, VUE_CORE_MODULES, CUSTOM_PROPERTIES)
     .forEach { (string, signature) ->
       signature.asJSSymbol()
-        ?.let { result.putValue(string, VueJsPropertyPropertyWithProximity.create(it, VueModelVisitor.Proximity.LOCAL)) }
+        ?.let { result.putValue(string, VueJsPropertyWithProximity.create(it, VueModelVisitor.Proximity.LOCAL)) }
     }
 }
 
@@ -219,7 +219,7 @@ private fun getCustomMethods(
     .filter { it.memberName !in propertyNames }
     .mapNotNull {
       it.asJSSymbol()?.let { symbol ->
-        VueJsPropertyPropertyWithProximity.create(symbol, VueModelVisitor.Proximity.LOCAL)
+        VueJsPropertyWithProximity.create(symbol, VueModelVisitor.Proximity.LOCAL)
       }
     }
 }
@@ -234,7 +234,7 @@ private fun contributeDefaultInstanceProperties(
       .asJSSymbol()
       .getJSPropertySymbols()
       .forEach {
-        result.putValue(it.name, VueJsPropertyPropertyWithProximity.create(it, VueModelVisitor.Proximity.LOCAL))
+        result.putValue(it.name, VueJsPropertyWithProximity.create(it, VueModelVisitor.Proximity.LOCAL))
       }
   }
   else {
@@ -307,7 +307,7 @@ private fun contributeComponentProperties(
 
       override fun visitInject(inject: VueInject, proximity: Proximity): Boolean {
         if (inject is VueCallInject) return true
-        process(VueJsPropertyPropertyWithProximity.create(inject, proximity, VueInjectedTypeProvider(inject, provides)), proximity, injects)
+        process(VueJsPropertyWithProximity.create(inject, proximity, VueInjectedTypeProvider(inject, provides)), proximity, injects)
         return true
       }
 
@@ -317,7 +317,7 @@ private fun contributeComponentProperties(
         dest: MultiMap<String, PolySymbol>,
       ) {
         if ((proximityMap.putIfAbsent(symbol.name, proximity) ?: proximity) >= proximity) {
-          val symbol = if (symbol.kind != JS_PROPERTIES) VueJsPropertyPropertyWithProximity.create(symbol, proximity) else symbol
+          val symbol = if (symbol.kind != JS_PROPERTIES) VueJsPropertyWithProximity.create(symbol, proximity) else symbol
           if (dest.get(symbol.name).none { it.isEquivalentTo(symbol) }) {
             dest.putValue(symbol.name, symbol)
           }
@@ -480,7 +480,8 @@ private fun replaceStandardProperty(
   ))
 }
 
-open class VueJsPropertyPropertyWithProximity private constructor(
+open class VueJsPropertyWithProximity
+private constructor(
   override val delegate: PolySymbol,
   val vueProximity: VueModelVisitor.Proximity,
   protected val typeProvider: VueTypeProvider?,
@@ -491,11 +492,11 @@ open class VueJsPropertyPropertyWithProximity private constructor(
       delegate: PolySymbol,
       vueProximity: VueModelVisitor.Proximity,
       typeProvider: VueTypeProvider? = null,
-    ): VueJsPropertyPropertyWithProximity =
+    ): VueJsPropertyWithProximity =
       if (delegate is PsiSourcedPolySymbol)
         VuePsiSourcedJsPropertyWithProximity(delegate, vueProximity, typeProvider)
       else
-        VueJsPropertyPropertyWithProximity(delegate, vueProximity, typeProvider)
+        VueJsPropertyWithProximity(delegate, vueProximity, typeProvider)
   }
 
   private val type by lazy(LazyThreadSafetyMode.NONE) {
@@ -513,7 +514,7 @@ open class VueJsPropertyPropertyWithProximity private constructor(
 
   override fun isEquivalentTo(symbol: Symbol): Boolean =
     symbol === this
-    || symbol is VueJsPropertyPropertyWithProximity
+    || symbol is VueJsPropertyWithProximity
     && symbol.delegate.isEquivalentTo(delegate)
     || delegate.isEquivalentTo(symbol)
 
@@ -526,7 +527,7 @@ open class VueJsPropertyPropertyWithProximity private constructor(
 
   override fun equals(other: Any?): Boolean =
     other === this
-    || other is VueJsPropertyPropertyWithProximity
+    || other is VueJsPropertyWithProximity
     && other.delegate == delegate
     && other.typeProvider == typeProvider
 
@@ -542,7 +543,7 @@ open class VueJsPropertyPropertyWithProximity private constructor(
     return Pointer {
       val delegate = delegatePtr.dereference() ?: return@Pointer null
       val typeProvider = typeProviderPtr?.let { it.dereference() ?: return@Pointer null }
-      VueJsPropertyPropertyWithProximity(delegate, vueProximity, typeProvider)
+      VueJsPropertyWithProximity(delegate, vueProximity, typeProvider)
     }
   }
 
@@ -550,7 +551,7 @@ open class VueJsPropertyPropertyWithProximity private constructor(
     delegate: PsiSourcedPolySymbol,
     proximity: VueModelVisitor.Proximity,
     typeProvider: VueTypeProvider?,
-  ) : VueJsPropertyPropertyWithProximity(delegate, proximity, typeProvider), PsiSourcedPolySymbol {
+  ) : VueJsPropertyWithProximity(delegate, proximity, typeProvider), PsiSourcedPolySymbol {
 
     override val source: PsiElement?
       get() = (delegate as PsiSourcedPolySymbol).source
@@ -562,8 +563,8 @@ open class VueJsPropertyPropertyWithProximity private constructor(
       delegate.getNavigationTargets(project)
 
     override fun isEquivalentTo(symbol: Symbol): Boolean =
-      super<VueJsPropertyPropertyWithProximity>.isEquivalentTo(symbol)
-      || super<VueJsPropertyPropertyWithProximity>.isEquivalentTo(symbol)
+      super<VueJsPropertyWithProximity>.isEquivalentTo(symbol)
+      || super<VueJsPropertyWithProximity>.isEquivalentTo(symbol)
 
     override fun createPointer(): Pointer<VuePsiSourcedJsPropertyWithProximity> {
       val delegatePtr = delegate.createPointer()

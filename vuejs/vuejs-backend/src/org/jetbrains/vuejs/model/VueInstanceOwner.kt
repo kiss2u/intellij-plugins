@@ -551,7 +551,8 @@ private constructor(
     delegate: PsiSourcedPolySymbol,
     proximity: VueModelVisitor.Proximity,
     typeProvider: VueTypeProvider?,
-  ) : VueJsPropertyWithProximity(delegate, proximity, typeProvider), PsiSourcedPolySymbol {
+  ) : VueJsPropertyWithProximity(delegate, proximity, typeProvider), 
+      PsiSourcedPolySymbol {
 
     override val source: PsiElement?
       get() = (delegate as PsiSourcedPolySymbol).source
@@ -564,7 +565,7 @@ private constructor(
 
     override fun isEquivalentTo(symbol: Symbol): Boolean =
       super<VueJsPropertyWithProximity>.isEquivalentTo(symbol)
-      || super<VueJsPropertyWithProximity>.isEquivalentTo(symbol)
+      || super<PsiSourcedPolySymbol>.isEquivalentTo(symbol)
 
     override fun createPointer(): Pointer<VuePsiSourcedJsPropertyWithProximity> {
       val delegatePtr = delegate.createPointer()

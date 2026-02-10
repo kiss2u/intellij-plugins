@@ -20,23 +20,33 @@ import com.intellij.refactoring.ui.NameSuggestionsField;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.AnActionButtonRunnable;
 import com.intellij.ui.EditorComboBox;
+import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.lang.reflect.Method;
+import java.util.ResourceBundle;
 
 /**
  * @author Maxim.Mossienko
@@ -44,17 +54,17 @@ import javax.swing.table.TableColumn;
 public class ActionScriptExtractFunctionDialog extends JSBaseClassBasedIntroduceDialog<IntroducedEntityInfoProvider>
   implements JSExtractFunctionSettings {
 
-  private JPanel myPanel;
-  private NameSuggestionsField myFunctionName;
-  private JSVisibilityPanel myVisibilityPanel;
-  private EditorComboBox myVarType;
-  private MethodSignatureComponent myPreviewText;
+  private final JPanel myPanel;
+  private final NameSuggestionsField myFunctionName;
+  private final JSVisibilityPanel myVisibilityPanel;
+  private final EditorComboBox myVarType;
+  private final MethodSignatureComponent myPreviewText;
   private JTable parametersTable;
-  private JPanel myVarTypePanel;
-  private JCheckBox myDeclareStaticCheckBox;
-  private JLabel myNameLabel;
-  @SuppressWarnings("unused") private JPanel myToolbarDecoratorPanel;
-  private JCheckBox myReplaceAllOccurrencesCheckBox;
+  private final JPanel myVarTypePanel;
+  private final JCheckBox myDeclareStaticCheckBox;
+  private final JLabel myNameLabel;
+  @SuppressWarnings("unused") private final JPanel myToolbarDecoratorPanel;
+  private final JCheckBox myReplaceAllOccurrencesCheckBox;
   private ParametersInfo parametersInfo;
   private final ExtractedFunctionSignatureGenerator mySignatureGenerator;
   private final JSExtractFunctionHandler.ContextInfo contextInfo;
@@ -102,6 +112,200 @@ public class ActionScriptExtractFunctionDialog extends JSBaseClassBasedIntroduce
     contextInfo = ci;
     myIntroductionScope = introductionScope;
     mySignatureGenerator = signatureGenerator;
+    {
+      myVisibilityPanel = new JSVisibilityPanel();
+      myFunctionName = configureNameField();
+      myVarType = configureTypeField();
+      myPreviewText = new MethodSignatureComponent(mySignatureGenerator.fun(
+        new DefaultJSExtractFunctionSettings(JSExtractFunctionHandler.DEFAULT_EXTRACTED_NAME, myIntroductionScope),
+        contextInfo), myProject, JSChangeSignatureDialog.getFileTypeFromContext(contextInfo.getContextElement()));
+      myPreviewText.setMinimumSize(JBUI.size(300, 40));
+
+      parametersTable = new JBTable();
+      setParametersInfo(JSExtractFunctionHandler.createDefaultParametersInfo(getIntroductionScope()));
+      parametersTable.setAutoCreateColumnsFromModel(false);
+      parametersTable.setModel(new AbstractTableModel() {
+        @Override
+        public int getRowCount() {
+          return parametersInfo.variableOptions.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+          return 2 + (isEcma4Context() ||
+                      isTypeScriptContext() ? 1 : 0);
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+          JSNamedElement var = parametersInfo.variables.get(rowIndex);
+          if (columnIndex == 0) return Boolean.valueOf(parametersInfo.variableOptions.get(var).used);
+          if (columnIndex == 1) return parametersInfo.variableOptions.get(var).name;
+          if (columnIndex == 2) return parametersInfo.variableOptions.get(var).type;
+
+          return null;
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+          return true;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+          JSNamedElement var = parametersInfo.variables.get(rowIndex);
+          ParameterInfo parameterInfo = parametersInfo.variableOptions.get(var);
+          ParameterInfo newParameterInfo = null;
+
+          if (columnIndex == 0) {
+            newParameterInfo = new ParameterInfo(parameterInfo.name, (Boolean)aValue, parameterInfo.type, rowIndex);
+          }
+          else if (columnIndex == 1) {
+            newParameterInfo = new ParameterInfo((String)aValue, parameterInfo.used, parameterInfo.type, rowIndex);
+          }
+          else if (columnIndex == 2) {
+            newParameterInfo = new ParameterInfo(parameterInfo.name, parameterInfo.used, (String)aValue, rowIndex);
+          }
+
+          if (newParameterInfo != null) {
+            parametersInfo.variableOptions.put(var, newParameterInfo);
+          }
+          initiateValidation();
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+          if (columnIndex == 0) return Boolean.class;
+          if (columnIndex == 1) return String.class;
+          if (columnIndex == 2) return String.class;
+          return super.getColumnClass(columnIndex);
+        }
+      });
+
+      DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+      final TableColumn checkboxColumn = new TableColumn(0);
+      checkboxColumn.setMaxWidth(60);
+      tableColumnModel.addColumn(checkboxColumn);
+      tableColumnModel.addColumn(new TableColumn(1));
+      if (isTypeScriptContext() || isEcma4Context()) tableColumnModel.addColumn(new TableColumn(2));
+      parametersTable.setColumnModel(tableColumnModel);
+      parametersTable.setRowSelectionAllowed(false);
+      parametersTable.getSelectionModel().setSelectionInterval(0, 0);
+
+      myToolbarDecoratorPanel = ToolbarDecorator.createDecorator(parametersTable)
+        .setMoveUpAction(new AnActionButtonRunnable() {
+          @Override
+          public void run(AnActionButton button) {
+            int selectedRow = parametersTable.getSelectedRow();
+            if (selectedRow - 1 >= 0) {
+              changeRowNumber(selectedRow, selectedRow - 1);
+              changeRowNumber(selectedRow - 1, selectedRow);
+              swapVars(selectedRow, selectedRow - 1);
+              ((AbstractTableModel)parametersTable.getModel()).fireTableRowsUpdated(selectedRow - 1, selectedRow);
+              parametersTable.getSelectionModel().setSelectionInterval(selectedRow - 1, selectedRow - 1);
+              initiateValidation();
+            }
+          }
+        }).setMoveDownAction(new AnActionButtonRunnable() {
+          @Override
+          public void run(AnActionButton button) {
+            int selectedRow = parametersTable.getSelectedRow();
+            if (selectedRow + 1 < parametersTable.getRowCount()) {
+              changeRowNumber(selectedRow, selectedRow + 1);
+              changeRowNumber(selectedRow + 1, selectedRow);
+              swapVars(selectedRow, selectedRow + 1);
+              ((AbstractTableModel)parametersTable.getModel()).fireTableRowsUpdated(selectedRow, selectedRow + 1);
+              parametersTable.getSelectionModel().setSelectionInterval(selectedRow + 1, selectedRow + 1);
+              initiateValidation();
+            }
+          }
+        }).createPanel();
+    }
+    {
+      // GUI initializer generated by IntelliJ IDEA GUI Designer
+      // >>> IMPORTANT!! <<<
+      // DO NOT EDIT OR ADD ANY CODE HERE!
+      myPanel = new JPanel();
+      myPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+      final JPanel panel1 = new JPanel();
+      panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+      panel1.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithoutIndent");
+      myPanel.add(panel1, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                              0, false));
+      panel1.setBorder(IdeBorderFactory.PlainSmallWithoutIndent.createTitledBorder(null, this.$$$getMessageFromBundle$$$(
+                                                                                     "messages/JavaScriptBundle", "extract.function.signature.preview"), TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                   TitledBorder.DEFAULT_POSITION, null, null));
+      panel1.add(myPreviewText, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                    GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null,
+                                                    null, 0, false));
+      final JPanel panel2 = new JPanel();
+      panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+      panel2.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithoutIndent");
+      myPanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                              0, false));
+      panel2.setBorder(IdeBorderFactory.PlainSmallWithoutIndent.createTitledBorder(null, this.$$$getMessageFromBundle$$$(
+                                                                                     "messages/JavaScriptBundle", "extract.function.parameters"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+                                                                                   null, null));
+      panel2.add(myToolbarDecoratorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              null, null, null, 0, false));
+      final JPanel panel3 = new JPanel();
+      panel3.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithoutIndent");
+      myPanel.add(panel3, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                              0, false));
+      panel3.setBorder(IdeBorderFactory.PlainSmallWithoutIndent.createTitledBorder(null, this.$$$getMessageFromBundle$$$(
+                                                                                     "messages/JavaScriptBundle", "extract.function.function"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null,
+                                                                                   null));
+      myNameLabel = new JLabel();
+      this.$$$loadLabelText$$$(myNameLabel, this.$$$getMessageFromBundle$$$("messages/JavaScriptBundle", "extract.function.name"));
+      panel3.add(myNameLabel,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      panel3.add(myFunctionName, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                     GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+      myDeclareStaticCheckBox = new JCheckBox();
+      myDeclareStaticCheckBox.setFocusable(false);
+      this.$$$loadButtonText$$$(myDeclareStaticCheckBox,
+                                this.$$$getMessageFromBundle$$$("messages/JavaScriptBundle", "extract.method.declare.static"));
+      panel3.add(myDeclareStaticCheckBox, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myVarTypePanel = new JPanel();
+      myVarTypePanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.add(myVarTypePanel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                     null, null, 0, false));
+      myVarTypePanel.add(myVarType, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                        new Dimension(150, -1), null, 0, false));
+      final JLabel label1 = new JLabel();
+      this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("messages/JavaScriptBundle", "extract.function.return.type"));
+      myVarTypePanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                     GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+                                                     0, false));
+      myReplaceAllOccurrencesCheckBox = new JCheckBox();
+      this.$$$loadButtonText$$$(myReplaceAllOccurrencesCheckBox, this.$$$getMessageFromBundle$$$("messages/JavaScriptBundle",
+                                                                                                 "javascript.introduce.variable.replace.all.occurrences"));
+      panel3.add(myReplaceAllOccurrencesCheckBox, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                      GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                      GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                      null, null, null, 0, false));
+      myPanel.add(myVisibilityPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                         null, null, 0, false));
+      label1.setLabelFor(myVarType);
+    }
 
     ChangeListener listener = new ChangeListener() {
       @Override
@@ -123,11 +327,84 @@ public class ActionScriptExtractFunctionDialog extends JSBaseClassBasedIntroduce
     if (isClassContext) {
       myDeclareStaticCheckBox.setEnabled(contextInfo.getJSContext() == JSContext.UNKNOWN
                                          && JSExtractFunctionHandler.possibleToExtractStaticFromInstance(ci, myIntroductionScope));
-      myDeclareStaticCheckBox.setSelected(ActionScriptExtractFunctionHandler.getDeclareStatic() || contextInfo.getJSContext() == JSContext.STATIC);
+      myDeclareStaticCheckBox.setSelected(
+        ActionScriptExtractFunctionHandler.getDeclareStatic() || contextInfo.getJSContext() == JSContext.STATIC);
     }
     myVisibilityPanel.configureForClassMember(false, false, ci.holder);
     doInit();
   }
+
+  private static Method $$$cachedGetBundleMethod$$$ = null;
+
+  /** @noinspection ALL */
+  private String $$$getMessageFromBundle$$$(String path, String key) {
+    ResourceBundle bundle;
+    try {
+      Class<?> thisClass = this.getClass();
+      if ($$$cachedGetBundleMethod$$$ == null) {
+        Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+        $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+      }
+      bundle = (ResourceBundle)$$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+    }
+    catch (Exception e) {
+      bundle = ResourceBundle.getBundle(path);
+    }
+    return bundle.getString(key);
+  }
+
+  /** @noinspection ALL */
+  private void $$$loadLabelText$$$(JLabel component, String text) {
+    StringBuffer result = new StringBuffer();
+    boolean haveMnemonic = false;
+    char mnemonic = '\0';
+    int mnemonicIndex = -1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '&') {
+        i++;
+        if (i == text.length()) break;
+        if (!haveMnemonic && text.charAt(i) != '&') {
+          haveMnemonic = true;
+          mnemonic = text.charAt(i);
+          mnemonicIndex = result.length();
+        }
+      }
+      result.append(text.charAt(i));
+    }
+    component.setText(result.toString());
+    if (haveMnemonic) {
+      component.setDisplayedMnemonic(mnemonic);
+      component.setDisplayedMnemonicIndex(mnemonicIndex);
+    }
+  }
+
+  /** @noinspection ALL */
+  private void $$$loadButtonText$$$(AbstractButton component, String text) {
+    StringBuffer result = new StringBuffer();
+    boolean haveMnemonic = false;
+    char mnemonic = '\0';
+    int mnemonicIndex = -1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '&') {
+        i++;
+        if (i == text.length()) break;
+        if (!haveMnemonic && text.charAt(i) != '&') {
+          haveMnemonic = true;
+          mnemonic = text.charAt(i);
+          mnemonicIndex = result.length();
+        }
+      }
+      result.append(text.charAt(i));
+    }
+    component.setText(result.toString());
+    if (haveMnemonic) {
+      component.setMnemonic(mnemonic);
+      component.setDisplayedMnemonicIndex(mnemonicIndex);
+    }
+  }
+
+  /** @noinspection ALL */
+  public JComponent $$$getRootComponent$$$() { return myPanel; }
 
   private void swapVars(int selectedRow, int anotherRow) {
     JSNamedElement var = parametersInfo.variables.get(selectedRow);
@@ -244,116 +521,6 @@ public class ActionScriptExtractFunctionDialog extends JSBaseClassBasedIntroduce
   @Override
   public JSExtractFunctionHandler.IntroductionScope getIntroductionScope() {
     return myIntroductionScope;
-  }
-
-  private void createUIComponents() {
-    myVisibilityPanel = new JSVisibilityPanel();
-    myFunctionName = configureNameField();
-    myVarType = configureTypeField();
-    myPreviewText = new MethodSignatureComponent(mySignatureGenerator.fun(
-      new DefaultJSExtractFunctionSettings(JSExtractFunctionHandler.DEFAULT_EXTRACTED_NAME, myIntroductionScope),
-      contextInfo), myProject, JSChangeSignatureDialog.getFileTypeFromContext(contextInfo.getContextElement()));
-    myPreviewText.setMinimumSize(JBUI.size(300, 40));
-
-    parametersTable = new JBTable();
-    setParametersInfo(JSExtractFunctionHandler.createDefaultParametersInfo(getIntroductionScope()));
-    parametersTable.setAutoCreateColumnsFromModel(false);
-    parametersTable.setModel(new AbstractTableModel() {
-      @Override
-      public int getRowCount() {
-        return parametersInfo.variableOptions.size();
-      }
-
-      @Override
-      public int getColumnCount() {
-        return 2 + (isEcma4Context() ||
-                    isTypeScriptContext() ? 1 : 0);
-      }
-
-      @Override
-      public Object getValueAt(int rowIndex, int columnIndex) {
-        JSNamedElement var = parametersInfo.variables.get(rowIndex);
-        if (columnIndex == 0) return Boolean.valueOf(parametersInfo.variableOptions.get(var).used);
-        if (columnIndex == 1) return parametersInfo.variableOptions.get(var).name;
-        if (columnIndex == 2) return parametersInfo.variableOptions.get(var).type;
-
-        return null;
-      }
-
-      @Override
-      public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
-      }
-
-      @Override
-      public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        JSNamedElement var = parametersInfo.variables.get(rowIndex);
-        ParameterInfo parameterInfo = parametersInfo.variableOptions.get(var);
-        ParameterInfo newParameterInfo = null;
-
-        if (columnIndex == 0) {
-          newParameterInfo = new ParameterInfo(parameterInfo.name, (Boolean)aValue, parameterInfo.type, rowIndex);
-        }
-        else if (columnIndex == 1) {
-          newParameterInfo = new ParameterInfo((String)aValue, parameterInfo.used, parameterInfo.type, rowIndex);
-        }
-        else if (columnIndex == 2) {
-          newParameterInfo = new ParameterInfo(parameterInfo.name, parameterInfo.used, (String)aValue, rowIndex);
-        }
-
-        if (newParameterInfo != null) {
-          parametersInfo.variableOptions.put(var, newParameterInfo);
-        }
-        initiateValidation();
-      }
-
-      @Override
-      public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 0) return Boolean.class;
-        if (columnIndex == 1) return String.class;
-        if (columnIndex == 2) return String.class;
-        return super.getColumnClass(columnIndex);
-      }
-    });
-
-    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-    final TableColumn checkboxColumn = new TableColumn(0);
-    checkboxColumn.setMaxWidth(60);
-    tableColumnModel.addColumn(checkboxColumn);
-    tableColumnModel.addColumn(new TableColumn(1));
-    if (isTypeScriptContext() || isEcma4Context()) tableColumnModel.addColumn(new TableColumn(2));
-    parametersTable.setColumnModel(tableColumnModel);
-    parametersTable.setRowSelectionAllowed(false);
-    parametersTable.getSelectionModel().setSelectionInterval(0, 0);
-
-    myToolbarDecoratorPanel = ToolbarDecorator.createDecorator(parametersTable)
-      .setMoveUpAction(new AnActionButtonRunnable() {
-        @Override
-        public void run(AnActionButton button) {
-          int selectedRow = parametersTable.getSelectedRow();
-          if (selectedRow - 1 >= 0) {
-            changeRowNumber(selectedRow, selectedRow - 1);
-            changeRowNumber(selectedRow - 1, selectedRow);
-            swapVars(selectedRow, selectedRow - 1);
-            ((AbstractTableModel)parametersTable.getModel()).fireTableRowsUpdated(selectedRow - 1, selectedRow);
-            parametersTable.getSelectionModel().setSelectionInterval(selectedRow - 1, selectedRow - 1);
-            initiateValidation();
-          }
-        }
-      }).setMoveDownAction(new AnActionButtonRunnable() {
-        @Override
-        public void run(AnActionButton button) {
-          int selectedRow = parametersTable.getSelectedRow();
-          if (selectedRow + 1 < parametersTable.getRowCount()) {
-            changeRowNumber(selectedRow, selectedRow + 1);
-            changeRowNumber(selectedRow + 1, selectedRow);
-            swapVars(selectedRow, selectedRow + 1);
-            ((AbstractTableModel)parametersTable.getModel()).fireTableRowsUpdated(selectedRow, selectedRow + 1);
-            parametersTable.getSelectionModel().setSelectionInterval(selectedRow + 1, selectedRow + 1);
-            initiateValidation();
-          }
-        }
-      }).createPanel();
   }
 
   public boolean isEcma4Context() {

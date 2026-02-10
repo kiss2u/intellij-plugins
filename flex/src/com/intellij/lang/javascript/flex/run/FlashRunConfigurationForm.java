@@ -34,15 +34,22 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.PathUtil;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -51,10 +58,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static com.intellij.lang.javascript.flex.run.FlashRunnerParameters.AirMobileDebugTransport;
 import static com.intellij.lang.javascript.flex.run.FlashRunnerParameters.AirMobileRunTarget;
@@ -70,61 +85,61 @@ public class FlashRunConfigurationForm extends SettingsEditor<FlashRunConfigurat
   // The base class for ActionScript-based dynamically-loadable modules
   public static final String MODULE_BASE_CLASS_NAME = "mx.modules.ModuleBase";
 
-  private JPanel myMainPanel;
-  private BCCombo myBCCombo;
+  private final JPanel myMainPanel;
+  private final BCCombo myBCCombo;
 
-  private JCheckBox myOverrideMainClassCheckBox;
+  private final JCheckBox myOverrideMainClassCheckBox;
   private Condition<JSClass> myMainClassFilter;
-  private JSReferenceEditor myMainClassComponent;
-  private JLabel myOutputFileNameLabel;
-  private JTextField myOutputFileNameTextField;
+  private final JSReferenceEditor myMainClassComponent;
+  private final JLabel myOutputFileNameLabel;
+  private final JTextField myOutputFileNameTextField;
 
-  private JPanel myLaunchPanel;
-  private JRadioButton myBCOutputRadioButton;
-  private JLabel myBCOutputLabel;
-  private JRadioButton myUrlOrFileRadioButton;
-  private TextFieldWithBrowseButton myUrlOrFileTextWithBrowse;
+  private final JPanel myLaunchPanel;
+  private final JRadioButton myBCOutputRadioButton;
+  private final JLabel myBCOutputLabel;
+  private final JRadioButton myUrlOrFileRadioButton;
+  private final TextFieldWithBrowseButton myUrlOrFileTextWithBrowse;
 
-  private JPanel myWebOptionsPanel;
-  private JLabel myLauncherParametersLabel;
-  private TextFieldWithBrowseButton myLauncherParametersTextWithBrowse;
-  private JLabel mySdkForDebuggingLabel;
-  private FlexSdkComboBoxWithBrowseButton mySdkForDebuggingCombo;
-  private JCheckBox myRunTrustedCheckBox;
+  private final JPanel myWebOptionsPanel;
+  private final JLabel myLauncherParametersLabel;
+  private final TextFieldWithBrowseButton myLauncherParametersTextWithBrowse;
+  private final JLabel mySdkForDebuggingLabel;
+  private final FlexSdkComboBoxWithBrowseButton mySdkForDebuggingCombo;
+  private final JCheckBox myRunTrustedCheckBox;
 
-  private JPanel myDesktopOptionsPanel;
-  private RawCommandLineEditor myAdlOptionsEditor;
-  private RawCommandLineEditor myAirProgramParametersEditor;
+  private final JPanel myDesktopOptionsPanel;
+  private final RawCommandLineEditor myAdlOptionsEditor;
+  private final RawCommandLineEditor myAirProgramParametersEditor;
 
-  private JPanel myMobileRunPanel;
-  private JRadioButton myOnEmulatorRadioButton;
-  private JRadioButton myOnAndroidDeviceRadioButton;
-  private JCheckBox myClearAndroidDataCheckBox;
-  private JRadioButton myOnIOSSimulatorRadioButton;
-  private TextFieldWithBrowseButton myIOSSimulatorSdkTextWithBrowse;
-  private JBLabel myIOSSimulatorDeviceLabel;
-  private JBTextField myIOSSimulatorDeviceTextField;
-  private JRadioButton myOnIOSDeviceRadioButton;
-  private JCheckBox myFastPackagingCheckBox;
+  private final JPanel myMobileRunPanel;
+  private final JRadioButton myOnEmulatorRadioButton;
+  private final JRadioButton myOnAndroidDeviceRadioButton;
+  private final JCheckBox myClearAndroidDataCheckBox;
+  private final JRadioButton myOnIOSSimulatorRadioButton;
+  private final TextFieldWithBrowseButton myIOSSimulatorSdkTextWithBrowse;
+  private final JBLabel myIOSSimulatorDeviceLabel;
+  private final JBTextField myIOSSimulatorDeviceTextField;
+  private final JRadioButton myOnIOSDeviceRadioButton;
+  private final JCheckBox myFastPackagingCheckBox;
 
-  private JComboBox<Emulator> myEmulatorCombo;
-  private JPanel myEmulatorScreenSizePanel;
-  private JTextField myScreenWidth;
-  private JTextField myScreenHeight;
-  private JTextField myFullScreenWidth;
-  private JTextField myFullScreenHeight;
-  private JTextField myScreenDpi;
+  private final JComboBox<Emulator> myEmulatorCombo;
+  private final JPanel myEmulatorScreenSizePanel;
+  private final JTextField myScreenWidth;
+  private final JTextField myScreenHeight;
+  private final JTextField myFullScreenWidth;
+  private final JTextField myFullScreenHeight;
+  private final JTextField myScreenDpi;
 
-  private JPanel myMobileOptionsPanel;
-  private JPanel myDebugTransportPanel;
-  private JLabel myDebugOverLabel;
-  private JRadioButton myDebugOverNetworkRadioButton;
-  private JRadioButton myDebugOverUSBRadioButton;
-  private JTextField myUsbDebugPortTextField;
-  private JBLabel myEmulatorAdlOptionsLabel;
-  private RawCommandLineEditor myEmulatorAdlOptionsEditor;
-  private JLabel myAppDescriptorForEmulatorLabel;
-  private JComboBox myAppDescriptorForEmulatorCombo;
+  private final JPanel myMobileOptionsPanel;
+  private final JPanel myDebugTransportPanel;
+  private final JLabel myDebugOverLabel;
+  private final JRadioButton myDebugOverNetworkRadioButton;
+  private final JRadioButton myDebugOverUSBRadioButton;
+  private final JTextField myUsbDebugPortTextField;
+  private final JBLabel myEmulatorAdlOptionsLabel;
+  private final RawCommandLineEditor myEmulatorAdlOptionsEditor;
+  private final JLabel myAppDescriptorForEmulatorLabel;
+  private final JComboBox myAppDescriptorForEmulatorCombo;
 
   private final Project myProject;
 
@@ -134,6 +149,455 @@ public class FlashRunConfigurationForm extends SettingsEditor<FlashRunConfigurat
 
   public FlashRunConfigurationForm(final Project project) {
     myProject = project;
+    {
+      myBCCombo = new BCCombo(myProject);
+      myMainClassFilter = Conditions.alwaysFalse();
+      myMainClassComponent = JSReferenceEditor.forClassName("", myProject, null, GlobalSearchScope.EMPTY_SCOPE, null,
+                                                            Conditions.alwaysTrue(), // no filtering until IDEA-83046
+                                                            ExecutionBundle.message("choose.main.class.dialog.title"));
+      mySdkForDebuggingCombo = new FlexSdkComboBoxWithBrowseButton(FlexSdkComboBoxWithBrowseButton.FLEX_OR_FLEXMOJOS_SDK);
+      mySdkForDebuggingCombo.showBCSdk(true);
+    }
+    {
+      // GUI initializer generated by IntelliJ IDEA GUI Designer
+      // >>> IMPORTANT!! <<<
+      // DO NOT EDIT OR ADD ANY CODE HERE!
+      myMainPanel = new JPanel();
+      myMainPanel.setLayout(new GridLayoutManager(9, 3, new Insets(0, 0, 0, 0), -1, -1));
+      final Spacer spacer1 = new Spacer();
+      myMainPanel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                                   GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+      final Spacer spacer2 = new Spacer();
+      myMainPanel.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                   GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      myLaunchPanel = new JPanel();
+      myLaunchPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myLaunchPanel.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent");
+      myMainPanel.add(myLaunchPanel, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                         null, null, 0, false));
+      myLaunchPanel.setBorder(IdeBorderFactory.PlainSmallWithIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "What to Launch",
+                                                                                       TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                       TitledBorder.DEFAULT_POSITION, null, null));
+      myBCOutputRadioButton = new JRadioButton();
+      myBCOutputRadioButton.setText("Build output:");
+      myBCOutputRadioButton.setMnemonic('O');
+      myBCOutputRadioButton.setDisplayedMnemonicIndex(6);
+      myLaunchPanel.add(myBCOutputRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                   GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                   GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                   null, null, null, 0, false));
+      myBCOutputLabel = new JLabel();
+      myBCOutputLabel.setText("SomeFile.swf via HTML wrapper");
+      myLaunchPanel.add(myBCOutputLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                             GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                             null, 0, false));
+      myUrlOrFileRadioButton = new JRadioButton();
+      myUrlOrFileRadioButton.setText("URL or local file:");
+      myUrlOrFileRadioButton.setMnemonic('R');
+      myUrlOrFileRadioButton.setDisplayedMnemonicIndex(1);
+      myLaunchPanel.add(myUrlOrFileRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                    GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                    null, null, null, 0, false));
+      myUrlOrFileTextWithBrowse = new TextFieldWithBrowseButton();
+      myLaunchPanel.add(myUrlOrFileTextWithBrowse,
+                        new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                            GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                            new Dimension(150, -1), null, 0, false));
+      myWebOptionsPanel = new JPanel();
+      myWebOptionsPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myWebOptionsPanel.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent");
+      myMainPanel.add(myWebOptionsPanel, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             null, null, null, 0, false));
+      myWebOptionsPanel.setBorder(IdeBorderFactory.PlainSmallWithIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "Options",
+                                                                                           TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                           TitledBorder.DEFAULT_POSITION, null, null));
+      final JPanel panel1 = new JPanel();
+      panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 5, 0, 0), -1, -1));
+      myWebOptionsPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                        null, null, 0, false));
+      myLauncherParametersLabel = new JLabel();
+      myLauncherParametersLabel.setText("Launch with:");
+      myLauncherParametersLabel.setDisplayedMnemonic('W');
+      myLauncherParametersLabel.setDisplayedMnemonicIndex(7);
+      panel1.add(myLauncherParametersLabel,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myLauncherParametersTextWithBrowse = new TextFieldWithBrowseButton();
+      myWebOptionsPanel.add(myLauncherParametersTextWithBrowse,
+                            new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                false));
+      myRunTrustedCheckBox = new JCheckBox();
+      this.$$$loadButtonText$$$(myRunTrustedCheckBox, this.$$$getMessageFromBundle$$$("messages/FlexBundle", "run.trusted"));
+      myWebOptionsPanel.add(myRunTrustedCheckBox, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                      GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                      GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                      null, null, null, 0, false));
+      final JPanel panel2 = new JPanel();
+      panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 5, 0, 0), -1, -1));
+      myWebOptionsPanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                        null, null, 0, false));
+      mySdkForDebuggingLabel = new JLabel();
+      mySdkForDebuggingLabel.setText("Use debugger from SDK:");
+      mySdkForDebuggingLabel.setDisplayedMnemonic('D');
+      mySdkForDebuggingLabel.setDisplayedMnemonicIndex(4);
+      panel2.add(mySdkForDebuggingLabel,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myWebOptionsPanel.add(mySdkForDebuggingCombo,
+                            new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
+                                                null, 0, false));
+      myDesktopOptionsPanel = new JPanel();
+      myDesktopOptionsPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myDesktopOptionsPanel.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent");
+      myMainPanel.add(myDesktopOptionsPanel, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                 GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                 GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+      myDesktopOptionsPanel.setBorder(
+        IdeBorderFactory.PlainSmallWithIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "Options",
+                                                                 TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null,
+                                                                 null));
+      final JLabel label1 = new JLabel();
+      label1.setText("AIR Debug Launcher options:");
+      label1.setDisplayedMnemonic('O');
+      label1.setDisplayedMnemonicIndex(19);
+      myDesktopOptionsPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                            GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                            null, 0, false));
+      final JLabel label2 = new JLabel();
+      label2.setText("Program parameters:");
+      label2.setDisplayedMnemonic('P');
+      label2.setDisplayedMnemonicIndex(0);
+      myDesktopOptionsPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                            GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                            null, 0, false));
+      myAirProgramParametersEditor = new RawCommandLineEditor();
+      myAirProgramParametersEditor.setDialogCaption("Program Parameters");
+      myDesktopOptionsPanel.add(myAirProgramParametersEditor,
+                                new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myAdlOptionsEditor = new RawCommandLineEditor();
+      myAdlOptionsEditor.setDialogCaption("ADL Options");
+      myDesktopOptionsPanel.add(myAdlOptionsEditor,
+                                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myMobileRunPanel = new JPanel();
+      myMobileRunPanel.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
+      myMobileRunPanel.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent");
+      myMainPanel.add(myMobileRunPanel, new GridConstraints(6, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            null, null, null, 0, false));
+      myMobileRunPanel.setBorder(IdeBorderFactory.PlainSmallWithIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "Run on",
+                                                                                          TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                          TitledBorder.DEFAULT_POSITION, null, null));
+      myOnEmulatorRadioButton = new JRadioButton();
+      myOnEmulatorRadioButton.setText("Emulator:");
+      myOnEmulatorRadioButton.setMnemonic('E');
+      myOnEmulatorRadioButton.setDisplayedMnemonicIndex(0);
+      myMobileRunPanel.add(myOnEmulatorRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                        GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                        GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myEmulatorCombo = new JComboBox();
+      myMobileRunPanel.add(myEmulatorCombo, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                                GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myEmulatorScreenSizePanel = new JPanel();
+      myEmulatorScreenSizePanel.setLayout(new GridLayoutManager(1, 10, new Insets(0, 0, 0, 0), 0, -1));
+      myMobileRunPanel.add(myEmulatorScreenSizePanel,
+                           new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
+                                               null, 0, false));
+      final JLabel label3 = new JLabel();
+      label3.setText("Screen:");
+      label3.setDisplayedMnemonic('R');
+      label3.setDisplayedMnemonicIndex(2);
+      myEmulatorScreenSizePanel.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myScreenWidth = new JTextField();
+      myEmulatorScreenSizePanel.add(myScreenWidth,
+                                    new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                        null, 0, false));
+      final JLabel label4 = new JLabel();
+      label4.setHorizontalAlignment(0);
+      label4.setHorizontalTextPosition(0);
+      label4.setText("x");
+      myEmulatorScreenSizePanel.add(label4, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+                                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myScreenHeight = new JTextField();
+      myEmulatorScreenSizePanel.add(myScreenHeight,
+                                    new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                        null, 0, false));
+      final JLabel label5 = new JLabel();
+      label5.setText("  Full:");
+      label5.setDisplayedMnemonic('F');
+      label5.setDisplayedMnemonicIndex(2);
+      myEmulatorScreenSizePanel.add(label5, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myFullScreenWidth = new JTextField();
+      myEmulatorScreenSizePanel.add(myFullScreenWidth,
+                                    new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                        null, 0, false));
+      final JLabel label6 = new JLabel();
+      label6.setHorizontalAlignment(0);
+      label6.setHorizontalTextPosition(0);
+      label6.setText("x");
+      myEmulatorScreenSizePanel.add(label6, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+                                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myFullScreenHeight = new JTextField();
+      myEmulatorScreenSizePanel.add(myFullScreenHeight,
+                                    new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                        null, 0, false));
+      final JLabel label7 = new JLabel();
+      label7.setText("ppi:");
+      label7.setDisplayedMnemonic('P');
+      label7.setDisplayedMnemonicIndex(0);
+      myEmulatorScreenSizePanel.add(label7, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                null, null, 0, false));
+      myScreenDpi = new JTextField();
+      myEmulatorScreenSizePanel.add(myScreenDpi,
+                                    new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                        null, 0, false));
+      final Spacer spacer3 = new Spacer();
+      myMobileRunPanel.add(spacer3, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      final JPanel panel3 = new JPanel();
+      panel3.setLayout(new GridLayoutManager(3, 3, new Insets(0, 0, 0, 0), -1, -1));
+      myMobileRunPanel.add(panel3, new GridConstraints(1, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                       null, null, 0, false));
+      myOnAndroidDeviceRadioButton = new JRadioButton();
+      myOnAndroidDeviceRadioButton.setText("Android device");
+      myOnAndroidDeviceRadioButton.setMnemonic('V');
+      myOnAndroidDeviceRadioButton.setDisplayedMnemonicIndex(10);
+      panel3.add(myOnAndroidDeviceRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                   GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                   GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                   null, null, null, 0, false));
+      myOnIOSDeviceRadioButton = new JRadioButton();
+      myOnIOSDeviceRadioButton.setText("iOS device");
+      myOnIOSDeviceRadioButton.setMnemonic('D');
+      myOnIOSDeviceRadioButton.setDisplayedMnemonicIndex(4);
+      panel3.add(myOnIOSDeviceRadioButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                               GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myFastPackagingCheckBox = new JCheckBox();
+      myFastPackagingCheckBox.setText("Fast packaging");
+      myFastPackagingCheckBox.setMnemonic('K');
+      myFastPackagingCheckBox.setDisplayedMnemonicIndex(8);
+      panel3.add(myFastPackagingCheckBox, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myClearAndroidDataCheckBox = new JCheckBox();
+      myClearAndroidDataCheckBox.setText("Clear application data on each launch");
+      myClearAndroidDataCheckBox.setMnemonic('I');
+      myClearAndroidDataCheckBox.setDisplayedMnemonicIndex(10);
+      panel3.add(myClearAndroidDataCheckBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                 GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                 GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                 null, null, null, 0, false));
+      final Spacer spacer4 = new Spacer();
+      panel3.add(spacer4, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                              GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      final Spacer spacer5 = new Spacer();
+      panel3.add(spacer5, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                              GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      final JPanel panel4 = new JPanel();
+      panel4.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.add(panel4, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                             0, false));
+      myOnIOSSimulatorRadioButton = new JRadioButton();
+      myOnIOSSimulatorRadioButton.setText("iOS Simulator, SDK:");
+      myOnIOSSimulatorRadioButton.setMnemonic('L');
+      myOnIOSSimulatorRadioButton.setDisplayedMnemonicIndex(8);
+      panel4.add(myOnIOSSimulatorRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                  GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                  null, null, null, 0, false));
+      myIOSSimulatorSdkTextWithBrowse = new TextFieldWithBrowseButton();
+      panel4.add(myIOSSimulatorSdkTextWithBrowse,
+                 new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                     GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myIOSSimulatorDeviceLabel = new JBLabel();
+      myIOSSimulatorDeviceLabel.setText("Simulator device:");
+      panel4.add(myIOSSimulatorDeviceLabel,
+                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myIOSSimulatorDeviceTextField = new JBTextField();
+      panel4.add(myIOSSimulatorDeviceTextField,
+                 new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
+                                     false));
+      myMobileOptionsPanel = new JPanel();
+      myMobileOptionsPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myMobileOptionsPanel.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithIndent");
+      myMainPanel.add(myMobileOptionsPanel, new GridConstraints(7, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                null, null, null, 0, false));
+      myMobileOptionsPanel.setBorder(IdeBorderFactory.PlainSmallWithIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "Options",
+                                                                                              TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                              TitledBorder.DEFAULT_POSITION, null, null));
+      final JPanel panel5 = new JPanel();
+      panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myMobileOptionsPanel.add(panel5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                           GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                           GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                           null, null, null, 0, false));
+      myDebugTransportPanel = new JPanel();
+      myDebugTransportPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+      panel5.add(myDebugTransportPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            null, null, null, 0, false));
+      myDebugOverNetworkRadioButton = new JRadioButton();
+      myDebugOverNetworkRadioButton.setText("Network");
+      myDebugOverNetworkRadioButton.setMnemonic('W');
+      myDebugOverNetworkRadioButton.setDisplayedMnemonicIndex(3);
+      myDebugTransportPanel.add(myDebugOverNetworkRadioButton,
+                                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myDebugOverUSBRadioButton = new JRadioButton();
+      myDebugOverUSBRadioButton.setText("USB, port:");
+      myDebugOverUSBRadioButton.setMnemonic('U');
+      myDebugOverUSBRadioButton.setDisplayedMnemonicIndex(0);
+      myDebugTransportPanel.add(myDebugOverUSBRadioButton,
+                                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                    GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myUsbDebugPortTextField = new JTextField();
+      myUsbDebugPortTextField.setColumns(4);
+      myDebugTransportPanel.add(myUsbDebugPortTextField,
+                                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                    GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                    null, 0, false));
+      final Spacer spacer6 = new Spacer();
+      panel5.add(spacer6, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                              GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      myDebugOverLabel = new JLabel();
+      myDebugOverLabel.setText("Debug on device over: ");
+      myMobileOptionsPanel.add(myDebugOverLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                     GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED,
+                                                                     null, null, null, 0, false));
+      myEmulatorAdlOptionsLabel = new JBLabel();
+      myEmulatorAdlOptionsLabel.setText("ADL options (emulator):");
+      myEmulatorAdlOptionsLabel.setDisplayedMnemonic('L');
+      myEmulatorAdlOptionsLabel.setDisplayedMnemonicIndex(2);
+      myMobileOptionsPanel.add(myEmulatorAdlOptionsLabel,
+                               new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                   GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                   false));
+      myEmulatorAdlOptionsEditor = new RawCommandLineEditor();
+      myEmulatorAdlOptionsEditor.setDialogCaption("ADL Options");
+      myMobileOptionsPanel.add(myEmulatorAdlOptionsEditor,
+                               new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                   GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                   new Dimension(150, -1), null, 0, false));
+      myAppDescriptorForEmulatorLabel = new JLabel();
+      myAppDescriptorForEmulatorLabel.setText("App descriptor (emulator):");
+      myAppDescriptorForEmulatorLabel.setDisplayedMnemonic('O');
+      myAppDescriptorForEmulatorLabel.setDisplayedMnemonicIndex(12);
+      myMobileOptionsPanel.add(myAppDescriptorForEmulatorLabel,
+                               new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                   GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                   false));
+      myAppDescriptorForEmulatorCombo = new JComboBox();
+      myMobileOptionsPanel.add(myAppDescriptorForEmulatorCombo,
+                               new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                   GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+                                                   0, false));
+      myOverrideMainClassCheckBox = new JCheckBox();
+      myOverrideMainClassCheckBox.setText("Override main class:");
+      myOverrideMainClassCheckBox.setMnemonic('M');
+      myOverrideMainClassCheckBox.setDisplayedMnemonicIndex(9);
+      myMainPanel.add(myOverrideMainClassCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                       GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                                       GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myOutputFileNameLabel = new JLabel();
+      myOutputFileNameLabel.setText("Output file name:");
+      myOutputFileNameLabel.setDisplayedMnemonic('T');
+      myOutputFileNameLabel.setDisplayedMnemonicIndex(2);
+      myMainPanel.add(myOutputFileNameLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+                                                                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                 null, null, 0, false));
+      myOutputFileNameTextField = new JTextField();
+      myMainPanel.add(myOutputFileNameTextField,
+                      new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                          GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                          new Dimension(150, -1), null, 0, false));
+      myMainClassComponent.setText("");
+      myMainPanel.add(myMainClassComponent, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                                                                GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                                new Dimension(150, -1), null, 0, false));
+      final JLabel label8 = new JLabel();
+      Font label8Font = this.$$$getFont$$$(null, Font.BOLD, -1, label8.getFont());
+      if (label8Font != null) label8.setFont(label8Font);
+      label8.setText("Build configuration:");
+      label8.setDisplayedMnemonic('C');
+      label8.setDisplayedMnemonicIndex(6);
+      myMainPanel.add(label8, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                  GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0,
+                                                  false));
+      myMainPanel.add(myBCCombo, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                     null, null, 0, false));
+      myLauncherParametersLabel.setLabelFor(myLauncherParametersTextWithBrowse);
+      label1.setLabelFor(myAdlOptionsEditor);
+      label2.setLabelFor(myAirProgramParametersEditor);
+      label3.setLabelFor(myScreenWidth);
+      label5.setLabelFor(myFullScreenWidth);
+      label7.setLabelFor(myScreenDpi);
+      myIOSSimulatorDeviceLabel.setLabelFor(myIOSSimulatorDeviceTextField);
+      myAppDescriptorForEmulatorLabel.setLabelFor(myAppDescriptorForEmulatorCombo);
+      myOutputFileNameLabel.setLabelFor(myOutputFileNameTextField);
+      label8.setLabelFor(myBCCombo);
+      ButtonGroup buttonGroup;
+      buttonGroup = new ButtonGroup();
+      buttonGroup.add(myBCOutputRadioButton);
+      buttonGroup.add(myUrlOrFileRadioButton);
+      buttonGroup = new ButtonGroup();
+      buttonGroup.add(myDebugOverNetworkRadioButton);
+      buttonGroup.add(myDebugOverUSBRadioButton);
+      buttonGroup = new ButtonGroup();
+      buttonGroup.add(myOnEmulatorRadioButton);
+      buttonGroup.add(myOnAndroidDeviceRadioButton);
+      buttonGroup.add(myOnIOSDeviceRadioButton);
+      buttonGroup.add(myOnIOSSimulatorRadioButton);
+    }
 
     initBCCombo();
     initMainClassRelatedControls();
@@ -144,6 +608,77 @@ public class FlashRunConfigurationForm extends SettingsEditor<FlashRunConfigurat
     mySdkForDebuggingLabel.setLabelFor(mySdkForDebuggingCombo.getChildComponent());
     myEmulatorAdlOptionsLabel.setLabelFor(myEmulatorAdlOptionsEditor.getTextField());
   }
+
+  /** @noinspection ALL */
+  private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
+    if (currentFont == null) return null;
+    String resultName;
+    if (fontName == null) {
+      resultName = currentFont.getName();
+    }
+    else {
+      Font testFont = new Font(fontName, Font.PLAIN, 10);
+      if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
+        resultName = fontName;
+      }
+      else {
+        resultName = currentFont.getName();
+      }
+    }
+    Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+    boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+    Font fontWithFallback = isMac
+                            ? new Font(font.getFamily(), font.getStyle(), font.getSize())
+                            : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+    return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
+  }
+
+  private static Method $$$cachedGetBundleMethod$$$ = null;
+
+  /** @noinspection ALL */
+  private String $$$getMessageFromBundle$$$(String path, String key) {
+    ResourceBundle bundle;
+    try {
+      Class<?> thisClass = this.getClass();
+      if ($$$cachedGetBundleMethod$$$ == null) {
+        Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+        $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+      }
+      bundle = (ResourceBundle)$$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+    }
+    catch (Exception e) {
+      bundle = ResourceBundle.getBundle(path);
+    }
+    return bundle.getString(key);
+  }
+
+  /** @noinspection ALL */
+  private void $$$loadButtonText$$$(AbstractButton component, String text) {
+    StringBuffer result = new StringBuffer();
+    boolean haveMnemonic = false;
+    char mnemonic = '\0';
+    int mnemonicIndex = -1;
+    for (int i = 0; i < text.length(); i++) {
+      if (text.charAt(i) == '&') {
+        i++;
+        if (i == text.length()) break;
+        if (!haveMnemonic && text.charAt(i) != '&') {
+          haveMnemonic = true;
+          mnemonic = text.charAt(i);
+          mnemonicIndex = result.length();
+        }
+      }
+      result.append(text.charAt(i));
+    }
+    component.setText(result.toString());
+    if (haveMnemonic) {
+      component.setMnemonic(mnemonic);
+      component.setDisplayedMnemonicIndex(mnemonicIndex);
+    }
+  }
+
+  /** @noinspection ALL */
+  public JComponent $$$getRootComponent$$$() { return myMainPanel; }
 
   private void initBCCombo() {
     myBCCombo.addActionListener(new ActionListener() {
@@ -467,16 +1002,6 @@ public class FlashRunConfigurationForm extends SettingsEditor<FlashRunConfigurat
     if (onDevice) {
       myUsbDebugPortTextField.setEnabled(myDebugOverUSBRadioButton.isSelected());
     }
-  }
-
-  private void createUIComponents() {
-    myBCCombo = new BCCombo(myProject);
-    myMainClassFilter = Conditions.alwaysFalse();
-    myMainClassComponent = JSReferenceEditor.forClassName("", myProject, null, GlobalSearchScope.EMPTY_SCOPE, null,
-                                                          Conditions.alwaysTrue(), // no filtering until IDEA-83046
-                                                          ExecutionBundle.message("choose.main.class.dialog.title"));
-    mySdkForDebuggingCombo = new FlexSdkComboBoxWithBrowseButton(FlexSdkComboBoxWithBrowseButton.FLEX_OR_FLEXMOJOS_SDK);
-    mySdkForDebuggingCombo.showBCSdk(true);
   }
 
   @Override

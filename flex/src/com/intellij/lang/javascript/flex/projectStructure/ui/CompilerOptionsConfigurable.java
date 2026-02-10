@@ -40,6 +40,7 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.HoverHyperlinkLabel;
 import com.intellij.ui.HyperlinkAdapter;
+import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.NonFocusableCheckBox;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.RawCommandLineEditor;
@@ -48,11 +49,15 @@ import com.intellij.ui.TableUtil;
 import com.intellij.ui.TreeTableSpeedSearch;
 import com.intellij.ui.UserActivityListener;
 import com.intellij.ui.UserActivityWatcher;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.navigation.Place;
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.EventDispatcher;
 import com.intellij.util.PathUtil;
 import com.intellij.util.containers.ContainerUtil;
@@ -64,28 +69,36 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.StyleContext;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -94,6 +107,7 @@ import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public final class CompilerOptionsConfigurable extends NamedConfigurable<CompilerOptions> implements Place.Navigator {
@@ -111,32 +125,32 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
     }
   }
 
-  private JPanel myMainPanel;
+  private final JPanel myMainPanel;
 
-  private TreeTable myTreeTable;
-  private NonFocusableCheckBox myShowAllOptionsCheckBox;
-  private JLabel myInheritProjectDefaultsLegend;
-  private JLabel myInheritModuleDefaultsLegend;
-  private JButton myProjectDefaultsButton;
-  private JButton myModuleDefaultsButton;
+  private final TreeTable myTreeTable;
+  private final NonFocusableCheckBox myShowAllOptionsCheckBox;
+  private final JLabel myInheritProjectDefaultsLegend;
+  private final JLabel myInheritModuleDefaultsLegend;
+  private final JButton myProjectDefaultsButton;
+  private final JButton myModuleDefaultsButton;
 
-  private JPanel myResourcesPanel;
-  private JCheckBox myCopyResourceFilesCheckBox;
-  private JRadioButton myCopyAllResourcesRadioButton;
-  private JRadioButton myRespectResourcePatternsRadioButton;
-  private HoverHyperlinkLabel myResourcePatternsHyperlink;
+  private final JPanel myResourcesPanel;
+  private final JCheckBox myCopyResourceFilesCheckBox;
+  private final JRadioButton myCopyAllResourcesRadioButton;
+  private final JRadioButton myRespectResourcePatternsRadioButton;
+  private final HoverHyperlinkLabel myResourcePatternsHyperlink;
 
-  private JPanel myIncludeInSWCPanel;
-  private TextFieldWithBrowseButton myIncludeInSWCField;
+  private final JPanel myIncludeInSWCPanel;
+  private final TextFieldWithBrowseButton myIncludeInSWCField;
   private Collection<String> myFilesToIncludeInSWC;
 
-  private JLabel myConfigFileLabel;
-  private TextFieldWithBrowseButton myConfigFileTextWithBrowse;
-  private JLabel myInheritedOptionsLabel;
-  private JTextField myInheritedOptionsField;
-  private JLabel myAdditionalOptionsLabel;
-  private RawCommandLineEditor myAdditionalOptionsField;
-  private JLabel myNoteLabel;
+  private final JLabel myConfigFileLabel;
+  private final TextFieldWithBrowseButton myConfigFileTextWithBrowse;
+  private final JLabel myInheritedOptionsLabel;
+  private final JTextField myInheritedOptionsField;
+  private final JLabel myAdditionalOptionsLabel;
+  private final RawCommandLineEditor myAdditionalOptionsField;
+  private final JLabel myNoteLabel;
 
   private final Mode myMode;
   private final Module myModule;
@@ -192,6 +206,233 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
     myProject = project;
     myNature = nature;
     myDependenciesConfigurable = dependenciesConfigurable;
+    {
+      myTreeTable = createTreeTable();
+      myResourcePatternsHyperlink = new HoverHyperlinkLabel("resource patterns");
+    }
+    {
+      // GUI initializer generated by IntelliJ IDEA GUI Designer
+      // >>> IMPORTANT!! <<<
+      // DO NOT EDIT OR ADD ANY CODE HERE!
+      myMainPanel = new JPanel();
+      myMainPanel.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
+      final JPanel panel1 = new JPanel();
+      panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+      myMainPanel.add(panel1, new GridConstraints(0, 0, 3, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null,
+                                                  null, 0, false));
+      final JBScrollPane jBScrollPane1 = new JBScrollPane();
+      panel1.add(jBScrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null,
+                                                    null, null, 0, false));
+      myTreeTable.setPreferredScrollableViewportSize(new Dimension(450, 450));
+      jBScrollPane1.setViewportView(myTreeTable);
+      final Spacer spacer1 = new Spacer();
+      myMainPanel.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                                   GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+      final JPanel panel2 = new JPanel();
+      panel2.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+      panel2.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithoutIndent");
+      myMainPanel.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
+                                                  null, 0, false));
+      panel2.setBorder(IdeBorderFactory.PlainSmallWithoutIndent.createTitledBorder(BorderFactory.createEtchedBorder(), "Legend",
+                                                                                   TitledBorder.DEFAULT_JUSTIFICATION,
+                                                                                   TitledBorder.DEFAULT_POSITION, null, null));
+      final JLabel label1 = new JLabel();
+      label1.setEnabled(false);
+      label1.setText("Global default");
+      panel2.add(label1,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myInheritProjectDefaultsLegend = new JLabel();
+      myInheritProjectDefaultsLegend.setEnabled(false);
+      Font myInheritProjectDefaultsLegendFont = this.$$$getFont$$$(null, Font.BOLD, -1, myInheritProjectDefaultsLegend.getFont());
+      if (myInheritProjectDefaultsLegendFont != null) myInheritProjectDefaultsLegend.setFont(myInheritProjectDefaultsLegendFont);
+      myInheritProjectDefaultsLegend.setText("Project default");
+      panel2.add(myInheritProjectDefaultsLegend,
+                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myInheritModuleDefaultsLegend = new JLabel();
+      myInheritModuleDefaultsLegend.setText("Module default");
+      panel2.add(myInheritModuleDefaultsLegend,
+                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      final JLabel label2 = new JLabel();
+      Font label2Font = this.$$$getFont$$$(null, Font.BOLD, -1, label2.getFont());
+      if (label2Font != null) label2.setFont(label2Font);
+      label2.setText("Specific value");
+      panel2.add(label2,
+                 new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      final JPanel panel3 = new JPanel();
+      panel3.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.putClientProperty("BorderFactoryClass", "com.intellij.ui.IdeBorderFactory$PlainSmallWithoutIndent");
+      myMainPanel.add(panel3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null,
+                                                  null, 0, false));
+      myConfigFileLabel = new JLabel();
+      myConfigFileLabel.setText("Additional compiler configuration file:");
+      myConfigFileLabel.setDisplayedMnemonic('F');
+      myConfigFileLabel.setDisplayedMnemonicIndex(34);
+      panel3.add(myConfigFileLabel,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myConfigFileTextWithBrowse = new TextFieldWithBrowseButton();
+      panel3.add(myConfigFileTextWithBrowse, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                 null, null, null, 0, false));
+      myAdditionalOptionsLabel = new JLabel();
+      myAdditionalOptionsLabel.setText("Additional compiler options:");
+      myAdditionalOptionsLabel.setDisplayedMnemonic('O');
+      myAdditionalOptionsLabel.setDisplayedMnemonicIndex(20);
+      panel3.add(myAdditionalOptionsLabel,
+                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myAdditionalOptionsField = new RawCommandLineEditor();
+      panel3.add(myAdditionalOptionsField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                                                               GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myInheritedOptionsLabel = new JLabel();
+      myInheritedOptionsLabel.setText("Inherited options:");
+      panel3.add(myInheritedOptionsLabel,
+                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myInheritedOptionsField = new JTextField();
+      myInheritedOptionsField.setEditable(false);
+      panel3.add(myInheritedOptionsField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                              GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                              new Dimension(150, -1), null, 0, false));
+      final JPanel panel4 = new JPanel();
+      panel4.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.add(panel4, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                             0, false));
+      myProjectDefaultsButton = new JButton();
+      myProjectDefaultsButton.setText("Project Defaults...");
+      myProjectDefaultsButton.setMnemonic('P');
+      myProjectDefaultsButton.setDisplayedMnemonicIndex(0);
+      panel4.add(myProjectDefaultsButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                              GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                              GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myModuleDefaultsButton = new JButton();
+      myModuleDefaultsButton.setText("Module Defaults...");
+      myModuleDefaultsButton.setMnemonic('M');
+      myModuleDefaultsButton.setDisplayedMnemonicIndex(0);
+      panel4.add(myModuleDefaultsButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                             GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      final Spacer spacer2 = new Spacer();
+      panel4.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                              GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      final Spacer spacer3 = new Spacer();
+      panel3.add(spacer3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                              GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 10), null, 0, false));
+      final JPanel panel5 = new JPanel();
+      panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+      panel3.add(panel5, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                             GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null,
+                                             0, false));
+      myNoteLabel = new JLabel();
+      myNoteLabel.setText("Options set in the configuration file and additional options may override the options set in the table");
+      panel5.add(myNoteLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                  GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                  GridConstraints.SIZEPOLICY_FIXED, new Dimension(150, -1), null, null, 0, false));
+      final Spacer spacer4 = new Spacer();
+      panel5.add(spacer4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                                              GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, 16), null, 0, false));
+      myShowAllOptionsCheckBox = new NonFocusableCheckBox();
+      myShowAllOptionsCheckBox.setText("Show more options");
+      myShowAllOptionsCheckBox.setMnemonic('W');
+      myShowAllOptionsCheckBox.setDisplayedMnemonicIndex(3);
+      myMainPanel.add(myShowAllOptionsCheckBox, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                                    GridConstraints.SIZEPOLICY_CAN_SHRINK |
+                                                                    GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+                                                                    null, null, null, 0, false));
+      myResourcesPanel = new JPanel();
+      myResourcesPanel.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
+      myMainPanel.add(myResourcesPanel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                            null, null, null, 0, false));
+      myCopyAllResourcesRadioButton = new JRadioButton();
+      myCopyAllResourcesRadioButton.setText("all except *.as and *.mxml");
+      myCopyAllResourcesRadioButton.setMnemonic('L');
+      myCopyAllResourcesRadioButton.setDisplayedMnemonicIndex(1);
+      myResourcesPanel.add(myCopyAllResourcesRadioButton,
+                           new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                               GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      final Spacer spacer5 = new Spacer();
+      myResourcesPanel.add(spacer5, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                        GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+      final JSeparator separator1 = new JSeparator();
+      myResourcesPanel.add(separator1, new GridConstraints(1, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                           GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                           null, null, 0, false));
+      final JPanel panel6 = new JPanel();
+      panel6.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), 0, -1));
+      myResourcesPanel.add(panel6, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                       GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
+                                                       null, null, 0, false));
+      myRespectResourcePatternsRadioButton = new JRadioButton();
+      myRespectResourcePatternsRadioButton.setText("according to");
+      myRespectResourcePatternsRadioButton.setMnemonic('R');
+      myRespectResourcePatternsRadioButton.setDisplayedMnemonicIndex(4);
+      panel6.add(myRespectResourcePatternsRadioButton,
+                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                     GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myResourcePatternsHyperlink.setText("resource patterns");
+      panel6.add(myResourcePatternsHyperlink,
+                 new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                                     GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myCopyResourceFilesCheckBox = new JCheckBox();
+      myCopyResourceFilesCheckBox.setText("Copy resource files to output folder:");
+      myCopyResourceFilesCheckBox.setMnemonic('C');
+      myCopyResourceFilesCheckBox.setDisplayedMnemonicIndex(0);
+      myResourcesPanel.add(myCopyResourceFilesCheckBox,
+                           new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                               GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+      myIncludeInSWCPanel = new JPanel();
+      myIncludeInSWCPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+      myMainPanel.add(myIncludeInSWCPanel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                               GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                                                               null, null, null, 0, false));
+      final JSeparator separator2 = new JSeparator();
+      myIncludeInSWCPanel.add(separator2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                              GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                                                              null, null, 0, false));
+      final JLabel label3 = new JLabel();
+      label3.setText("Items to include in output SWC:");
+      label3.setDisplayedMnemonic('T');
+      label3.setDisplayedMnemonicIndex(6);
+      myIncludeInSWCPanel.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                                                          GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                                                          null, 0, false));
+      myIncludeInSWCField = new TextFieldWithBrowseButton();
+      myIncludeInSWCPanel.add(myIncludeInSWCField,
+                              new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                                                  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+                                                  0, false));
+      myConfigFileLabel.setLabelFor(myConfigFileTextWithBrowse);
+      myAdditionalOptionsLabel.setLabelFor(myAdditionalOptionsField);
+      myInheritedOptionsLabel.setLabelFor(myInheritedOptionsField);
+      label3.setLabelFor(myIncludeInSWCField);
+      ButtonGroup buttonGroup;
+      buttonGroup = new ButtonGroup();
+      buttonGroup.add(myCopyAllResourcesRadioButton);
+      buttonGroup.add(myRespectResourcePatternsRadioButton);
+    }
     myName = myMode == Mode.BC
              ? getTabName()
              : myMode == Mode.Module
@@ -271,6 +512,33 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
       }
     }, myDisposable);
   }
+
+  /** @noinspection ALL */
+  private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
+    if (currentFont == null) return null;
+    String resultName;
+    if (fontName == null) {
+      resultName = currentFont.getName();
+    }
+    else {
+      Font testFont = new Font(fontName, Font.PLAIN, 10);
+      if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
+        resultName = fontName;
+      }
+      else {
+        resultName = currentFont.getName();
+      }
+    }
+    Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+    boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+    Font fontWithFallback = isMac
+                            ? new Font(font.getFamily(), font.getStyle(), font.getSize())
+                            : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+    return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
+  }
+
+  /** @noinspection ALL */
+  public JComponent $$$getRootComponent$$$() { return myMainPanel; }
 
   public void addUserActivityListener(final UserActivityListener listener, final Disposable disposable) {
     myUserActivityDispatcher.addListener(listener, disposable);
@@ -459,7 +727,8 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
 
       final CompilerOptions.ResourceFilesMode mode = myModel.getResourceFilesMode();
       myCopyResourceFilesCheckBox.setSelected(mode != CompilerOptions.ResourceFilesMode.None);
-      myCopyAllResourcesRadioButton.setSelected(mode == CompilerOptions.ResourceFilesMode.None || mode == CompilerOptions.ResourceFilesMode.All);
+      myCopyAllResourcesRadioButton.setSelected(
+        mode == CompilerOptions.ResourceFilesMode.None || mode == CompilerOptions.ResourceFilesMode.All);
       myRespectResourcePatternsRadioButton.setSelected(mode == CompilerOptions.ResourceFilesMode.ResourcePatterns);
       updateResourcesControls();
 
@@ -479,11 +748,6 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
   public void disposeUIResources() {
     myListeners.clear();
     Disposer.dispose(myDisposable);
-  }
-
-  private void createUIComponents() {
-    myTreeTable = createTreeTable();
-    myResourcePatternsHyperlink = new HoverHyperlinkLabel("resource patterns");
   }
 
   private TreeTable createTreeTable() {
@@ -860,7 +1124,7 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
       for (final CompilerOptionInfo childInfo : info.getChildOptionInfos()) {
         if (myMode != Mode.BC || childInfo.isApplicable(getSdkVersion(), myNature)) {
           final ValueSource childSource = getValueAndSource(childInfo).second;
-          if (childSource.compareTo(groupValueSource) >0) {
+          if (childSource.compareTo(groupValueSource) > 0) {
             groupValueSource = childSource;
           }
         }
@@ -975,7 +1239,8 @@ public final class CompilerOptionsConfigurable extends NamedConfigurable<Compile
               new RepeatableValueDialog(myProject, StringUtil.capitalizeWords(myInfo.DISPLAY_NAME, true), buffers, myInfo,
                                         myAddedConditionalCompilerDefinition);
             if (dialog.showAndGet()) {
-              myValue = StringUtil.join(dialog.getCurrentList(), stringBuilder -> stringBuilder.toString(), CompilerOptionInfo.LIST_ENTRIES_SEPARATOR);
+              myValue = StringUtil.join(dialog.getCurrentList(), stringBuilder -> stringBuilder.toString(),
+                                        CompilerOptionInfo.LIST_ENTRIES_SEPARATOR);
             }
           }
           TableUtil.stopEditing(myTreeTable);

@@ -2022,7 +2022,7 @@ public class FlexHighlightingTest extends ActionScriptDaemonAnalyzerTestCase {
   @SuppressWarnings("ConstantConditions")
   public void testDumbMode() throws Exception {
     DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> {
-      ((DaemonCodeAnalyzerImpl)DaemonCodeAnalyzer.getInstance(getProject())).mustWaitForSmartMode(false, getTestRootDisposable());
+      CodeInsightTestFixtureImpl.mustWaitForSmartMode(false, getTestRootDisposable());
       assertTrue(DumbService.isDumb(getProject()));
       configureByFile(getBasePath() + "/dumbMode.mxml");
       XmlNSDescriptor nsDescriptor = ((XmlFile)getFile()).getDocument().getRootTagNSDescriptor();

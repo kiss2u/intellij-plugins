@@ -1,8 +1,6 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.intellij.lang.javascript.linter.tslint;
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.javascript.nodejs.library.yarn.pnp.YarnPnpNodePackage;
 import com.intellij.javascript.nodejs.util.NodePackage;
@@ -19,6 +17,7 @@ import com.intellij.lang.javascript.nodejs.library.yarn.AbstractYarnPnpIntegrati
 import com.intellij.lang.javascript.service.JSLanguageServiceUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.DumbModeTestUtils;
+import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl;
 import com.intellij.util.LineSeparator;
 import org.jetbrains.annotations.NotNull;
 
@@ -150,7 +149,7 @@ public class TsLintHighlightingTest extends LinterHighlightingTest {
   }
 
   public void testFixFileInDumbMode() {
-    ((DaemonCodeAnalyzerImpl)DaemonCodeAnalyzer.getInstance(getProject())).mustWaitForSmartMode(false, getTestRootDisposable());
+    CodeInsightTestFixtureImpl.mustWaitForSmartMode(false, getTestRootDisposable());
     DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> {
       doFixTest("fix", "TSLint: Fix current file");
     });

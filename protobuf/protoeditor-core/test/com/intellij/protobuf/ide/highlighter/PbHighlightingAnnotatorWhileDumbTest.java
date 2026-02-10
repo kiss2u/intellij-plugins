@@ -1,10 +1,9 @@
 package com.intellij.protobuf.ide.highlighter;
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
 import com.intellij.protobuf.TestUtils;
 import com.intellij.protobuf.fixtures.PbCodeInsightFixtureTestCase;
 import com.intellij.testFramework.DumbModeTestUtils;
+import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl;
 
 public class PbHighlightingAnnotatorWhileDumbTest extends PbCodeInsightFixtureTestCase {
 
@@ -26,7 +25,7 @@ public class PbHighlightingAnnotatorWhileDumbTest extends PbCodeInsightFixtureTe
   public void testAnnotatorInDumbMode() {
     myFixture.configureByFile("ide/highlighter/TopLevelString.proto.testdata");
 
-    ((DaemonCodeAnalyzerImpl)DaemonCodeAnalyzer.getInstance(getProject())).mustWaitForSmartMode(false, getTestRootDisposable());
+    CodeInsightTestFixtureImpl.mustWaitForSmartMode(false, getTestRootDisposable());
     DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> {
       myFixture.testFile("ide/highlighter/Highlighted.dumb.proto.testdata").checkSymbolNames().test();
     });

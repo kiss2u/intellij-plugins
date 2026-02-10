@@ -551,7 +551,7 @@ private constructor(
     delegate: PsiSourcedPolySymbol,
     proximity: VueModelVisitor.Proximity,
     typeProvider: VueTypeProvider?,
-  ) : VueJsPropertyWithProximity(delegate, proximity, typeProvider), 
+  ) : VueJsPropertyWithProximity(delegate, proximity, typeProvider),
       PsiSourcedPolySymbol {
 
     override val source: PsiElement?

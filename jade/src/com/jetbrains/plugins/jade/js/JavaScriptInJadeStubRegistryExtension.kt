@@ -8,7 +8,7 @@ import com.jetbrains.plugins.jade.js.JavascriptInJadeParserDefinition.JS_IN_JADE
 class JavaScriptInJadeStubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     JS_IN_JADE_FILE.let {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
   }
 }

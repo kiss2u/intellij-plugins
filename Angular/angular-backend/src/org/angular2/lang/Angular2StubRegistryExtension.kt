@@ -28,7 +28,7 @@ import org.angular2.lang.stubs.Angular2StringPartsLiteralExpressionStubSerialize
 class Angular2StubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     for (type in Angular2TemplateSyntax.entries.map { it.expressionLanguageFileElementType }.distinct()) {
-      registry.registerStubSerializer(type, JSFileStubSerializer(type.language))
+      registry.registerStubSerializer(type, JSFileStubSerializer(type))
     }
 
     listOf(

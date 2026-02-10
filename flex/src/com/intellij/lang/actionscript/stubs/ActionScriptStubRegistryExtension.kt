@@ -13,7 +13,7 @@ class ActionScriptStubRegistryExtension : StubRegistryExtension {
       FlexFileElementTypes.ECMA4_FILE,
       DecompiledSwfParserDefinition.FILE_TYPE,
     ).forEach {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
   }
 }

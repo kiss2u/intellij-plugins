@@ -36,14 +36,14 @@ import org.jetbrains.vuejs.lang.stubs.serializers.VueScriptIdAttributeStubSerial
 import org.jetbrains.vuejs.lang.stubs.serializers.VueScriptSetupEmbeddedContentStubSerializer
 import org.jetbrains.vuejs.lang.stubs.serializers.VueSrcAttributeStubSerializer
 
-private class VueStubRegistryExtension : StubRegistryExtension {
+internal class VueStubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     listOf(
       VueFileElementType.INSTANCE,
       VUEJS_FILE,
       VUETS_FILE,
     ).forEach {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
     registry.registerStubSerializer(VueFileElementType.INSTANCE, VueFileStubSerializer())
 

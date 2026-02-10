@@ -9,7 +9,7 @@ import org.jetbrains.astro.lang.frontmatter.AFM_FILE
 class AstroStubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     AFM_FILE.let {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
   }
 }

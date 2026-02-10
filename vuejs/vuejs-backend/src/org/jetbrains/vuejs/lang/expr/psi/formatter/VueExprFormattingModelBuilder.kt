@@ -7,12 +7,12 @@ import com.intellij.formatting.FormattingModel
 import com.intellij.formatting.Indent
 import com.intellij.formatting.Wrap
 import com.intellij.lang.injection.InjectedLanguageManager
+import com.intellij.lang.javascript.JSFileElementTypes
 import com.intellij.lang.javascript.JSLanguageUtil
 import com.intellij.lang.javascript.formatter.JSBlockContext
 import com.intellij.lang.javascript.formatter.JavascriptFormattingModelBuilder
 import com.intellij.lang.javascript.formatter.SpacingStrategy
 import com.intellij.lang.javascript.formatter.blocks.CompositeJSBlock
-import com.intellij.lang.javascript.types.JSFileElementType
 import com.intellij.psi.formatter.WrappingUtil
 import com.intellij.psi.xml.XmlTag
 import com.intellij.psi.xml.XmlText
@@ -33,8 +33,9 @@ class VueExprFormattingModelBuilder : JavascriptFormattingModelBuilder() {
       rootBlock = jsBlockContext.createBlock(element.node, Wrap.createWrap(wrapType, true),
                                              alignment, Indent.getNormalIndent(), null, null)
       // Wrap with a composite block to add indentation
+      val fileElementType = element.containingFile.fileElementType ?: JSFileElementTypes.FILE
       rootBlock = CompositeJSBlock(listOf(rootBlock), SpacingStrategy { _, _ -> null }, null,
-                                   JSFileElementType.getByLanguage(dialect), jsBlockContext)
+                                   fileElementType, jsBlockContext)
     }
     else {
       rootBlock = jsBlockContext.createBlock(element.node, null, alignment, null, null, null)

@@ -7,7 +7,7 @@ import com.intellij.psi.stubs.StubRegistryExtension
 class MdxJSStubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     FILE.let {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
   }
 }

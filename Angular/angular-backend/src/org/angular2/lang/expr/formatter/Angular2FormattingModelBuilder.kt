@@ -10,9 +10,9 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.Language
 import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.lang.javascript.JSElementTypes
+import com.intellij.lang.javascript.JSFileElementTypes
 import com.intellij.lang.javascript.JSLanguageUtil
 import com.intellij.lang.javascript.JSTokenTypes
-import com.intellij.lang.javascript.JavascriptLanguage
 import com.intellij.lang.javascript.formatter.JSBlockContext
 import com.intellij.lang.javascript.formatter.JSCodeStyleSettings
 import com.intellij.lang.javascript.formatter.JSSpacingProcessor
@@ -54,10 +54,10 @@ class Angular2FormattingModelBuilder : JavascriptFormattingModelBuilder() {
 
       // Try to get a correct file element type
       val fileElementType = LanguageParserDefinitions.INSTANCE.forLanguage(dialect)?.fileNodeType as? JSFileElementType
-                            ?: JSFileElementType.getByLanguage(dialect)
+                            ?: element.containingFile.fileElementType
                             ?: run {
                               thisLogger().error("No JSFileElementType registered for language $dialect of element $element, using plain JavaScript")
-                              JSFileElementType.getByLanguage(JavascriptLanguage)
+                              JSFileElementTypes.FILE
                             }
 
       // Wrap with a composite block to add indentation

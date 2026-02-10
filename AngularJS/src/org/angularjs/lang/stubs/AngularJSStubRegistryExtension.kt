@@ -9,7 +9,7 @@ import org.angularjs.lang.parser.AngularJSParserDefinition
 class AngularJSStubRegistryExtension : StubRegistryExtension {
   override fun register(registry: StubRegistry) {
     AngularJSParserDefinition.FILE.let {
-      registry.registerStubSerializer(it, JSFileStubSerializer(it.language))
+      registry.registerStubSerializer(it, JSFileStubSerializer(it))
     }
   }
 }

@@ -67,7 +67,7 @@ public class FlexUnitRunConfigurationForm extends SettingsEditor<FlexUnitRunConf
       myBCCombo = new BCCombo(myProject);
       myWhatToTestForm = new WhatToTestForm(myProject,
                                             () -> {
-                                              final java.lang.Module module = myBCCombo.getModule();
+                                              final Module module = myBCCombo.getModule();
                                               if (module != null) return module;
                                               throw new RuntimeConfigurationError(FlexBundle.message("bc.not.specified"));
                                             },

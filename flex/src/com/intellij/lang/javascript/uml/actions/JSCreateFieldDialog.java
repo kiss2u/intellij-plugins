@@ -59,7 +59,7 @@ public class JSCreateFieldDialog extends DialogWrapper {
     super(clazz.getProject(), true);
     myTargetClass = clazz;
     {
-      java.lang.Module module = ModuleUtilCore.findModuleForPsiElement(myTargetClass);
+      Module module = ModuleUtilCore.findModuleForPsiElement(myTargetClass);
       GlobalSearchScope scope = getTypeFieldScope(module, myTargetClass.getProject());
       myTypeField = createTypeField(myTargetClass.getProject(), scope);
 

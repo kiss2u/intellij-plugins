@@ -80,6 +80,10 @@ public class FlexMoveClassDialog extends RefactoringDialog {
     myElements = elements;
     myTargetContainer = targetContainer;
     myCallback = callback;
+
+    final JSQualifiedNamedElement firstElement = myElements.iterator().next();
+    myFileLocal = ActionScriptResolveUtil.isFileLocalSymbol(firstElement);
+
     {
       String initialPackage;
       if (myTargetContainer instanceof PsiDirectoryContainer) {
@@ -180,9 +184,6 @@ public class FlexMoveClassDialog extends RefactoringDialog {
                                                               new Dimension(150, -1), null, 0, false));
       myClassNameLabel.setLabelFor(myClassNameField);
     }
-
-    final JSQualifiedNamedElement firstElement = myElements.iterator().next();
-    myFileLocal = ActionScriptResolveUtil.isFileLocalSymbol(firstElement);
 
     setSize(500, 130);
 

@@ -107,6 +107,7 @@ public class OsmorcFacetGeneralEditorTab extends FacetEditorTab {
 
   public OsmorcFacetGeneralEditorTab(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
     myEditorContext = editorContext;
+    myModule = editorContext.getModule();
     myValidatorsManager = validatorsManager;
     {
       mySetupCoreLibLink = new ActionLink("", e -> {
@@ -288,7 +289,6 @@ public class OsmorcFacetGeneralEditorTab extends FacetEditorTab {
       buttonGroup.add(myUseModuleSpecificManifestFileLocation);
       buttonGroup.add(myUseProjectDefaultManifestFileLocation);
     }
-    myModule = editorContext.getModule();
 
     myManifestFileChooser.addActionListener(e -> chooseFile(myManifestFileChooser));
     myBndFile.addActionListener(e -> chooseFile(myBndFile));

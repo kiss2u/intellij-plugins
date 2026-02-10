@@ -153,6 +153,7 @@ public class DependenciesConfigurable extends NamedConfigurable<Dependencies> im
                                   @NotNull ProjectStructureConfigurable projectStructureConfigurable) {
     mySkdsModel = sdksModel;
     myConfigEditor = configEditor;
+    myProject = project;
     {
       final Condition<SdkTypeId> sdkTypeFilter = Conditions.oneOf(FlexSdkType2.getInstance(), FlexmojosSdkType.getInstance());
       Condition<Sdk> sdkCondition =
@@ -258,7 +259,6 @@ public class DependenciesConfigurable extends NamedConfigurable<Dependencies> im
       myTargetPlayerLabel.setLabelFor(myTargetPlayerCombo);
     }
     myDependencies = bc.getDependencies();
-    myProject = project;
     myNature = bc.getNature();
     myProjectStructureConfigurable = projectStructureConfigurable;
 

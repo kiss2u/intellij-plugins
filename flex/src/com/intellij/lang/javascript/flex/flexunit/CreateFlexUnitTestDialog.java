@@ -83,13 +83,13 @@ public class CreateFlexUnitTestDialog extends DialogWrapper {
     myModule = module;
     myContextClass = contextClass;
     {
-      final java.lang.Module module = ModuleUtilCore.findModuleForPsiElement(myContextClass);
-      assert module != null;
+      final Module moduleFormContextClass = ModuleUtilCore.findModuleForPsiElement(myContextClass);
+      assert moduleFormContextClass != null;
 
       myPackageCombo =
         ActionScriptPackageChooserDialog.createPackageReferenceEditor(StringUtil.getPackageName(myContextClass.getQualifiedName()),
-                                                                      module.getProject(),
-                                                                      null, getTestClassPackageScope(module),
+                                                                      moduleFormContextClass.getProject(),
+                                                                      null, getTestClassPackageScope(moduleFormContextClass),
                                                                       RefactoringBundle.message("choose.destination.package"));
 
       final Condition<JSClass> filter = jsClass -> {
@@ -97,7 +97,7 @@ public class CreateFlexUnitTestDialog extends DialogWrapper {
         return !jsClass.isInterface() && attributeList != null && !attributeList.hasModifier(JSAttributeList.ModifierType.FINAL);
       };
 
-      mySuperClassField = JSReferenceEditor.forClassName("", module.getProject(), null, getSuperClassScope(module), null, filter,
+      mySuperClassField = JSReferenceEditor.forClassName("", moduleFormContextClass.getProject(), null, getSuperClassScope(moduleFormContextClass), null, filter,
                                                          JavaScriptBundle.message("choose.super.class.title"));
 
 

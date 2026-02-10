@@ -91,6 +91,10 @@ public abstract class AirPackagingConfigurableBase<T extends ModifiableAirPackag
     myModule = module;
     myModel = model;
     myAirDescriptorInfoProvider = airDescriptorInfoProvider;
+
+    isAndroid = model instanceof ModifiableAndroidPackagingOptions;
+    isIOS = model instanceof ModifiableIosPackagingOptions;
+
     {
       final Runnable descriptorCreator = () -> {
         final String folderPath = FlexUtils.getContentOrModuleFolderPath(myModule);
@@ -179,9 +183,6 @@ public abstract class AirPackagingConfigurableBase<T extends ModifiableAirPackag
                                                              GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
       label1.setLabelFor(myPackageFileNameTextField);
     }
-
-    isAndroid = model instanceof ModifiableAndroidPackagingOptions;
-    isIOS = model instanceof ModifiableIosPackagingOptions;
 
     myEnabledCheckBox.addActionListener(new ActionListener() {
       @Override

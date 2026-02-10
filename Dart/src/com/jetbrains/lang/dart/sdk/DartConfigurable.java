@@ -137,13 +137,13 @@ public final class DartConfigurable implements SearchableConfigurable, NoScroll 
 
             getTextRenderer().append(DartBundle.message("project.0", ((Project)userObject).getName()));
           }
-          else if (userObject instanceof java.lang.Module) {
+          else if (userObject instanceof Module) {
             getCheckbox().setEnabled(dartSupportEnabled);
             getTextRenderer().setEnabled(dartSupportEnabled);
 
-            final Icon moduleIcon = ModuleType.get((java.lang.Module)userObject).getIcon();
+            final Icon moduleIcon = ModuleType.get((Module)userObject).getIcon();
             getTextRenderer().setIcon(dartSupportEnabled ? moduleIcon : IconLoader.getDisabledIcon(moduleIcon));
-            getTextRenderer().append(((java.lang.Module)userObject).getName());
+            getTextRenderer().append(((Module)userObject).getName());
           }
         }
       };

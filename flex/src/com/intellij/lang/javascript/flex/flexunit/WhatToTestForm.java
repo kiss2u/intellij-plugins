@@ -52,22 +52,20 @@ public class WhatToTestForm {
   private final JPanel myMethodPanel;
   private final TextFieldWithBrowseButton.NoPathCompletion myMethodField;
 
-  private final Project myProject;
   private final ThrowableComputable<? extends Module, ? extends RuntimeConfigurationError> myModuleComputable;
   private final ThrowableComputable<? extends FlexUnitSupport, ? extends RuntimeConfigurationError> myFlexUnitSupportComputable;
-  private TestClassFilter myMainClassFilter;
+  private final TestClassFilter myMainClassFilter;
 
   public WhatToTestForm(final Project project,
                         final ThrowableComputable<? extends Module, ? extends RuntimeConfigurationError> moduleComputable,
                         final ThrowableComputable<? extends FlexUnitSupport, ? extends RuntimeConfigurationError> flexUnitSupportComputable) {
-    myProject = project;
     myModuleComputable = moduleComputable;
     myFlexUnitSupportComputable = flexUnitSupportComputable;
     {
-      myMainClassFilter = new TestClassFilter(myProject);
-      myClassField = JSReferenceEditor.forClassName("", myProject, null, GlobalSearchScope.EMPTY_SCOPE, null, myMainClassFilter,
+      myMainClassFilter = new TestClassFilter(project);
+      myClassField = JSReferenceEditor.forClassName("", project, null, GlobalSearchScope.EMPTY_SCOPE, null, myMainClassFilter,
                                                     ExecutionBundle.message("choose.test.class.dialog.title"));
-      myPackageField = ActionScriptPackageChooserDialog.createPackageReferenceEditor("", myProject, null, GlobalSearchScope.EMPTY_SCOPE,
+      myPackageField = ActionScriptPackageChooserDialog.createPackageReferenceEditor("", project, null, GlobalSearchScope.EMPTY_SCOPE,
                                                                                      ExecutionBundle.message(
                                                                                        "choose.package.dialog.title"));
     }
@@ -277,16 +275,7 @@ public class WhatToTestForm {
     }
   }
 
-  @SuppressWarnings("BoundFieldAssignment")
   public void dispose() {
-    myPackageRadioButton = null;
-    myClassRadioButton = null;
-    myMethodRadioButton = null;
-    myPackageOrClassLabel = null;
-    myClassField = null;
-    myPackageField = null;
-    myMethodPanel = null;
-    myMethodField = null;
   }
 
   private class MethodChooserActionListener extends BrowseModuleValueActionListener<JTextField> {

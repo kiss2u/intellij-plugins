@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.model
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -30,11 +30,13 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.applyIf
 import org.intellij.terraform.config.TerraformFileType
+import org.intellij.terraform.config.model.local.TF_DIRECTORY_NAME
 import org.intellij.terraform.config.model.version.MalformedConstraintException
 import org.intellij.terraform.config.model.version.Version
 import org.intellij.terraform.config.model.version.VersionConstraint
 import org.intellij.terraform.config.util.getApplicableToolType
 import org.intellij.terraform.hcl.HCLBundle
+import org.intellij.terraform.hcl.HclFileType
 import org.intellij.terraform.hcl.psi.HCLBlock
 import org.intellij.terraform.hcl.psi.HCLElement
 import org.intellij.terraform.hcl.psi.HCLProperty
@@ -46,6 +48,7 @@ import org.intellij.terraform.hil.psi.ILPsiFile
 import org.intellij.terraform.hil.psi.ILRecursiveVisitor
 import org.intellij.terraform.hil.psi.ILVariable
 import org.intellij.terraform.isTofuFile
+import org.intellij.terraform.opentofu.OpenTofuFileType
 import java.net.URLEncoder
 import java.util.TreeMap
 
@@ -90,7 +93,7 @@ object ModuleDetectionUtil {
     }
   }
 
-  sealed class Result<T>() {
+  sealed class Result<T> {
     abstract val value: T?
     abstract val failureString: String?
 
@@ -535,7 +538,7 @@ object ModuleDetectionUtil {
   fun getTerraformDirSomewhere(virtualFile: VirtualFile?, project: Project): VirtualFile? {
     virtualFile ?: return null
     return getVFSParents(virtualFile, project).filter { it.isDirectory }.firstNotNullOfOrNull { parent ->
-      parent.findChild(".terraform")?.takeIf { it.isDirectory }
+      parent.findChild(TF_DIRECTORY_NAME)?.takeIf { it.isDirectory }
     }
   }
 
@@ -543,11 +546,11 @@ object ModuleDetectionUtil {
     .filter { it.isDirectory }
     .firstOrNull {
       it.children.asSequence()
-        .mapNotNull { it.extension?.lowercase() }
-        .any {
-          it == TerraformFileType.defaultExtension ||
-          it == "tofu" ||
-          it == "hcl"
+        .mapNotNull { file -> file.extension?.lowercase() }
+        .any { extension ->
+          extension == TerraformFileType.defaultExtension ||
+          extension == OpenTofuFileType.defaultExtension ||
+          extension == HclFileType.defaultExtension
         }
     }
 

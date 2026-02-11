@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.actions
 
 import com.intellij.codeInspection.LocalQuickFix
@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import org.intellij.terraform.config.model.local.TF_DIRECTORY_NAME
 import org.intellij.terraform.config.model.local.TfLocalSchemaService
 import org.intellij.terraform.hcl.HCLBundle
 import org.jetbrains.annotations.Nls
@@ -43,7 +44,7 @@ internal fun createQuickFixNotInitialized(element: PsiElement): LocalQuickFix? {
 
 internal fun isInitRequired(project: Project, virtualFile: VirtualFile): Boolean {
   val lock = project.service<TfLocalSchemaService>().findLockFile(virtualFile) ?: return true
-  val terraformDirectory = lock.parent.findChild(".terraform") ?: return true
+  val terraformDirectory = lock.parent.findChild(TF_DIRECTORY_NAME) ?: return true
   return !terraformDirectory.isDirectory || terraformDirectory.children.isEmpty()
 }
 

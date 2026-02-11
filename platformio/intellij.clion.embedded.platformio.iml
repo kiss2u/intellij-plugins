@@ -36,6 +36,7 @@
     <orderEntry type="module" module-name="intellij.clion.testFramework" scope="TEST" />
     <orderEntry type="module" module-name="intellij.clion.testFramework.nolang" scope="TEST" />
     <orderEntry type="module" module-name="intellij.clion.toolchains" />
+    <orderEntry type="module" module-name="intellij.platform.welcomeScreen.impl" />
     <orderEntry type="module" module-name="intellij.platform.analysis" />
     <orderEntry type="module" module-name="intellij.platform.concurrency" />
     <orderEntry type="module" module-name="intellij.platform.core" />

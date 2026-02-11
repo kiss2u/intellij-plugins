@@ -5,7 +5,6 @@ import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator;
 import com.intellij.lang.javascript.ui.NodeModuleNamesUtil;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -23,7 +22,6 @@ import icons.YeomanIcons;
 import jetbrains.plugins.yeoman.YeomanBundle;
 import jetbrains.plugins.yeoman.generators.YeomanInstalledGeneratorInfo;
 import jetbrains.plugins.yeoman.projectGenerator.step.YeomanProjectSettingsStep;
-import jetbrains.plugins.yeoman.projectGenerator.ui.run.YeomanRunGeneratorForm;
 import jetbrains.plugins.yeoman.projectGenerator.util.YeomanCommandLineUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -33,11 +31,8 @@ import javax.swing.Icon;
 import java.io.File;
 import java.io.IOException;
 
-
-public class YeomanProjectGenerator extends DirectoryProjectGeneratorBase<YeomanProjectGenerator.Settings>
+public final class YeomanProjectGenerator extends DirectoryProjectGeneratorBase<YeomanProjectGenerator.Settings>
   implements CustomStepProjectGenerator {
-  public static final Logger LOGGER = Logger.getInstance(YeomanRunGeneratorForm.class);
-
   public static final String BOWER_JSON = "bower.json";
 
   public static class Settings {
@@ -54,7 +49,7 @@ public class YeomanProjectGenerator extends DirectoryProjectGeneratorBase<Yeoman
   }
 
   @Override
-  public @Nullable Icon getLogo() {
+  public @NotNull Icon getLogo() {
     return YeomanIcons.Yeoman;
   }
 

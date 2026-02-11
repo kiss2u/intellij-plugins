@@ -40,6 +40,7 @@ jvm_library(
     "@community//platform/platform-util-io:ide-util-io",
     "@community//platform/util/text-matching",
     "@community//platform/forms_rt:java-guiForms-rt",
+    "@community//platform/welcome-screen-impl:welcomeScreen-impl",
   ]
 )
 
@@ -69,6 +70,7 @@ jvm_library(
     "@community//platform/util/text-matching",
     "@community//platform/util/text-matching:text-matching_test_lib",
     "@community//platform/forms_rt:java-guiForms-rt",
+    "@community//platform/welcome-screen-impl:welcomeScreen-impl",
   ]
 )
 ### auto-generated section `build intellij.yeoman` end

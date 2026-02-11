@@ -1,10 +1,13 @@
 // Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
-import type {Mapper} from "@volar/language-core"
+import type {CodeInformation, Mapper} from "@volar/language-core"
 
 export type SimpleRange = [
   startOffset: number,
   endOffset: number,
 ] | undefined
+
+const LOCATION_FILTER: (data: CodeInformation) => boolean =
+  data => !!data.verification
 
 export class ScriptMapper {
   constructor(
@@ -40,7 +43,7 @@ export class ScriptMapper {
   }
 
   #toSourceOffset = (offset: number): number | undefined => {
-    for (const [sourceOffset] of this.mapper.toSourceLocation(offset - this.tsShift)) {
+    for (const [sourceOffset] of this.mapper.toSourceLocation(offset - this.tsShift, LOCATION_FILTER)) {
       return sourceOffset
     }
 
@@ -48,7 +51,7 @@ export class ScriptMapper {
   }
 
   #toGeneratedOffset = (offset: number): number | undefined => {
-    for (const [generatedOffset] of this.mapper.toGeneratedLocation(offset)) {
+    for (const [generatedOffset] of this.mapper.toGeneratedLocation(offset, LOCATION_FILTER)) {
       return generatedOffset + this.tsShift
     }
 

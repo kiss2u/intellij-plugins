@@ -1,0 +1,290 @@
+JSFile:test.spread.binding
+  Angular2Binding
+    JSArrayLiteralExpression
+      PsiElement(JS:LBRACKET)('[')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:RBRACKET)(']')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSArrayLiteralExpression
+      PsiElement(JS:LBRACKET)('[')
+      JSLiteralExpression
+        PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSLiteralExpression
+        PsiElement(JS:NUMERIC_LITERAL)('2')
+      PsiElement(JS:RBRACKET)(']')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSArrayLiteralExpression
+      PsiElement(JS:LBRACKET)('[')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSLiteralExpression
+        PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('bar')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('baz')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSLiteralExpression
+        PsiElement(JS:NUMERIC_LITERAL)('2')
+      PsiElement(JS:RBRACKET)(']')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSArrayLiteralExpression
+      PsiElement(JS:LBRACKET)('[')
+      JSLiteralExpression
+        PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSArrayLiteralExpression
+          PsiElement(JS:LBRACKET)('[')
+          JSLiteralExpression
+            PsiElement(JS:NUMERIC_LITERAL)('2')
+          PsiElement(JS:COMMA)(',')
+          PsiWhiteSpace(' ')
+          JSSpreadExpression
+            PsiElement(JS:DOT_DOT_DOT)('...')
+            JSArrayLiteralExpression
+              PsiElement(JS:LBRACKET)('[')
+              JSLiteralExpression
+                PsiElement(JS:NUMERIC_LITERAL)('3')
+              PsiElement(JS:RBRACKET)(']')
+          PsiElement(JS:RBRACKET)(']')
+      PsiElement(JS:RBRACKET)(']')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSObjectLiteralExpression
+      PsiElement(JS:LBRACE)('{')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:RBRACE)('}')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSObjectLiteralExpression
+      PsiElement(JS:LBRACE)('{')
+      JSProperty
+        PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSProperty
+        PsiElement(JS:IDENTIFIER)('b')
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('2')
+      PsiElement(JS:RBRACE)('}')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSObjectLiteralExpression
+      PsiElement(JS:LBRACE)('{')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('foo')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSProperty
+        PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('bar')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('baz')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSProperty
+        PsiElement(JS:IDENTIFIER)('b')
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('2')
+      PsiElement(JS:RBRACE)('}')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSObjectLiteralExpression
+      PsiElement(JS:LBRACE)('{')
+      JSProperty
+        PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+      PsiElement(JS:COMMA)(',')
+      PsiWhiteSpace(' ')
+      JSSpreadExpression
+        PsiElement(JS:DOT_DOT_DOT)('...')
+        JSObjectLiteralExpression
+          PsiElement(JS:LBRACE)('{')
+          JSProperty
+            PsiElement(JS:IDENTIFIER)('b')
+            PsiElement(JS:COLON)(':')
+            PsiWhiteSpace(' ')
+            JSObjectLiteralExpression
+              PsiElement(JS:LBRACE)('{')
+              JSSpreadExpression
+                PsiElement(JS:DOT_DOT_DOT)('...')
+                JSObjectLiteralExpression
+                  PsiElement(JS:LBRACE)('{')
+                  JSProperty
+                    PsiElement(JS:IDENTIFIER)('c')
+                    PsiElement(JS:COLON)(':')
+                    PsiWhiteSpace(' ')
+                    JSLiteralExpression
+                      PsiElement(JS:NUMERIC_LITERAL)('3')
+                  PsiElement(JS:RBRACE)('}')
+              PsiElement(JS:RBRACE)('}')
+          PsiElement(JS:RBRACE)('}')
+      PsiElement(JS:RBRACE)('}')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('fn')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSReferenceExpression
+            PsiElement(JS:IDENTIFIER)('foo')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('fn')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSReferenceExpression
+            PsiElement(JS:IDENTIFIER)('foo')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('2')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('fn')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSReferenceExpression
+            PsiElement(JS:IDENTIFIER)('foo')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSReferenceExpression
+            PsiElement(JS:IDENTIFIER)('bar')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSReferenceExpression
+            PsiElement(JS:IDENTIFIER)('baz')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('2')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.spread.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('fn')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSLiteralExpression
+          PsiElement(JS:NUMERIC_LITERAL)('1')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSSpreadExpression
+          PsiElement(JS:DOT_DOT_DOT)('...')
+          JSArrayLiteralExpression
+            PsiElement(JS:LBRACKET)('[')
+            JSLiteralExpression
+              PsiElement(JS:NUMERIC_LITERAL)('2')
+            PsiElement(JS:COMMA)(',')
+            PsiWhiteSpace(' ')
+            JSSpreadExpression
+              PsiElement(JS:DOT_DOT_DOT)('...')
+              JSArrayLiteralExpression
+                PsiElement(JS:LBRACKET)('[')
+                JSLiteralExpression
+                  PsiElement(JS:NUMERIC_LITERAL)('3')
+                PsiElement(JS:RBRACKET)(']')
+            PsiElement(JS:RBRACKET)(']')
+        PsiElement(JS:RPAR)(')')

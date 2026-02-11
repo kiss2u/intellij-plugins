@@ -123,6 +123,8 @@ LINE_TERMINATOR_SEQUENCE=\R
   "in"                        { return IN_KEYWORD; }
   "void"                      { if (enableVoidKeyword) return VOID_KEYWORD; else return IDENTIFIER; }
 
+  "..."                       { return DOT_DOT_DOT; }
+
   "as"/(\.)                   { return IDENTIFIER; }
   {IDENT}                     { return IDENTIFIER; }
 

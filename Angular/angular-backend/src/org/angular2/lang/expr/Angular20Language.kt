@@ -20,7 +20,7 @@ object Angular20Language : Angular2ExprDialect("Angular20", Angular20Dialect(), 
 
   private class Angular20Dialect : DialectOptionHolder("ANGULAR20", true) {
     override fun defineFeatures(): Set<JSLanguageFeature> {
-      return setOf(JSLanguageFeature.IMPORT_DECLARATIONS)
+      return setOf(JSLanguageFeature.IMPORT_DECLARATIONS, JSLanguageFeature.REST_PARAMETERS)
     }
   }
 }

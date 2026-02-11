@@ -4,6 +4,7 @@ package org.angular2.lang.expr.parser
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiBuilder.Marker
 import com.intellij.lang.WhitespacesBinders
+import com.intellij.lang.ecmascript6.parsing.ES6ExpressionParser
 import com.intellij.lang.javascript.JSElementTypes
 import com.intellij.lang.javascript.JSKeywordSets
 import com.intellij.lang.javascript.JSTokenTypes
@@ -252,7 +253,7 @@ class Angular2Parser private constructor(
     }
   }
 
-  inner class Angular2ExpressionParser : ExpressionParser<Angular2Parser>(this@Angular2Parser) {
+  inner class Angular2ExpressionParser : ES6ExpressionParser<Angular2Parser>(this@Angular2Parser) {
     override fun parseAssignmentExpression(allowIn: Boolean): Boolean {
       //In Angular EL Pipe is the top level expression instead of Assignment
       return parsePipe()
@@ -383,7 +384,8 @@ class Angular2Parser private constructor(
 
     override fun isPropertyStart(elementType: IElementType?): Boolean {
       if (!isAngularIdentifierToken(elementType)
-          && elementType !== JSTokenTypes.STRING_LITERAL) {
+          && elementType !== JSTokenTypes.STRING_LITERAL
+          && elementType !== JSTokenTypes.DOT_DOT_DOT) {
         builder.error(Angular2Bundle.message("angular.parse.expression.expected-identifier-keyword-or-string"))
         return false
       }
@@ -422,6 +424,12 @@ class Angular2Parser private constructor(
         if (errorMessage != null) {
           builder.error(errorMessage)
         }
+      }
+      else if (firstToken === JSTokenTypes.DOT_DOT_DOT) {
+        builder.advanceLexer()
+        parseAssignmentExpression(true)
+        property.done(JSElementTypes.SPREAD_EXPRESSION)
+        return true
       }
       else {
         builder.error(JavaScriptParserBundle.message("javascript.parser.message.expected.property.name"))

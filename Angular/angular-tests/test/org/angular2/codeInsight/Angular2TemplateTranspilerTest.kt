@@ -183,6 +183,10 @@ class Angular2TemplateTranspilerTest : Angular2TestCase("templateTranspiler", tr
   fun testLibraryWithSignals() =
     checkTranspilation(ANGULAR_CORE_20_1_4, configureFileName = "my-component.ts", dir = true)
 
+  fun testSpreadSyntax() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_1_3
+  )
+
   private fun checkTranspilation(
     vararg modules: WebFrameworkTestModule,
     dir: Boolean = false,

@@ -1,0 +1,26 @@
+/* Angular type checking code */
+
+/* TCB for spreadSyntax.ts */
+
+function _tcb1(this: AppComponent) {
+const _t1 = [...this.foo];
+const _t2 = [1, ...this.foo, 2];
+const _t3 = [...this.foo, 1, ...this.bar, ...this.baz, 2];
+const _t4 = [1, ...[2, ...[3]]];
+"" + (_t1);
+"" + (_t2);
+"" + (_t3);
+"" + (_t4);
+const _t5 = {...this.foo};
+const _t6 = {a: 1, ...this.foo, b: 2};
+const _t7 = {...this.foo, a: 1, ...this.bar, ...this.baz, b: 2};
+const _t8 = {a: 1, ...{b: {...{c: 3}}}};
+"" + (_t5);
+"" + (_t6);
+"" + (_t7);
+"" + (_t8);
+"" + (this.fn(...this.foo));
+"" + (this.fn(1, ...this.foo, 2));
+"" + (this.fn(...this.foo, 1, ...this.bar, ...this.baz, 2));
+"" + (this.fn(1, ...[2, ...[3]]));
+}

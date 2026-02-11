@@ -9,6 +9,8 @@ export type SimpleRange = [
 const LOCATION_FILTER: (data: CodeInformation) => boolean =
   data => !!data.verification
 
+type OffsetTransform = (offset: number) => number | undefined
+
 export class ScriptMapper {
   constructor(
     readonly mapper: Mapper,
@@ -31,18 +33,18 @@ export class ScriptMapper {
   #toRange = (
     startOffset: number,
     endOffset: number,
-    transform: (offset: number) => number | undefined,
+    transformOffset: OffsetTransform,
   ): SimpleRange => {
-    const start = transform(startOffset)
+    const start = transformOffset(startOffset)
     if (start === undefined) return undefined
 
-    const end = transform(endOffset)
+    const end = transformOffset(endOffset)
     if (end === undefined) return undefined
 
     return [start, end]
   }
 
-  #toSourceOffset = (offset: number): number | undefined => {
+  #toSourceOffset: OffsetTransform = offset => {
     for (const [sourceOffset] of this.mapper.toSourceLocation(offset - this.tsShift, LOCATION_FILTER)) {
       return sourceOffset
     }
@@ -50,7 +52,7 @@ export class ScriptMapper {
     return undefined
   }
 
-  #toGeneratedOffset = (offset: number): number | undefined => {
+  #toGeneratedOffset: OffsetTransform = offset => {
     for (const [generatedOffset] of this.mapper.toGeneratedLocation(offset, LOCATION_FILTER)) {
       return generatedOffset + this.tsShift
     }

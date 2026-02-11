@@ -6,30 +6,23 @@ import com.intellij.polySymbols.context.PolyContext
 import com.intellij.polySymbols.framework.PolySymbolFramework.Companion.KIND_FRAMEWORK
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import org.jetbrains.annotations.Nls
+import org.jetbrains.vuejs.VueBundle
 
 internal class VueFreeTierEditorNotificationProvider : PluginWithFreeTierEditorNotificationProvider {
 
-  override val pluginName: String
-    get() = "Vue"
+  @Nls
+  override fun getNotificationMessage(file: PsiFile): String? =
+    if (PolyContext.get(KIND_FRAMEWORK, file) == "vue" && isFileWithVueContent(file))
+      VueBundle.message("vue.free.tier.notification.message")
+    else
+      null
 
-  override fun showNotification(file: PsiFile): Boolean {
-
-    if (PolyContext.get(KIND_FRAMEWORK, file) != "vue") return false
-
-    if (file.name.endsWith(".ts")) {
-      val document = PsiDocumentManager.getInstance(file.project).getDocument(file)
-                     ?: return false
-      val text = document.charsSequence
-      // In TypeScript files show banner only if the file has a Vue file import, or a vue import
-      if (vueImportRegex.containsMatchIn(text))
-        return false
-    }
-    // In HTML or Vue files show the banner always
-    else if (!file.name.endsWith(".vue") && !file.name.endsWith(".html"))
-      return false
-
-    return true
-  }
+  private fun isFileWithVueContent(file: PsiFile): Boolean =
+    (file.name.endsWith(".ts") &&
+     vueImportRegex.containsMatchIn(PsiDocumentManager.getInstance(file.project).getDocument(file)?.charsSequence ?: ""))
+    || file.name.endsWith(".html")
+    || file.name.endsWith(".vue")
 
 }
 

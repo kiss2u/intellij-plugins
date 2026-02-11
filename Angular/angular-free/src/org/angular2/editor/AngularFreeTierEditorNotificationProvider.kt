@@ -5,27 +5,23 @@ import com.intellij.polySymbols.context.PolyContext
 import com.intellij.polySymbols.framework.PolySymbolFramework.Companion.KIND_FRAMEWORK
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import org.angular2.lang.Angular2Bundle
+import org.jetbrains.annotations.Nls
 
 internal class AngularFreeTierEditorNotificationProvider : PluginWithFreeTierEditorNotificationProvider {
 
-  override val pluginName: String
-    get() = "Angular"
+  @Nls
+  override fun getNotificationMessage(file: PsiFile): String? =
+    if (PolyContext.get(KIND_FRAMEWORK, file) == "angular" && isFileWithAngularContent(file))
+      Angular2Bundle.message("angular.free.tier.notification.message")
+    else
+      null
 
-  override fun showNotification(file: PsiFile): Boolean {
-    if (PolyContext.get(KIND_FRAMEWORK, file) != "angular") return false
+  private fun isFileWithAngularContent(file: PsiFile): Boolean =
+    (file.name.endsWith(".ts") &&
+     angularEntityRegex.containsMatchIn(PsiDocumentManager.getInstance(file.project).getDocument(file)?.charsSequence ?: ""))
+    || file.name.endsWith(".html")
 
-    if (file.name.endsWith(".ts")) {
-      val document = PsiDocumentManager.getInstance(file.project).getDocument(file) ?: return false
-      val text = document.charsSequence
-      // In TypeScript files show banner only if the file has a component, directive, module or pipe
-      if (!(text.contains("@Component") || text.contains("@Directive")
-            || text.contains("@NgModule") || text.contains("@Pipe")
-            || text.contains("createComponent")))
-        return false
-    }
-    // In HTML files show the banner always
-    else if (!file.name.endsWith(".html"))
-      return false
-    return true
-  }
 }
+
+private val angularEntityRegex = Regex("@Component|@Directive|@NgModule|@Pipe|createComponent", RegexOption.MULTILINE)

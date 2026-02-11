@@ -1,4 +1,4 @@
-package com.intellij.prettierjs.next
+package com.intellij.prettier.wsl
 
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.prettierjs.PrettierConfiguration

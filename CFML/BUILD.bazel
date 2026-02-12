@@ -104,6 +104,7 @@ jvm_library(
     "@community//platform/util/jdom",
     "@community//platform/execution",
     "//dbe/database/testFramework",
+    "//dbe/database/testFramework:testFramework_test_lib",
   ]
 )
 ### auto-generated section `build intellij.cfml` end

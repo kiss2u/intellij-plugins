@@ -11,10 +11,16 @@ internal class TfIndexableFileScanner : IndexableFileScanner {
     return IndexableFileScanner.ScanSession {
       IndexableFileScanner.IndexableFileVisitor { fileOrDir ->
         if (buildLocalMetadataAutomatically && isTfLock(fileOrDir)) {
-          logger<TfLocalSchemaService>().info("Scanning local schema: $fileOrDir")
+          Log.info("Scanning local schema: $fileOrDir")
           project.service<TfLocalSchemaService>().scheduleModelRebuild(setOf(fileOrDir))
+        }
+        if (isValidTfDirectory(fileOrDir)) {
+          Log.info("Excluding .terraform directory: $fileOrDir")
+          project.service<TfDirectoryExcludeService>().excludeTerraformDirs(setOf(fileOrDir))
         }
       }
     }
   }
 }
+
+private val Log = logger<TfIndexableFileScanner>()

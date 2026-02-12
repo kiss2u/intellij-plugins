@@ -21,7 +21,7 @@ import org.intellij.terraform.hcl.psi.HCLElement
 import org.intellij.terraform.hcl.psi.HCLElementVisitor
 import org.intellij.terraform.hcl.psi.HCLProperty
 import org.intellij.terraform.hcl.psi.HCLPsiUtil
-import org.intellij.terraform.hcl.psi.getElementName
+import org.intellij.terraform.hcl.psi.getReferenceName
 import org.intellij.terraform.isTfOrTofuPsiFile
 
 internal class TfUnusedElementsInspection : LocalInspectionTool() {
@@ -46,7 +46,7 @@ internal class TfUnusedElementsInspection : LocalInspectionTool() {
 
   private fun checkElement(holder: ProblemsHolder, element: HCLElement) {
     ProgressIndicatorProvider.checkCanceled()
-    val name = element.getElementName() ?: return
+    val name = element.getReferenceName() ?: return
     // Need to know is that a suitable hclElement before reference search (isElementUnused method)
     val unused = getHclUnusedElement(element, name) ?: return
 

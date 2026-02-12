@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.hcl.psi
 
 import com.intellij.lang.injection.InjectedLanguageManager
@@ -14,7 +14,7 @@ import org.intellij.terraform.config.patterns.TfPsiPatterns
 import org.intellij.terraform.hcl.psi.common.BaseExpression
 import org.intellij.terraform.hil.psi.impl.getHCLHost
 
-fun HCLBlock.getNameElementUnquoted(i: Int): String? {
+internal fun HCLBlock.getNameElementUnquoted(i: Int): String? {
   val elements = this.nameElements
   if (elements.size < i + 1) return null
   return when (val element = elements[i]) {
@@ -25,13 +25,16 @@ fun HCLBlock.getNameElementUnquoted(i: Int): String? {
   }
 }
 
-internal fun HCLElement.getElementName(): String? = when (this) {
+internal fun HCLElement.getReferenceName(): String? = when (this) {
   // For now, consider the name of 'Local' property, 'Variable', 'Data source' and 'Resource'
-  is HCLProperty -> this.name
+  is HCLProperty -> name
   is HCLBlock -> when {
-    TfPsiPatterns.VariableRootBlock.accepts(this) -> this.getNameElementUnquoted(1)
-    TfPsiPatterns.DataSourceRootBlock.accepts(this) || TfPsiPatterns.ResourceRootBlock.accepts(this) ->
-      this.getNameElementUnquoted(2)
+    TfPsiPatterns.VariableRootBlock.accepts(this) -> getNameElementUnquoted(1)
+    TfPsiPatterns.DataSourceRootBlock.accepts(this) || TfPsiPatterns.ResourceRootBlock.accepts(this) -> {
+      val type = getNameElementUnquoted(1)
+      val name = getNameElementUnquoted(2)
+      if (type != null && name != null) "$type.$name" else null
+    }
     else -> null
   }
   else -> null

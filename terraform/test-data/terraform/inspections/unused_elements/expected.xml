@@ -45,7 +45,7 @@
     <line>85</line>
     <module>0</module>
     <problem_class id="TfUnusedElements" severity="WARNING" attribute_key="NOT_USED_ELEMENT_ATTRIBUTES">Unused elements</problem_class>
-    <description>Data source 'default' is never used</description>
+    <description>Data source 'aws_vpc.default' is never used</description>
     <language>HCL</language>
     <offset>0</offset>
     <length>45</length>

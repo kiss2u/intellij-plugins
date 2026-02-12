@@ -18,7 +18,7 @@ import org.intellij.terraform.hcl.HCLBundle
 import org.intellij.terraform.hcl.psi.HCLBlock
 import org.intellij.terraform.hcl.psi.HCLElement
 import org.intellij.terraform.hcl.psi.HCLProperty
-import org.intellij.terraform.hcl.psi.getElementName
+import org.intellij.terraform.hcl.psi.getReferenceName
 import org.intellij.terraform.isTfOrTofuPsiFile
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -38,11 +38,11 @@ internal class TfReferencesCodeVisionProvider : ReferencesCodeVisionProvider() {
     if (element !is HCLElement)
       return null
 
-    val elementName = element.getElementName() ?: return null
+    val name = element.getReferenceName() ?: return null
 
     val project = element.project
     val scope = GlobalSearchScope.projectScope(project).restrictToTerraformFiles(project)
-    val costSearch = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(elementName, scope, file)
+    val costSearch = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(name, scope, file)
     if (costSearch == SearchCostResult.TOO_MANY_OCCURRENCES)
       return HCLBundle.message("terraform.inlay.hints.indefinite.usages.text")
 

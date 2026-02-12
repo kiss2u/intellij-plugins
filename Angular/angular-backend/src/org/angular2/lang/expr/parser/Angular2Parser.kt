@@ -9,10 +9,13 @@ import com.intellij.lang.javascript.JSElementTypes
 import com.intellij.lang.javascript.JSKeywordSets
 import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.JavaScriptParserBundle
+import com.intellij.lang.javascript.JavaScriptParserBundle.message
 import com.intellij.lang.javascript.parsing.AdvancesLexer
 import com.intellij.lang.javascript.parsing.ExpressionParser
+import com.intellij.lang.javascript.parsing.JSFunctionParser
 import com.intellij.lang.javascript.parsing.JavaScriptParser
 import com.intellij.lang.javascript.parsing.StatementParser
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
@@ -57,7 +60,10 @@ class Angular2Parser private constructor(
     Angular2ExpressionParser()
 
   override val statementParser: Angular2StatementParser =
-    Angular2StatementParser(this)
+    Angular2StatementParser()
+
+  override val functionParser: Angular2FunctionParser =
+    Angular2FunctionParser()
 
   override fun isIdentifierToken(tokenType: IElementType?): Boolean {
     return JSKeywordSets.TS_IDENTIFIERS_TOKENS_SET.contains(tokenType)
@@ -68,7 +74,7 @@ class Angular2Parser private constructor(
            || language.getKeywords().contains(tokenType)
   }
 
-  inner class Angular2StatementParser(parser: Angular2Parser) : StatementParser<Angular2Parser>(parser) {
+  inner class Angular2StatementParser : StatementParser<Angular2Parser>(this@Angular2Parser) {
     fun parseChain(openParens: Int = 0, allowEmpty: Boolean = true) {
       assert(!myIsJavaScript)
       val chain = builder.mark()
@@ -254,6 +260,9 @@ class Angular2Parser private constructor(
   }
 
   inner class Angular2ExpressionParser : ES6ExpressionParser<Angular2Parser>(this@Angular2Parser) {
+
+    private var arrowFunctionLevel = 0
+
     override fun parseAssignmentExpression(allowIn: Boolean): Boolean {
       //In Angular EL Pipe is the top level expression instead of Assignment
       return parsePipe()
@@ -271,7 +280,7 @@ class Angular2Parser private constructor(
         pipe.drop()
         return false
       }
-      while (builder.tokenType === JSTokenTypes.OR) {
+      while (arrowFunctionLevel == 0 && builder.tokenType === JSTokenTypes.OR) {
         if (myIsSimpleBinding) {
           builder.error(Angular2Bundle.message("angular.parse.expression.pipe-in-host-binding"))
         }
@@ -317,6 +326,16 @@ class Angular2Parser private constructor(
     }
 
     private fun parseAssignmentExpressionChecked(): Boolean {
+      if (builder.tokenType === JSTokenTypes.LPAR || isIdentifierToken(builder.tokenType)) {
+        arrowFunctionLevel++
+        try {
+          if (parser.functionParser.parseArrowFunction()) {
+            return true
+          }
+        } finally {
+          arrowFunctionLevel--
+        }
+      }
       val expr = builder.mark()
       if (builder.tokenType === JSTokenTypes.EQ) {
         builder.error(JavaScriptParserBundle.message("javascript.parser.message.expected.expression"))
@@ -486,6 +505,23 @@ class Angular2Parser private constructor(
 
   }
 
+  inner class Angular2FunctionParser : JSFunctionParser<Angular2Parser>(this@Angular2Parser) {
+
+    override fun parseArrowFunctionExpressionBody() {
+      val expressionBody = builder.mark()
+      if (parser.expressionParser.parseAssignmentExpression(true)) {
+        expressionBody.drop()
+      }
+      else {
+        expressionBody.rollbackTo()
+        builder.error(message("javascript.parser.message.expected.expression"))
+      }
+    }
+
+    override fun allowTrailingCommaInParameterList(): Boolean = false
+
+  }
+
   companion object {
     /*
   Angular Expression AST mapping
@@ -512,6 +548,8 @@ class Angular2Parser private constructor(
   */
     private const val CHAR_ENTITY_QUOT: @NonNls String = "&quot;"
     private const val CHAR_ENTITY_APOS: @NonNls String = "&apos;"
+
+    private val PARSE_ARROW_FUNCTION_KEY: Key<Boolean> = Key.create("Angular2Parser.PARSE_ARROW_FUNCTION_KEY")
 
     fun parseAction(templateSyntax: Angular2TemplateSyntax, builder: PsiBuilder, root: IElementType) {
       parseRoot(templateSyntax, builder, root, Angular2ElementTypes.ACTION_STATEMENT, true, false) { parser ->

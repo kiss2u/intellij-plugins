@@ -34,6 +34,7 @@ enum class Angular2TestModule(myPackageName: String, myVersion: String) : WebFra
   ANGULAR_CORE_20_1_4("@angular/core", "20.1.4"),
   ANGULAR_CORE_20_2_2("@angular/core", "20.2.2"),
   ANGULAR_CORE_21_1_3("@angular/core", "21.1.3"),
+  ANGULAR_CORE_21_2_0("@angular/core", "21.2.0-next.3"),
 
   ANGULAR_FLEX_LAYOUT_13_0_0("@angular/flex-layout", "13.0.0-beta.36"),
 

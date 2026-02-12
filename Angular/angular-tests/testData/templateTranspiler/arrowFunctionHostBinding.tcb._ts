@@ -1,0 +1,9 @@
+/* Angular type checking code */
+
+/* TCB for host bindings of TestDir */
+
+function _tcb_host_1(this: TestDir) {
+var _t1 = document.createElement("div");
+(((a, b) => a / b)(5, 10));
+(((a, b) => a / b + this.componentProp)(6, 12));
+}

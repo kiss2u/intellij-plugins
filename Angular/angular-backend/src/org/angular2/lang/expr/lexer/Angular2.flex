@@ -124,6 +124,7 @@ LINE_TERMINATOR_SEQUENCE=\R
   "void"                      { if (enableVoidKeyword) return VOID_KEYWORD; else return IDENTIFIER; }
 
   "..."                       { return DOT_DOT_DOT; }
+  "=>"                        { return EQGT; }
 
   "as"/(\.)                   { return IDENTIFIER; }
   {IDENT}                     { return IDENTIFIER; }

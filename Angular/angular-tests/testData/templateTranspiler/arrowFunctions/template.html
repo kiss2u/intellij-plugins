@@ -1,0 +1,19 @@
+<!-- arrow function that uses only local parameters -->
+<button (click)="withCallback((a, b) => a + b)"></button>
+
+<!-- arrow function that references class members -->
+<button (click)="withCallback((a) => componentFn(a + componentProp))"></button>
+
+<!-- arrow function that accesses higher-level parameters -->
+{{() => () => (c) => () => () => c + 1}}
+
+<!-- arrow function that accesses a class member with the same name as a parameter through `this` -->
+<button (click)="withCallback((a) => a + this.a)"></button>
+
+<!-- arrow function that accesses a class member with the same name as a higher-level parameter through `this` -->
+<button (click)="withCallback(a => b => () => a + b + this.a + this.b + someOtherProp)"></button>
+
+<!-- arrow function that references local symbols -->
+@let one = 1;
+<input #someInput/>
+<button (click)="withCallback(() => one + someInput.value)"></button>

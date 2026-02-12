@@ -293,4 +293,28 @@ class Angular2RenameTest : Angular2TestCase("refactoring/rename", false) {
   fun testNewAngularAnimationBindings() =
     checkSymbolRename("newName", Angular2TestModule.ANGULAR_CORE_20_2_2, dir = false)
 
+  fun testArrowFunctionParamInterpolationInlineFromDefinition() =
+    checkSymbolRename("newName", dir = false)
+
+  fun testArrowFunctionParamInterpolationInlineFromUsage() =
+    checkSymbolRename("newName", dir = false)
+
+  fun testArrowFunctionParamInterpolationExternalFromDefinition() =
+    checkSymbolRename("template.html","newName", dir = true)
+
+  fun testArrowFunctionParamInterpolationExternalFromUsage() =
+    checkSymbolRename("template.html","newName", dir = true)
+
+  fun testArrowFunctionParamHostBindingFromDefinition() =
+    checkSymbolRename("newName", dir = false)
+
+  fun testArrowFunctionParamHostBindingFromUsage() =
+    checkSymbolRename("newName", dir = false)
+
+  fun testArrowFunctionParamLetBlockFromDefinition() =
+    checkSymbolRename("newName", dir = false)
+
+  fun testArrowFunctionParamLetBlockFromUsage() =
+    checkSymbolRename("newName", dir = false)
+
 }

@@ -7,6 +7,7 @@ import com.intellij.lang.javascript.psi.JSElement
 import com.intellij.lang.javascript.psi.JSExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSObjectLiteralExpression
+import com.intellij.lang.javascript.psi.JSParameter
 import com.intellij.lang.javascript.psi.JSPsiElementBase
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.lang.javascript.psi.JSThisExpression
@@ -129,6 +130,15 @@ internal class TmplAstVariable(
   override val keySpan: TextRange?,
   override val valueSpan: TextRange?,
 ) : TmplAstExpressionSymbol
+
+internal class TmplAstArrowFunctionParameter(
+  override val name: String,
+  override val keySpan: TextRange?,
+) : TmplAstExpressionSymbol {
+
+  override val value: String? get() = null
+  override val valueSpan: TextRange? get() = null
+}
 
 internal class TmplAstLetDeclaration(
   val name: String,
@@ -478,7 +488,9 @@ internal class BoundTarget(component: Angular2Component?) {
 
     return when (result) {
       is ResolveResult -> {
-        val element = (result as ResolveResult).element ?: return null
+        val element = result.element ?: return null
+        if (element is JSParameter)
+          return TmplAstArrowFunctionParameter(element.name ?: return null, element.textRange)
         val owner = element.parentOfTypes(
           XmlAttribute::class,
           Angular2TemplateBinding::class,

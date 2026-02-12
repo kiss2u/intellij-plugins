@@ -1,0 +1,17 @@
+/* Angular type checking code */
+
+/* TCB for arrowFunctionDefinedLet.ts */
+
+function _tcb1(this: TestComp) {
+const _t1 = (a, b) => this.componentValue + a + b;
+"" + (_t1(0, 1));
+if (true) {
+"" + (_t1(1, 1));
+var _t2 = document.createElement("button");
+_t2.addEventListener("click", ($event): any => {
+if ((true)){
+this.componentValue = _t1(2, 1);
+}
+});
+}
+}

@@ -1,0 +1,16 @@
+/* Angular type checking code */
+
+/* TCB for arrowFunctionDollarEvents.ts */
+
+function _tcb1(this: TestComp) {
+const _t1 = 1;
+if (true) {
+const _t2 = 2;
+var _t3 = document.createElement("button");
+_t3.addEventListener("click", ($event): any => {
+if ((true)){
+this.signal.update(prev => $event.type + prev + _t2 + _t1 + this.componentProp);
+}
+});
+}
+}

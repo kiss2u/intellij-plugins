@@ -187,6 +187,30 @@ class Angular2TemplateTranspilerTest : Angular2TestCase("templateTranspiler", tr
     Angular2TestModule.ANGULAR_CORE_21_1_3
   )
 
+  fun testArrowFunctions() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0, dir = true
+  )
+
+  fun testArrowFunctionDefinedLet() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0
+  )
+
+  fun testArrowFunctionDollarEvents() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0
+  )
+
+  fun testArrowFunctionHostBinding() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0
+  )
+
+  fun testArrowFunctionLoopVariables() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0
+  )
+
+  fun testArrowFunctionSafeAccess() = checkTranspilation(
+    Angular2TestModule.ANGULAR_CORE_21_2_0
+  )
+
   private fun checkTranspilation(
     vararg modules: WebFrameworkTestModule,
     dir: Boolean = false,

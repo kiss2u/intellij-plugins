@@ -1,0 +1,2 @@
+componentProp (typeText='number'; priority=101.0; bold)
+foo (typeText='HTMLInputElement'; priority=101.0; bold)

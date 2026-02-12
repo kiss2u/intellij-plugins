@@ -1,0 +1,11 @@
+/* Angular type checking code */
+
+/* TCB for arrowFunctionSafeAccess.ts */
+
+function _tcb1(this: TestComp) {
+"" + ((0 as any ? ((0 as any ? ((0 as any ? ((0 as any ? (this.componentProp)!.a : undefined))!.b : undefined))!.c : undefined))!() : undefined)?.()?.()?.());
+var _t1 = document.createElement("hr");
+"" + ((value => (0 as any ? ((0 as any ? ((0 as any ? ((0 as any ? (value)!.a : undefined))!.b : undefined))!.c : undefined))!() : undefined)?.()?.()?.())(this.componentProp));
+var _t2 = document.createElement("hr");
+"" + (() => (0 as any ? ((0 as any ? ((0 as any ? ((0 as any ? (this.componentProp)!.a : undefined))!.b : undefined))!.c : undefined))!() : undefined)?.()?.()?.());
+}

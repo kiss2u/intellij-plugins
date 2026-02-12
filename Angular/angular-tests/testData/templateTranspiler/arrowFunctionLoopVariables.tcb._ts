@@ -1,0 +1,26 @@
+/* Angular type checking code */
+
+/* TCB for arrowFunctionLoopVariables.ts */
+
+function _tcb1(this: TestComp) {
+for (const _t1 of (this.items)!) {
+var _t2 = null! as boolean;
+var _t3 = null! as number;
+var _t4 = null! as boolean;
+var _t5 : boolean = _t2;
+var _t6 = null! as boolean;
+var _t7 = null! as boolean;
+var _t8 = null! as number;
+for (const _t9 of (_t1.subItems)!) {
+var _t10 = null! as number;
+var _t11 = null! as boolean;
+var _t12 = null! as boolean;
+var _t13 = null! as boolean;
+var _t14 = null! as boolean;
+var _t15 = null! as number;
+"" + ((() => _t5 || _t12 || _t10)());
+(_t10);
+}
+(_t3);
+}
+}

@@ -1,0 +1,295 @@
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('withCallback')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiElement(JS:COMMA)(',')
+            PsiWhiteSpace(' ')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('b')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSBinaryExpression
+            JSReferenceExpression
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiWhiteSpace(' ')
+            PsiElement(JS:PLUS)('+')
+            PsiWhiteSpace(' ')
+            JSReferenceExpression
+              PsiElement(JS:IDENTIFIER)('b')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSFunctionExpression
+      JSAttributeList
+        <empty list>
+      JSParameterList
+        PsiElement(JS:LPAR)('(')
+        PsiElement(JS:RPAR)(')')
+      PsiWhiteSpace(' ')
+      PsiElement(JS:EQGT)('=>')
+      PsiWhiteSpace(' ')
+      JSFunctionExpression
+        JSAttributeList
+          <empty list>
+        JSParameterList
+          PsiElement(JS:LPAR)('(')
+          PsiElement(JS:RPAR)(')')
+        PsiWhiteSpace(' ')
+        PsiElement(JS:EQGT)('=>')
+        PsiWhiteSpace(' ')
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSFunctionExpression
+            JSAttributeList
+              <empty list>
+            JSParameterList
+              PsiElement(JS:LPAR)('(')
+              PsiElement(JS:RPAR)(')')
+            PsiWhiteSpace(' ')
+            PsiElement(JS:EQGT)('=>')
+            PsiWhiteSpace(' ')
+            JSFunctionExpression
+              JSAttributeList
+                <empty list>
+              JSParameterList
+                PsiElement(JS:LPAR)('(')
+                PsiElement(JS:RPAR)(')')
+              PsiWhiteSpace(' ')
+              PsiElement(JS:EQGT)('=>')
+              PsiWhiteSpace(' ')
+              JSBinaryExpression
+                JSReferenceExpression
+                  PsiElement(JS:IDENTIFIER)('a')
+                PsiWhiteSpace(' ')
+                PsiElement(JS:PLUS)('+')
+                PsiWhiteSpace(' ')
+                JSLiteralExpression
+                  PsiElement(JS:NUMERIC_LITERAL)('1')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('withCallback')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSBinaryExpression
+            JSReferenceExpression
+              PsiElement(JS:IDENTIFIER)('one')
+            PsiWhiteSpace(' ')
+            PsiElement(JS:PLUS)('+')
+            PsiWhiteSpace(' ')
+            JSReferenceExpression
+              JSReferenceExpression
+                PsiElement(JS:IDENTIFIER)('someInput')
+              PsiElement(JS:DOT)('.')
+              PsiElement(JS:IDENTIFIER)('value')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('withCallback')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSBinaryExpression
+            JSReferenceExpression
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiWhiteSpace(' ')
+            PsiElement(JS:PLUS)('+')
+            PsiWhiteSpace(' ')
+            JSReferenceExpression
+              JSThisExpression
+                PsiElement(JS:THIS_KEYWORD)('this')
+              PsiElement(JS:DOT)('.')
+              PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    Angular2PipeExpression
+      Angular2PipeLeftSideArgument
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiElement(JS:COMMA)(',')
+            PsiWhiteSpace(' ')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('b')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSBinaryExpression
+            JSBinaryExpression
+              JSReferenceExpression
+                PsiElement(JS:IDENTIFIER)('a')
+              PsiWhiteSpace(' ')
+              PsiElement(JS:PLUS)('+')
+              PsiWhiteSpace(' ')
+              JSReferenceExpression
+                PsiElement(JS:IDENTIFIER)('b')
+            PsiWhiteSpace(' ')
+            PsiElement(JS:PLUS)('+')
+            PsiWhiteSpace(' ')
+            JSReferenceExpression
+              PsiElement(JS:IDENTIFIER)('componentProp')
+      PsiWhiteSpace(' ')
+      PsiElement(JS:OR)('|')
+      PsiWhiteSpace(' ')
+      Angular2PipeReferenceExpression
+        PsiElement(JS:IDENTIFIER)('test')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    Angular2PipeExpression
+      Angular2PipeLeftSideArgument
+        JSFunctionExpression
+          JSAttributeList
+            <empty list>
+          JSParameterList
+            PsiElement(JS:LPAR)('(')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('a')
+            PsiElement(JS:COMMA)(',')
+            PsiWhiteSpace(' ')
+            JSParameter
+              PsiElement(JS:IDENTIFIER)('b')
+            PsiElement(JS:RPAR)(')')
+          PsiWhiteSpace(' ')
+          PsiElement(JS:EQGT)('=>')
+          PsiWhiteSpace(' ')
+          JSParenthesizedExpression
+            PsiElement(JS:LPAR)('(')
+            JSBinaryExpression
+              JSBinaryExpression
+                JSReferenceExpression
+                  PsiElement(JS:IDENTIFIER)('a')
+                PsiWhiteSpace(' ')
+                PsiElement(JS:PLUS)('+')
+                PsiWhiteSpace(' ')
+                JSReferenceExpression
+                  PsiElement(JS:IDENTIFIER)('b')
+              PsiWhiteSpace(' ')
+              PsiElement(JS:PLUS)('+')
+              PsiWhiteSpace(' ')
+              JSReferenceExpression
+                PsiElement(JS:IDENTIFIER)('componentProp')
+            PsiErrorElement:) expected
+              <empty list>
+      PsiWhiteSpace(' ')
+      PsiElement(JS:OR)('|')
+      PsiWhiteSpace(' ')
+      Angular2PipeReferenceExpression
+        PsiElement(JS:IDENTIFIER)('test')
+    PsiErrorElement:Unexpected token ')'
+      <empty list>
+    PsiElement(JS:RPAR)(')')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSFunctionExpression
+      JSAttributeList
+        <empty list>
+      JSParameterList
+        PsiElement(JS:LPAR)('(')
+        JSParameter
+          PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSParameter
+          PsiElement(JS:IDENTIFIER)('b')
+        PsiElement(JS:RPAR)(')')
+      PsiWhiteSpace(' ')
+      PsiElement(JS:EQGT)('=>')
+      PsiWhiteSpace(' ')
+      JSBlockStatement
+        PsiElement(JS:LBRACE)('{')
+        PsiElement(JS:RBRACE)('}')
+------
+JSFile:test.arrow-functions.binding
+  Angular2Binding
+    JSFunctionExpression
+      JSAttributeList
+        <empty list>
+      JSParameterList
+        PsiElement(JS:LPAR)('(')
+        JSParameter
+          PsiElement(JS:IDENTIFIER)('a')
+        PsiElement(JS:COMMA)(',')
+        PsiWhiteSpace(' ')
+        JSParameter
+          PsiElement(JS:IDENTIFIER)('b')
+        PsiElement(JS:RPAR)(')')
+      PsiWhiteSpace(' ')
+      PsiElement(JS:EQGT)('=>')
+      PsiWhiteSpace(' ')
+      JSBlockStatement
+        PsiElement(JS:LBRACE)('{')
+        JSLabeledStatement
+          PsiElement(JS:IDENTIFIER)('a')
+          PsiElement(JS:COLON)(':')
+          PsiWhiteSpace(' ')
+          JSExpressionStatement
+            JSCommaExpression
+              JSLiteralExpression
+                PsiElement(JS:NUMERIC_LITERAL)('12')
+              PsiElement(JS:COMMA)(',')
+              PsiWhiteSpace(' ')
+              JSReferenceExpression
+                PsiElement(JS:IDENTIFIER)('b')
+            PsiErrorElement:Newline or semicolon expected
+              <empty list>
+        PsiElement(JS:COLON)(':')
+        PsiWhiteSpace(' ')
+        JSExpressionStatement
+          JSLiteralExpression
+            PsiElement(JS:NUMERIC_LITERAL)('13')
+        PsiElement(JS:RBRACE)('}')

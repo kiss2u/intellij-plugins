@@ -18,6 +18,7 @@ import org.angular2.Angular2TestModule.ANGULAR_CORE_16_2_8
 import org.angular2.Angular2TestModule.ANGULAR_CORE_17_3_0
 import org.angular2.Angular2TestModule.ANGULAR_CORE_18_2_1
 import org.angular2.Angular2TestModule.ANGULAR_CORE_20_1_4
+import org.angular2.Angular2TestModule.ANGULAR_CORE_21_2_0
 import org.angular2.Angular2TestModule.ANGULAR_CORE_8_2_14
 import org.angular2.Angular2TestModule.Companion.configureDependencies
 import org.angular2.Angular2TestModule.TS_LIB
@@ -38,6 +39,7 @@ import org.angular2.inspections.AngularNonEmptyNgContentInspection
 import org.angular2.inspections.AngularUncalledSignalLengthPropertyAccessInspection
 import org.angular2.inspections.AngularUndefinedBindingInspection
 import org.angular2.inspections.AngularUndefinedTagInspection
+import org.angular2.inspections.AngularUnsupportedSyntaxInspection
 import org.angular2.lang.Angular2Bundle
 
 /**
@@ -377,6 +379,39 @@ class Angular2TemplateInspectionsTest : Angular2TestCase("inspections/template",
       inspections = listOf(AngularUncalledSignalLengthPropertyAccessInspection::class.java),
       dependencies = listOf(ANGULAR_CORE_20_1_4),
       files = listOf("uncalled-signal-length-property-access.html", "uncalled-signal-length-property-access.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testArrowFunctionWithBlockBody1() =
+    doTest(
+      testNr = 1,
+      location = "{{ () => {<caret>a: 12} }}",
+      quickFixName = Angular2Bundle.message("angular.quickfix.wrap-with-parentheses.family"),
+      inspections = listOf(AngularUnsupportedSyntaxInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("arrowFunctionWithBlockBody.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testArrowFunctionWithBlockBody2() =
+    doTest(
+      testNr = 2,
+      location = "{{ () => {<caret>} }}",
+      quickFixName = Angular2Bundle.message("angular.quickfix.wrap-with-parentheses.family"),
+      inspections = listOf(AngularUnsupportedSyntaxInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("arrowFunctionWithBlockBody.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testArrowFunctionWithBlockBody3() =
+    doTest(
+      testNr = 3,
+      location = "{{ () => {<caret>return 12} }}",
+      quickFixName = Angular2Bundle.message("angular.quickfix.wrap-with-parentheses.family"),
+      inspections = listOf(AngularUnsupportedSyntaxInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("arrowFunctionWithBlockBody.ts"),
       configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
     )
 

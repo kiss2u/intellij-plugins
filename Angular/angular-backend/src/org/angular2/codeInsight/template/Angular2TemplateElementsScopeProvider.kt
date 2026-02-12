@@ -2,6 +2,11 @@
 package org.angular2.codeInsight.template
 
 import com.intellij.codeInsight.completion.CompletionUtil
+import com.intellij.lang.javascript.psi.JSExpression
+import com.intellij.lang.javascript.psi.JSFunctionExpression
+import com.intellij.lang.javascript.psi.JSLiteralExpression
+import com.intellij.lang.javascript.psi.JSParameter
+import com.intellij.lang.javascript.psi.JSProperty
 import com.intellij.lang.javascript.psi.JSPsiElementBase
 import com.intellij.lang.javascript.psi.resolve.JSResolveResult
 import com.intellij.lang.javascript.psi.stubs.JSImplicitElement
@@ -19,7 +24,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlTag
+import com.intellij.util.asSafely
 import com.intellij.util.containers.Stack
+import org.angular2.Angular2DecoratorUtil.isHostBinding
 import org.angular2.Angular2InjectionUtils
 import org.angular2.codeInsight.blocks.BLOCK_FOR
 import org.angular2.codeInsight.blocks.BLOCK_LET
@@ -32,7 +39,6 @@ import org.angular2.lang.html.parser.Angular2AttributeType.REFERENCE
 import org.angular2.lang.html.parser.Angular2AttributeType.TEMPLATE_BINDINGS
 import org.angular2.lang.html.psi.Angular2HtmlBlock
 import org.angular2.lang.html.psi.Angular2HtmlBlockParameters
-import org.angular2.lang.html.psi.Angular2HtmlBoundAttribute
 import org.angular2.lang.html.psi.Angular2HtmlLet
 import org.angular2.lang.html.psi.Angular2HtmlRecursiveElementVisitor
 import org.angular2.lang.html.psi.Angular2HtmlReference
@@ -41,10 +47,13 @@ import org.angular2.web.ELEMENT_NG_TEMPLATE
 import org.jetbrains.annotations.NonNls
 import java.util.function.Consumer
 
-private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProvider() {
+internal class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProvider() {
   override fun getScopes(element: PsiElement, hostElement: PsiElement?): List<Angular2TemplateScope> {
+    // drop host element if it is a host binding
+    val hostElement = hostElement?.takeIf {
+      it.asSafely<JSLiteralExpression>()?.context?.asSafely<JSProperty>()?.let(::isHostBinding) != true
+    }
     val hostFile = CompletionUtil.getOriginalOrSelf(hostElement ?: element).containingFile
-
     val isInjected = hostElement != null
     val templateRootScope = CachedValuesManager.getCachedValue(hostFile) {
       val result: Angular2TemplateElementScope
@@ -54,7 +63,7 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
       else {
         result = Angular2ForeignTemplateScopeBuilder(hostFile).topLevelScope
       }
-      CachedValueProvider.Result.create(result, PsiModificationTracker.MODIFICATION_COUNT)
+      CachedValueProvider.Result.create(result, PsiModificationTracker.MODIFICATION_COUNT, hostFile)
     }
     return listOfNotNull(templateRootScope.findBestMatchingTemplateScope(hostElement ?: element))
   }
@@ -138,6 +147,15 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
       scopes.add(Angular2TemplateElementScope(myTemplateFile, null))
     }
 
+    override fun visitElement(element: PsiElement) {
+      if (element is JSExpression) {
+        element.accept(expressionVisitor)
+      }
+      else {
+        super.visitElement(element)
+      }
+    }
+
     fun currentScope(): Angular2TemplateElementScope {
       return scopes.peek()
     }
@@ -161,6 +179,24 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
     fun prevScope(): Angular2TemplateElementScope {
       return scopes[scopes.size - 2]
     }
+
+    protected val expressionVisitor = object : Angular2RecursiveVisitor() {
+
+      override fun visitAngular2BlockParameter(parameter: Angular2BlockParameter) {
+        parameter.variables.forEach(::addElement)
+      }
+
+      override fun visitJSFunctionExpression(node: JSFunctionExpression) {
+        pushScope(node)
+        super.visitJSFunctionExpression(node)
+        popScope()
+      }
+
+      override fun visitJSParameter(node: JSParameter) {
+        addElement(node)
+      }
+
+    }
   }
 
   private class Angular2TemplateScopeBuilder(templateFile: PsiFile) : Angular2BaseScopeBuilder(templateFile) {
@@ -174,10 +210,6 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
       if (isTemplateTag) {
         popScope()
       }
-    }
-
-    override fun visitBoundAttribute(boundAttribute: Angular2HtmlBoundAttribute) {
-      //do not visit expressions
     }
 
     override fun visitReference(reference: Angular2HtmlReference) {
@@ -201,6 +233,7 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
         if (b.keyIsVar() && b.variableDefinition != null) {
           addElement(b.variableDefinition!!)
         }
+        b.expression?.accept(expressionVisitor)
       }
     }
 
@@ -208,8 +241,10 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
       val blockName = block.getName()
       if (blockName == BLOCK_LET) {
         // Do not create scope or visit children for @let
-        block.parameters.getOrNull(0)?.variables?.firstOrNull()
-          ?.let { addElement(it) }
+        block.parameters.getOrNull(0)?.variables?.firstOrNull()?.let {
+          addElement(it)
+          it.initializer?.accept(expressionVisitor)
+        }
         return
       }
       pushScope(block)
@@ -224,14 +259,6 @@ private class Angular2TemplateElementsScopeProvider : Angular2TemplateScopesProv
 
     override fun visitBlockParameters(blockParameters: Angular2HtmlBlockParameters) {
       blockParameters.accept(expressionVisitor)
-    }
-
-    private val expressionVisitor = object : Angular2RecursiveVisitor() {
-
-      override fun visitAngular2BlockParameter(parameter: Angular2BlockParameter) {
-        parameter.variables.forEach(::addElement)
-      }
-
     }
   }
 

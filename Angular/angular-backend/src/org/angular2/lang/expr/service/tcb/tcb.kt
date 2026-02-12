@@ -19,6 +19,7 @@ import com.intellij.lang.javascript.psi.JSEmptyExpression
 import com.intellij.lang.javascript.psi.JSExpression
 import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSObjectLiteralExpression
+import com.intellij.lang.javascript.psi.JSParameterList
 import com.intellij.lang.javascript.psi.JSParenthesizedExpression
 import com.intellij.lang.javascript.psi.JSProperty
 import com.intellij.lang.javascript.psi.JSRecordType
@@ -312,7 +313,8 @@ private class TcbTemplateBodyOp(private val tcb: Context, private val scope: Sco
             // Call the guard function on the directive with the directive instance and that
             // expression.
             val guardInvoke = Expression {
-              append("$dirId.$NG_TEMPLATE_GUARD_PREFIX${guard.inputName}", boundInput.value?.textRange?.shiftRight(boundInput.valueMappingOffset))
+              append("$dirId.$NG_TEMPLATE_GUARD_PREFIX${guard.inputName}",
+                     boundInput.value?.textRange?.shiftRight(boundInput.valueMappingOffset))
               append("($dirInstId, ")
               append(expr)
               append(")")
@@ -477,8 +479,8 @@ private abstract class TcbDirectiveTypeOpBase(
  * Executing this operation returns a reference to the directive instance variable with its inferred
  * type.
  */
-private class TcbNonGenericDirectiveTypeOp(tcb: Context, scope: Scope, node: `TmplAstElement|TmplAstTemplate`, dir: TmplDirectiveMetadata)
-  : TcbDirectiveTypeOpBase(tcb, scope, node, dir) {
+private class TcbNonGenericDirectiveTypeOp(tcb: Context, scope: Scope, node: `TmplAstElement|TmplAstTemplate`, dir: TmplDirectiveMetadata) :
+  TcbDirectiveTypeOpBase(tcb, scope, node, dir) {
   /**
    * Creates a variable declaration for this op's directive of the argument type. Returns the id of
    * the newly created variable.
@@ -497,8 +499,12 @@ private class TcbNonGenericDirectiveTypeOp(tcb: Context, scope: Scope, node: `Tm
  * Executing this operation returns a reference to the directive instance variable with its generic
  * type parameters set to `any`.
  */
-private class TcbGenericDirectiveTypeWithAnyParamsOp(tcb: Context, scope: Scope, node: `TmplAstElement|TmplAstTemplate`, dir: TmplDirectiveMetadata)
-  : TcbDirectiveTypeOpBase(tcb, scope, node, dir) {
+private class TcbGenericDirectiveTypeWithAnyParamsOp(
+  tcb: Context,
+  scope: Scope,
+  node: `TmplAstElement|TmplAstTemplate`,
+  dir: TmplDirectiveMetadata,
+) : TcbDirectiveTypeOpBase(tcb, scope, node, dir) {
 
   override fun execute(): Identifier {
     assert(dir.isGeneric)
@@ -2709,12 +2715,18 @@ private open class TcbExpressionTranslator(
     element.errorDescription == JavaScriptParserBundle.message("javascript.parser.message.expected.rbrace") ||
     element.errorDescription == JavaScriptParserBundle.message("javascript.parser.message.missing.back.quote")
 
-  private fun getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: JSReferenceExpression): Expression {
-    val identifier = this.scope.resolve(targetNode)
-    return Expression {
-      append(identifier, expressionNode.textRange, supportTypes = true)
+  private fun getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: JSReferenceExpression): Expression =
+    if (targetNode is TmplAstArrowFunctionParameter) {
+      Expression {
+        append(targetNode.name, expressionNode.textRange, supportTypes = true)
+      }
     }
-  }
+    else {
+      val identifier = this.scope.resolve(targetNode)
+      Expression {
+        append(identifier, expressionNode.textRange, supportTypes = true)
+      }
+    }
 
   open fun isValidLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PsiElement): Boolean {
     val targetStart = target.sourceSpan.startOffset
@@ -3005,7 +3017,12 @@ private fun tcbEventHandlerExpression(ast: JSElement?, offset: Int, tcb: Context
   }
 }
 
-private fun checkSplitTwoWayBinding(inputName: String, output: TmplAstBoundEvent, inputs: Map<String, TmplAstBoundAttribute>, tcb: Context): Boolean {
+private fun checkSplitTwoWayBinding(
+  inputName: String,
+  output: TmplAstBoundEvent,
+  inputs: Map<String, TmplAstBoundAttribute>,
+  tcb: Context,
+): Boolean {
   val input = inputs[inputName]
   if (input == null || input.sourceSpan != output.sourceSpan) {
     return false
@@ -3030,8 +3047,8 @@ private fun checkSplitTwoWayBinding(inputName: String, output: TmplAstBoundEvent
   return false
 }
 
-private class TcbEventHandlerTranslator(tcb: Context, scope: Scope, result: Expression.ExpressionBuilder)
-  : TcbExpressionTranslator(tcb, scope, result) {
+private class TcbEventHandlerTranslator(tcb: Context, scope: Scope, result: Expression.ExpressionBuilder) :
+  TcbExpressionTranslator(tcb, scope, result) {
 
 
   override fun visitJSReferenceExpression(node: JSReferenceExpression) {

@@ -13,6 +13,7 @@ import org.angular2.Angular2TestModule
 import org.angular2.Angular2TestModule.ANGULAR_CORE_13_3_5
 import org.angular2.Angular2TestModule.ANGULAR_CORE_15_1_5
 import org.angular2.Angular2TestModule.ANGULAR_CORE_19_2_0
+import org.angular2.Angular2TestModule.ANGULAR_CORE_21_2_0
 import org.angular2.Angular2TsConfigFile
 import org.angular2.lang.Angular2Bundle
 
@@ -371,6 +372,15 @@ class Angular2CompletionTest : Angular2TestCase("completion", true) {
       completeBasic()
       assertLookupContains("description")
       type("des\n")
+    }
+  }
+
+  fun testArrowFunctions() {
+    doLookupTest(ANGULAR_CORE_21_2_0, locations = listOf(
+      "() => <caret>componentProp + 1",
+      "(a,b) => <caret>val + 1"
+    )) {
+      it.priority > 10.0
     }
   }
 

@@ -1,0 +1,30 @@
+/* Angular type checking code */
+
+/* TCB for template.html */
+
+function _tcb1(this: ArrowComponent) {
+var _t1 = document.createElement("button");
+_t1.addEventListener("click", ($event): any => {
+this.withCallback((a, b) => a + b);
+});
+var _t2 = document.createElement("button");
+_t2.addEventListener("click", ($event): any => {
+this.withCallback((a) => this.componentFn(a + this.componentProp));
+});
+"" + (() => () => (c) => () => () => c + 1);
+var _t3 = document.createElement("button");
+_t3.addEventListener("click", ($event): any => {
+this.withCallback((a) => a + this.a);
+});
+var _t4 = document.createElement("button");
+_t4.addEventListener("click", ($event): any => {
+this.withCallback(a => b => () => a + b + this.a + this.b + this.someOtherProp);
+});
+const _t5 = 1;
+var _t6 = document.createElement("input");
+var _t7 = _t6;
+var _t8 = document.createElement("button");
+_t8.addEventListener("click", ($event): any => {
+this.withCallback(() => _t5 + _t7.value);
+});
+}

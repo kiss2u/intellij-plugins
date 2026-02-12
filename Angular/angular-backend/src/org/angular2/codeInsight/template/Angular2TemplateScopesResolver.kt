@@ -3,10 +3,14 @@ package org.angular2.codeInsight.template
 
 import com.intellij.codeInsight.completion.CompletionUtil
 import com.intellij.lang.injection.InjectedLanguageManager
+import com.intellij.lang.javascript.psi.JSLiteralExpression
+import com.intellij.lang.javascript.psi.JSProperty
 import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveResult
 import com.intellij.util.Processor
+import com.intellij.util.asSafely
+import org.angular2.Angular2DecoratorUtil.isHostBinding
 import org.angular2.lang.expr.Angular2Language
 import org.angular2.lang.html.Angular2HtmlLanguage
 

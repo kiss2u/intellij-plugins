@@ -2,6 +2,7 @@ package org.angular2.lang.expr.service
 
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.lang.javascript.integration.JSAnnotationError
+import com.intellij.lang.javascript.psi.JSParameter
 import com.intellij.lang.javascript.service.JSLanguageServiceUtil
 import com.intellij.lang.typescript.compiler.languageService.TypeScriptLanguageServiceAnnotationResult
 import com.intellij.lang.typescript.psi.TypeScriptPsiUtil
@@ -19,6 +20,7 @@ object Angular2LanguageServiceErrorFilter {
     error !is TypeScriptLanguageServiceAnnotationResult
     || when (error.errorCode) {
       TS_ERROR_CODE_UNUSED_DECLARATION -> !shouldIgnoreUnusedDeclarationError(error, file)
+      TS_ERROR_IMPLICIT_ANY_TYPE -> !shouldIgnoreImplicitAnyTypeError(error, file)
       else -> true
     }
 
@@ -28,6 +30,12 @@ object Angular2LanguageServiceErrorFilter {
     return isTemplateReferenceVariable(document, elementInfo)
            || isNgAnimateBinding(document, elementInfo)
            || elementInfo.element?.let { isUnderscoredLocalVariableIdentifierInAngularTemplate(it) } == true
+  }
+
+  private fun shouldIgnoreImplicitAnyTypeError(error: TypeScriptLanguageServiceAnnotationResult, file: PsiFile): Boolean {
+    val document = file.viewProvider.document ?: return false
+    val elementInfo = getElementInfoInjectionAware(file, document, error) ?: return false
+    return isArrowFunctionParameter(document, elementInfo)
   }
 
   private fun isTemplateReferenceVariable(document: Document, elementInfo: JSLanguageServiceUtil.PsiElementInfo) =
@@ -43,6 +51,9 @@ object Angular2LanguageServiceErrorFilter {
       ?.takeIf { it.startsWith("[") && it.endsWith("]") }
       ?.let { it.substring(1, it.length - 1) }
       .let { it == ANIMATE_ENTER_ATTR || it == ANIMATE_LEAVE_ATTR }
+
+  private fun isArrowFunctionParameter(document: Document, elementInfo: JSLanguageServiceUtil.PsiElementInfo) =
+    elementInfo.element?.let { it.parent is JSParameter } == true
 
   fun getElementInfoInjectionAware(
     file: PsiFile,
@@ -61,7 +72,7 @@ object Angular2LanguageServiceErrorFilter {
     val injectedFile = rangeStartElement.containingFile
     if (injectedFile != rangeEndElement.containingFile) return result
 
-    val rangeWithinHost = range.shiftLeft(host.textRange.startOffset)
+    val rangeWithinHost = range.shiftLeft(host.textRange.startOffset + 1)
     if (rangeWithinHost.startOffset < 0 || rangeWithinHost.endOffset > host.textLength) return result
 
     val editableRanges = injectedLanguageManager.intersectWithAllEditableFragments(injectedFile, rangeWithinHost)

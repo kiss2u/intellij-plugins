@@ -6,7 +6,7 @@ import com.jediterm.terminal.TtyConnector
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
-class SerialTtyConnector(private val consoleView: JeditermConsoleView,
+internal class SerialTtyConnector(private val consoleView: JeditermConsoleView,
                          private val connection: SerialPortService.SerialConnection) : TtyConnector {
 
   var charset: Charset = StandardCharsets.US_ASCII

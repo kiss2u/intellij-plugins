@@ -36,7 +36,7 @@ import kotlin.math.min
 
 private const val BUFFER_SIZE = 100000
 
-class JeditermConsoleView(project: Project, connection: SerialPortService.SerialConnection) : ConsoleView {
+internal class JeditermConsoleView(project: Project, connection: SerialPortService.SerialConnection) : ConsoleView {
 
   private val widget: JBTerminalWidget
 

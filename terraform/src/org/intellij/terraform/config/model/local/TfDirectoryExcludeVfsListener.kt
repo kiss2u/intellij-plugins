@@ -5,20 +5,24 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.AsyncFileListener
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 
 internal class TfDirectoryExcludeVfsListener : AsyncFileListener {
   override fun prepareChange(events: List<VFileEvent>): AsyncFileListener.ChangeApplier? {
-    val terraformDirs = events.asSequence()
-      .mapNotNull { it.file }
-      .filter { isValidTfDirectory(it) }
-      .toList()
-    if (terraformDirs.isEmpty()) return null
+    val terraformPaths = events
+      .filterIsInstance<VFileCreateEvent>()
+      .filter { it.isDirectory && it.childName == TF_DIRECTORY_NAME }
+      .map { it.path }
+    if (terraformPaths.isEmpty()) return null
 
     return object : AsyncFileListener.ChangeApplier {
       override fun afterVfsChange() {
-        val projects = ProjectManager.getInstance().openProjects
+        val fileSystem = LocalFileSystem.getInstance()
+        val terraformDirs = terraformPaths.mapNotNull { fileSystem.findFileByPath(it) }
 
+        val projects = ProjectManager.getInstance().openProjects
         for (project in projects) {
           val fileIndex = ProjectFileIndex.getInstance(project)
           val dirsToExclude = terraformDirs.filter { fileIndex.isInProject(it) }.toSet()

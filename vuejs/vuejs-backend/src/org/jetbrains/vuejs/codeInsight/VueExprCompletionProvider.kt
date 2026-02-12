@@ -1,10 +1,10 @@
 // Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.vuejs.codeInsight
 
-import com.intellij.codeInsight.completion.BaseCompletionService
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.FusCompletionKeys
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.lang.javascript.completion.JSCompletionContributor
 import com.intellij.lang.javascript.completion.JSLookupPriority.LOCAL_SCOPE_MAX_PRIORITY
@@ -40,7 +40,7 @@ class VueExprCompletionProvider : CompletionProvider<CompletionParameters>() {
         val lookupElement = completionResult.lookupElement
         // Filter out JavaScript symbols, and keywords such as 'class' and 'function'
         if (lookupElement is PrioritizedLookupElement<*>
-            && lookupElement.getUserData(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR)
+            && lookupElement.getUserData(FusCompletionKeys.LOOKUP_ELEMENT_CONTRIBUTOR)
               .let { it is JSCompletionContributor || it is JSPatternBasedCompletionContributor }) {
           val priority = lookupElement.priority.toInt()
           val proximity = lookupElement.explicitProximity

@@ -1,13 +1,13 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.angular2.codeInsight
 
-import com.intellij.codeInsight.completion.BaseCompletionService
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.completion.CompletionUtil
+import com.intellij.codeInsight.completion.FusCompletionKeys
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.lookup.LookupElement
@@ -316,7 +316,7 @@ class Angular2CompletionContributor : CompletionContributor() {
             return@runRemainingContributors
           }
           if (lookupElement is PrioritizedLookupElement<*> &&
-              lookupElement.getUserData<CompletionContributor>(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR)
+              lookupElement.getUserData<CompletionContributor>(FusCompletionKeys.LOOKUP_ELEMENT_CONTRIBUTOR)
                 .let { it is JSCompletionContributor || it is JSPatternBasedCompletionContributor }) {
             val priority = lookupElement.priority.toInt()
             // Filter out unsupported keywords

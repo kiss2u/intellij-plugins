@@ -1,6 +1,6 @@
 package org.jetbrains.vuejs.lang
 
-import com.intellij.codeInsight.completion.BaseCompletionService
+import com.intellij.codeInsight.completion.FusCompletionKeys
 import com.intellij.lang.javascript.completion.JSCompletionContributor
 import com.intellij.lang.javascript.completion.JSLookupPriority
 import com.intellij.lang.javascript.completion.JSPatternBasedCompletionContributor
@@ -22,7 +22,7 @@ val filterOutAriaAttributes: (LookupElementInfo) -> Boolean = { !it.lookupString
 
 val filterOutMostOfGlobalJSSymbolsInVue: (item: LookupElementInfo) -> Boolean = { info ->
   info.priority >= JSLookupPriority.NON_CONTEXT_KEYWORDS_PRIORITY.priorityValue
-  || info.lookupElement.getUserData(BaseCompletionService.LOOKUP_ELEMENT_CONTRIBUTOR).let {
+  || info.lookupElement.getUserData(FusCompletionKeys.LOOKUP_ELEMENT_CONTRIBUTOR).let {
     it !is VueCompletionContributor && it !is JSCompletionContributor && it !is JSPatternBasedCompletionContributor
   }
   || info.lookupString.startsWith("A")

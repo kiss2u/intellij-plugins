@@ -1,0 +1,20 @@
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.intellij.terraform.config.model.local
+
+import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
+import com.intellij.util.indexing.roots.IndexableFileScanner
+
+internal class TfIndexableFileScanner : IndexableFileScanner {
+  override fun startSession(project: Project): IndexableFileScanner.ScanSession {
+    return IndexableFileScanner.ScanSession {
+      IndexableFileScanner.IndexableFileVisitor { fileOrDir ->
+        if (buildLocalMetadataAutomatically && isTfLock(fileOrDir)) {
+          logger<TfLocalSchemaService>().info("Scanning local schema: $fileOrDir")
+          project.service<TfLocalSchemaService>().scheduleModelRebuild(setOf(fileOrDir))
+        }
+      }
+    }
+  }
+}

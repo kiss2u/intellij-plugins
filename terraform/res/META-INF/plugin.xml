@@ -364,7 +364,7 @@
 
     <vfs.asyncListener implementation="org.intellij.terraform.config.model.local.LocalSchemaVfsListener"/>
     <vfs.asyncListener implementation="org.intellij.terraform.config.model.local.TfDirectoryExcludeVfsListener"/>
-    <projectFileScanner implementation="org.intellij.terraform.config.model.local.LocalSchemaIndexableFileScanner"/>
+    <projectFileScanner implementation="org.intellij.terraform.config.model.local.TfIndexableFileScanner"/>
 
     <lang.inspectionSuppressor language="HCL" implementationClass="org.intellij.terraform.config.inspection.HCLInspectionSuppressor"/>
     <!-- HCL compatible inspections: Terraform, OpenTofu and Terragrunt -->

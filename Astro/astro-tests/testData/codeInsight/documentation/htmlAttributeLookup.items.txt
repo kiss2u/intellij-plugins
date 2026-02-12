@@ -1,2 +1,2 @@
-src (typeText=null; priority=100.0)
+src (typeText=null; priority=50.0)
 title (typeText=null; priority=0.0)

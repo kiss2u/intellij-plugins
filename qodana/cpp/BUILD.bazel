@@ -27,7 +27,7 @@ jvm_library(
     "//CIDR/clion-radler/core",
     "@community//platform/projectModel-api:projectModel",
     "@community//platform/ide-core-impl",
-    "//CIDR/clion-makefile",
+    "//CIDR/clion-makefile/core",
     "//CIDR/cidr-execution",
     "//CIDR/clion-compdb",
     "//CIDR/clion-meson/core",

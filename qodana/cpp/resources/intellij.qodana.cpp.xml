@@ -3,9 +3,9 @@
     <plugin id="org.jetbrains.plugins.clion.radler"/>
     <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
     <plugin id="com.intellij.clion-compdb"/>
-    <plugin id="com.intellij.clion-makefile"/>
     <plugin id="com.intellij.cmake"/>
     <module name="intellij.cidr.projectModel"/>
+    <module name="intellij.clion.makefile.core"/>
     <module name="intellij.clion.meson.core"/>
     <module name="intellij.clion.radler.core"/>
     <!-- endregion -->

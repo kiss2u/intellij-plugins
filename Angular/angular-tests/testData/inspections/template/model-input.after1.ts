@@ -5,7 +5,7 @@ import {Component, model} from "@angular/core"
   template: ``,
 })
 export class ChildComponent {
-    test = model<{ key: string }>(undefined);
+    test = model<{ key: string }>({key: undefined});
 }
 
 @Component({

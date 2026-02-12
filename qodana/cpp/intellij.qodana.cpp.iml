@@ -24,6 +24,6 @@
     <orderEntry type="module" module-name="intellij.clion.makefile" />
     <orderEntry type="module" module-name="intellij.cidr.execution" />
     <orderEntry type="module" module-name="intellij.clion.compdb" />
-    <orderEntry type="module" module-name="intellij.clion.meson" />
+    <orderEntry type="module" module-name="intellij.clion.meson.core" />
   </component>
 </module>

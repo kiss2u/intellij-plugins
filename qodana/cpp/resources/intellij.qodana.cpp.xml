@@ -1,12 +1,14 @@
 <idea-plugin package="org.jetbrains.qodana.cpp">
   <dependencies>
-    <plugin id="com.intellij.cmake"/>
-    <plugin id="com.intellij.clion-compdb"/>
-    <plugin id="com.intellij.clion.meson"/>
-    <plugin id="com.intellij.clion-makefile"/>
     <plugin id="org.jetbrains.plugins.clion.radler"/>
-    <module name="intellij.clion.radler.core"/>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <plugin id="com.intellij.clion-compdb"/>
+    <plugin id="com.intellij.clion-makefile"/>
+    <plugin id="com.intellij.cmake"/>
     <module name="intellij.cidr.projectModel"/>
+    <module name="intellij.clion.meson.core"/>
+    <module name="intellij.clion.radler.core"/>
+    <!-- endregion -->
   </dependencies>
 
   <projectListeners>

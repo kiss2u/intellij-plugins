@@ -30,7 +30,7 @@ jvm_library(
     "//CIDR/clion-makefile",
     "//CIDR/cidr-execution",
     "//CIDR/clion-compdb",
-    "//CIDR/clion-meson",
+    "//CIDR/clion-meson/core",
   ]
 )
 ### auto-generated section `build intellij.qodana.cpp` end

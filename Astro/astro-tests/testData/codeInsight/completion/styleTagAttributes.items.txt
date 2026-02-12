@@ -1,5 +1,4 @@
 media (typeText=null; priority=50.0)
-type (typeText=null; priority=50.0)
 define:vars (typeText=null; priority=10.0; typeGreyed)
 is:inline (typeText=null; priority=10.0; typeGreyed)
 is:global (typeText=null; priority=10.0; typeGreyed)

@@ -24,6 +24,7 @@ jvm_library(
     "@community//platform/core-ui",
     "@community//platform/execution-impl",
     "@community//platform/lang-api:lang",
+    "@lib//:kotlin-stdlib",
     "@community//platform/lang-impl",
     "@community//libraries/guava",
     "@community//platform/platform-impl:ide-impl",

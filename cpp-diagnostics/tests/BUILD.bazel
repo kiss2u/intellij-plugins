@@ -4,7 +4,8 @@ load("@rules_jvm//:jvm.bzl", "jvm_library")
 jvm_library(
   name = "tests",
   visibility = ["//visibility:public"],
-  srcs = glob([], allow_empty = True)
+  srcs = glob([], allow_empty = True),
+  runtime_deps = ["@lib//:kotlin-stdlib"]
 )
 
 jvm_library(
@@ -13,6 +14,7 @@ jvm_library(
   visibility = ["//visibility:public"],
   srcs = glob(["testSrc/**/*.kt", "testSrc/**/*.java", "testSrc/**/*.form"], allow_empty = True),
   deps = [
+    "@lib//:kotlin-stdlib",
     "//CIDR/cidr-common-testFramework/nolang",
     "//CIDR/cidr-common-testFramework/nolang:nolang_test_lib",
     "//contrib/cpp-diagnostics:clion-diagnostics",

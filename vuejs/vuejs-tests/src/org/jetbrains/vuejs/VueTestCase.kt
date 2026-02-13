@@ -1,6 +1,7 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.vuejs
 
+import com.intellij.javascript.nodejs.PackageJsonData
 import com.intellij.javascript.testFramework.web.WebFrameworkTestCase
 import com.intellij.lang.javascript.HybridTestMode
 import com.intellij.lang.javascript.waitEmptyServiceQueueForService
@@ -31,7 +32,10 @@ abstract class VueTestCase(
   override fun beforeConfiguredTest(configuration: TestConfiguration) {
     val tsPluginVersion = when (testMode) {
       VueTestMode.DEFAULT,
-        -> VueTSPluginVersion.V3_2_4
+        -> if (useLatestPlugin())
+        VueTSPluginVersion.V3_2_4
+      else
+        VueTSPluginVersion.V3_0_10
 
       VueTestMode.LEGACY_PLUGIN,
         -> VueTSPluginVersion.V3_0_10
@@ -63,6 +67,15 @@ abstract class VueTestCase(
     }
   }
 
+  private fun useLatestPlugin(): Boolean {
+    val packageJson = myFixture.tempDirFixture.getFile("node_modules/vue/package.json")
+                      ?: return true
+
+    val version = PackageJsonData.getOrCreate(packageJson).version
+                  ?: return true
+
+    return version.major != 2
+  }
 
   override val testDataRoot: String
     get() = getVueTestDataPath()

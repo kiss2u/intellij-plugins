@@ -4,6 +4,7 @@ package org.jetbrains.vuejs.lang
 import com.intellij.javascript.testFramework.web.WebFrameworkTestModule
 import com.intellij.javascript.testFramework.web.configureDependencies
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import org.jetbrains.vuejs.index.VUE_MODULE
 
 fun CodeInsightTestFixture.configureVueDependencies(
   vararg additionalDependencies: Pair<String, String>,
@@ -52,16 +53,16 @@ enum class VueTestModule(
   QUASAR_2_6_5("quasar/2.6.5", "quasar"),
   SHARDS_VUE_1_0_5("shards-vue", "@shards/vue"),
 
-  VUE_2_5_3("vue/2.5.3", "vue"),
-  VUE_2_6_10("vue/2.6.10", "vue"),
-  VUE_2_7_14("vue/2.7.14", "vue"),
-  VUE_3_0_0("vue/3.0.0", "vue"),
-  VUE_3_1_0("vue/3.1.0", "vue"),
-  VUE_3_2_2("vue/3.2.2", "vue"),
-  VUE_3_3_4("vue/3.3.4", "vue"),
-  VUE_3_4_0("vue/3.4.0", "vue"),
-  VUE_3_5_0("vue/3.5.0", "vue"),
-  VUE_3_6_0("vue/3.6.0", "vue"),
+  VUE_2_5_3("vue/2.5.3", VUE_MODULE),
+  VUE_2_6_10("vue/2.6.10", VUE_MODULE),
+  VUE_2_7_14("vue/2.7.14", VUE_MODULE),
+  VUE_3_0_0("vue/3.0.0", VUE_MODULE),
+  VUE_3_1_0("vue/3.1.0", VUE_MODULE),
+  VUE_3_2_2("vue/3.2.2", VUE_MODULE),
+  VUE_3_3_4("vue/3.3.4", VUE_MODULE),
+  VUE_3_4_0("vue/3.4.0", VUE_MODULE),
+  VUE_3_5_0("vue/3.5.0", VUE_MODULE),
+  VUE_3_6_0("vue/3.6.0", VUE_MODULE),
 
   VUE_TSCONFIG_0_8_1("vue-tsconfig/0.8.1", "@vue/tsconfig"),
 

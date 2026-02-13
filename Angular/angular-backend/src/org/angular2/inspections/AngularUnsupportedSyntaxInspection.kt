@@ -70,7 +70,7 @@ class AngularUnsupportedSyntaxInspection : LocalInspectionTool() {
           is JSStringTemplateExpression if isLessThanAngularVersion(element, AngularVersion.V_19_2) -> {
             holder.registerProblem(element, Angular2Bundle.htmlMessage("angular.inspection.unsupported-syntax-inspection.message.template"))
           }
-          is JSLiteralExpression if element.isRegExpLiteral && isLessThanAngularVersion(element, AngularVersion.V_21_0) -> {
+          is JSLiteralExpression if element.isRegExpLiteral && isLessThanAngularVersion(element, AngularVersion.V_21) -> {
             holder.registerProblem(
               element,
               Angular2Bundle.htmlMessage("angular.inspection.unsupported-syntax-inspection.message.reg-ex")
@@ -111,6 +111,7 @@ private val keywordToVersionMap = mutableMapOf(
   JSTokenTypes.TYPEOF_KEYWORD to AngularVersion.V_19,
   JSTokenTypes.IN_KEYWORD to AngularVersion.V_20,
   JSTokenTypes.MULTMULT to AngularVersion.V_20,
+  JSTokenTypes.INSTANCEOF_KEYWORD to AngularVersion.V_21_2
 ).apply {
   ASSIGNMENT_OPERATORS.types.forEach { if (it != JSTokenTypes.EQ) put(it, AngularVersion.V_20_1) }
 }

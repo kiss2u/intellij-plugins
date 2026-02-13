@@ -27,7 +27,7 @@ interface Angular2TokenTypes {
                                                JSTokenTypes.UNDEFINED_KEYWORD, JSTokenTypes.TRUE_KEYWORD, JSTokenTypes.FALSE_KEYWORD,
                                                JSTokenTypes.IF_KEYWORD,
                                                JSTokenTypes.ELSE_KEYWORD, JSTokenTypes.THIS_KEYWORD, BLOCK_PARAMETER_NAME,
-                                               JSTokenTypes.TYPE_KEYWORD, JSTokenTypes.IN_KEYWORD)
+                                               JSTokenTypes.TYPE_KEYWORD, JSTokenTypes.IN_KEYWORD, JSTokenTypes.INSTANCEOF_KEYWORD)
 
     @JvmField
     val KEYWORDS_20: TokenSet = TokenSet.orSet(KEYWORDS_2, TokenSet.create(JSTokenTypes.VOID_KEYWORD))

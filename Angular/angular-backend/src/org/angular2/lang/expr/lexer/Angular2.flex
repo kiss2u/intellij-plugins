@@ -168,6 +168,7 @@ LINE_TERMINATOR_SEQUENCE=\R
   "this"                      { return THIS_KEYWORD; }
   "typeof"                    { return TYPEOF_KEYWORD; }
   "in"                        { return IN_KEYWORD; }
+  "instanceof"                { return INSTANCEOF_KEYWORD; }
   "void"                      { if (enableVoidKeyword) return VOID_KEYWORD; else return IDENTIFIER; }
 
   "..."                       { return DOT_DOT_DOT; }

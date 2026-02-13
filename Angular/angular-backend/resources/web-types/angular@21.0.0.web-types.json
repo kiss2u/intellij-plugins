@@ -17,7 +17,7 @@
       }
     },
     "angular-version": {
-      "V_21_0": {
+      "V_21": {
         "enable-when": {
           "node-packages": [
             "@angular/core"

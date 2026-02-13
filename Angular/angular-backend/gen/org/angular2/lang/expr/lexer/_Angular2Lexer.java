@@ -294,15 +294,15 @@ class _Angular2Lexer implements FlexLexer {
     "\1\63\1\64\1\65\1\66\1\67\1\70\1\71\2\10"+
     "\1\72\1\73\10\10\1\74\4\0\2\75\1\0\1\76"+
     "\1\77\2\0\2\3\1\100\1\101\2\0\1\102\1\103"+
-    "\1\24\1\104\1\105\1\106\2\10\1\107\5\10\1\110"+
+    "\1\24\1\104\1\105\1\106\3\10\1\107\5\10\1\110"+
     "\1\10\1\111\2\0\1\112\4\0\1\113\1\114\1\77"+
-    "\1\0\2\3\2\0\1\115\1\10\1\116\1\117\1\120"+
-    "\2\10\1\121\5\0\1\114\2\3\2\0\1\122\2\10"+
-    "\3\0\1\114\2\3\1\123\1\124\1\125\1\10\1\126"+
-    "\1\127\1\130\1\3\2\10\1\131";
+    "\1\0\2\3\2\0\1\115\2\10\1\116\1\117\1\120"+
+    "\2\10\1\121\5\0\1\114\2\3\2\0\1\122\3\10"+
+    "\3\0\1\114\2\3\1\123\1\124\1\10\1\125\1\10"+
+    "\1\126\1\127\1\130\1\3\5\10\1\131\1\132";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[189];
+    int [] result = new int[197];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -338,22 +338,23 @@ class _Angular2Lexer implements FlexLexer {
     "\0\u0a02\0\u0225\0\u0a3f\0\u0a7c\0\u0ab9\0\u0131\0\u0af6\0\u0b33"+
     "\0\u0b70\0\u0bad\0\u0131\0\u0131\0\u0131\0\u0bea\0\u0c27\0\u0c64"+
     "\0\u0131\0\u0ca1\0\u0131\0\u0cde\0\u0131\0\u0131\0\u0131\0\u0d1b"+
-    "\0\u0d58\0\u0d95\0\u0dd2\0\u0319\0\u0319\0\u0e0f\0\u0e4c\0\u0e89"+
-    "\0\u0ec6\0\u0f03\0\u0f40\0\u0f7d\0\u0fba\0\u0ff7\0\u1034\0\u1071"+
-    "\0\u10ae\0\u10eb\0\u0131\0\u1128\0\u1165\0\u0131\0\u11a2\0\u11df"+
-    "\0\u121c\0\u1259\0\u1296\0\u0131\0\u0131\0\u12d3\0\u1310\0\u0131"+
-    "\0\u0131\0\u134d\0\u0131\0\u0131\0\u0131\0\u138a\0\u13c7\0\u0319"+
-    "\0\u1404\0\u1441\0\u147e\0\u14bb\0\u14f8\0\u0319\0\u1535\0\u0131"+
-    "\0\u1572\0\u15af\0\u0131\0\u15ec\0\u1629\0\u1666\0\u16a3\0\u0131"+
-    "\0\u16e0\0\u171d\0\u175a\0\u1797\0\u17d4\0\u1811\0\u184e\0\u0319"+
-    "\0\u188b\0\u0319\0\u0319\0\u0319\0\u18c8\0\u1905\0\u0319\0\u1942"+
-    "\0\u197f\0\u19bc\0\u19f9\0\u1a36\0\u1a73\0\u1ab0\0\u1aed\0\u1b2a"+
-    "\0\u1b67\0\u0319\0\u1ba4\0\u1be1\0\u1c1e\0\u1c5b\0\u1c98\0\u1cd5"+
-    "\0\u1d12\0\u1d4f\0\u0131\0\u0131\0\u0319\0\u1d8c\0\u0131\0\u0131"+
-    "\0\u01e8\0\u1dc9\0\u1e06\0\u1e43\0\u0319";
+    "\0\u0d58\0\u0d95\0\u0dd2\0\u0319\0\u0e0f\0\u0e4c\0\u0e89\0\u0ec6"+
+    "\0\u0f03\0\u0f40\0\u0f7d\0\u0fba\0\u0ff7\0\u1034\0\u1071\0\u10ae"+
+    "\0\u10eb\0\u1128\0\u0131\0\u1165\0\u11a2\0\u0131\0\u11df\0\u121c"+
+    "\0\u1259\0\u1296\0\u12d3\0\u0131\0\u0131\0\u1310\0\u134d\0\u0131"+
+    "\0\u0131\0\u138a\0\u0131\0\u0131\0\u0131\0\u13c7\0\u1404\0\u1441"+
+    "\0\u0319\0\u147e\0\u14bb\0\u14f8\0\u1535\0\u1572\0\u0319\0\u15af"+
+    "\0\u0131\0\u15ec\0\u1629\0\u0131\0\u1666\0\u16a3\0\u16e0\0\u171d"+
+    "\0\u0131\0\u175a\0\u1797\0\u17d4\0\u1811\0\u184e\0\u188b\0\u18c8"+
+    "\0\u0319\0\u1905\0\u1942\0\u0319\0\u0319\0\u0319\0\u197f\0\u19bc"+
+    "\0\u0319\0\u19f9\0\u1a36\0\u1a73\0\u1ab0\0\u1aed\0\u1b2a\0\u1b67"+
+    "\0\u1ba4\0\u1be1\0\u1c1e\0\u0319\0\u1c5b\0\u1c98\0\u1cd5\0\u1d12"+
+    "\0\u1d4f\0\u1d8c\0\u1dc9\0\u1e06\0\u1e43\0\u0131\0\u0131\0\u1e80"+
+    "\0\u0319\0\u1ebd\0\u0131\0\u0131\0\u01e8\0\u1efa\0\u1f37\0\u1f74"+
+    "\0\u1fb1\0\u1fee\0\u202b\0\u0319\0\u0319";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[189];
+    int [] result = new int[197];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -425,78 +426,87 @@ class _Angular2Lexer implements FlexLexer {
     "\24\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
     "\16\22\1\176\5\22\15\0\1\22\13\0\1\22\6\0"+
     "\4\22\5\0\10\22\1\177\13\22\15\0\1\22\13\0"+
-    "\1\22\6\0\4\22\5\0\17\22\1\200\4\22\15\0"+
-    "\1\22\13\0\1\22\6\0\4\22\5\0\10\22\1\201"+
-    "\13\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
-    "\7\22\1\202\14\22\15\0\1\22\13\0\1\22\6\0"+
-    "\4\22\5\0\20\22\1\203\3\22\15\0\1\22\13\0"+
-    "\1\22\6\0\4\22\5\0\13\22\1\204\10\22\15\0"+
-    "\1\22\13\0\1\22\6\0\4\22\5\0\2\22\1\205"+
-    "\21\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
-    "\15\22\1\206\6\22\15\0\1\22\13\0\1\22\6\0"+
-    "\4\22\5\0\7\22\1\207\14\22\35\0\1\210\70\0"+
-    "\1\211\11\0\1\212\27\0\1\212\27\0\2\150\1\0"+
-    "\2\150\1\213\4\0\4\150\5\0\24\150\3\0\1\150"+
-    "\22\0\2\150\1\0\2\150\1\213\4\0\4\150\5\0"+
-    "\13\150\1\214\10\150\3\0\1\150\22\0\2\150\1\0"+
-    "\2\150\1\213\4\0\4\150\5\0\20\150\1\215\3\150"+
-    "\3\0\1\150\10\0\1\216\15\0\1\217\5\0\4\217"+
-    "\5\0\24\217\3\0\1\217\25\220\1\221\6\220\2\221"+
-    "\7\220\5\221\23\220\2\157\1\0\2\157\1\0\16\157"+
-    "\1\222\13\157\1\160\1\161\33\157\41\160\1\223\1\157"+
-    "\32\160\2\157\1\0\2\157\1\0\67\157\34\0\4\12"+
-    "\5\0\15\12\1\224\6\12\40\0\4\12\5\0\4\12"+
-    "\1\225\17\12\63\0\1\226\74\0\1\227\42\0\1\172"+
-    "\60\0\1\22\13\0\1\22\6\0\4\22\5\0\3\22"+
-    "\1\230\20\22\15\0\1\22\13\0\1\22\6\0\4\22"+
-    "\5\0\16\22\1\231\5\22\15\0\1\22\13\0\1\22"+
-    "\6\0\4\22\5\0\10\22\1\232\13\22\15\0\1\22"+
-    "\13\0\1\22\6\0\4\22\5\0\16\22\1\233\5\22"+
-    "\15\0\1\22\13\0\1\22\6\0\4\22\5\0\3\22"+
-    "\1\234\20\22\15\0\1\22\13\0\1\22\6\0\4\22"+
-    "\5\0\3\22\1\235\20\22\15\0\1\22\13\0\1\22"+
+    "\1\22\6\0\4\22\5\0\16\22\1\200\5\22\15\0"+
+    "\1\22\13\0\1\22\6\0\4\22\5\0\17\22\1\201"+
+    "\4\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
+    "\10\22\1\202\13\22\15\0\1\22\13\0\1\22\6\0"+
+    "\4\22\5\0\7\22\1\203\14\22\15\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\20\22\1\204\3\22\15\0"+
+    "\1\22\13\0\1\22\6\0\4\22\5\0\13\22\1\205"+
+    "\10\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
+    "\2\22\1\206\21\22\15\0\1\22\13\0\1\22\6\0"+
+    "\4\22\5\0\15\22\1\207\6\22\15\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\7\22\1\210\14\22\35\0"+
+    "\1\211\70\0\1\212\11\0\1\213\27\0\1\213\27\0"+
+    "\2\150\1\0\2\150\1\214\4\0\4\150\5\0\24\150"+
+    "\3\0\1\150\22\0\2\150\1\0\2\150\1\214\4\0"+
+    "\4\150\5\0\13\150\1\215\10\150\3\0\1\150\22\0"+
+    "\2\150\1\0\2\150\1\214\4\0\4\150\5\0\20\150"+
+    "\1\216\3\150\3\0\1\150\10\0\1\217\15\0\1\220"+
+    "\5\0\4\220\5\0\24\220\3\0\1\220\25\221\1\222"+
+    "\6\221\2\222\7\221\5\222\23\221\2\157\1\0\2\157"+
+    "\1\0\16\157\1\223\13\157\1\160\1\161\33\157\41\160"+
+    "\1\224\1\157\32\160\2\157\1\0\2\157\1\0\67\157"+
+    "\34\0\4\12\5\0\15\12\1\225\6\12\40\0\4\12"+
+    "\5\0\4\12\1\226\17\12\63\0\1\227\74\0\1\230"+
+    "\42\0\1\172\60\0\1\22\13\0\1\22\6\0\4\22"+
+    "\5\0\3\22\1\231\20\22\15\0\1\22\13\0\1\22"+
+    "\6\0\4\22\5\0\16\22\1\232\5\22\15\0\1\22"+
+    "\13\0\1\22\6\0\4\22\5\0\17\22\1\233\4\22"+
+    "\15\0\1\22\13\0\1\22\6\0\4\22\5\0\10\22"+
+    "\1\234\13\22\15\0\1\22\13\0\1\22\6\0\4\22"+
+    "\5\0\16\22\1\235\5\22\15\0\1\22\13\0\1\22"+
     "\6\0\4\22\5\0\3\22\1\236\20\22\15\0\1\22"+
-    "\13\0\1\22\6\0\4\22\5\0\2\22\1\237\21\22"+
-    "\31\0\1\211\1\0\1\213\72\0\1\240\6\0\2\240"+
-    "\7\0\5\240\45\0\2\150\1\0\2\150\1\213\4\0"+
-    "\4\150\5\0\12\150\1\241\11\150\3\0\1\150\22\0"+
-    "\2\150\1\0\2\150\1\213\4\0\4\150\5\0\12\150"+
-    "\1\242\11\150\3\0\1\150\25\0\1\243\11\0\1\244"+
-    "\27\0\1\244\27\0\2\217\1\0\2\217\1\153\4\0"+
-    "\4\217\5\0\24\217\3\0\1\217\25\0\1\245\6\0"+
-    "\2\245\7\0\5\245\72\0\1\222\2\0\1\222\1\0"+
-    "\1\222\6\0\1\222\1\0\4\222\4\0\2\160\4\0"+
-    "\67\160\34\0\4\12\5\0\1\246\23\12\40\0\4\12"+
-    "\5\0\3\12\1\247\20\12\67\0\1\250\75\0\1\251"+
-    "\21\0\1\22\13\0\1\22\6\0\4\22\5\0\3\22"+
-    "\1\252\20\22\15\0\1\22\13\0\1\22\6\0\4\22"+
-    "\5\0\12\22\1\253\11\22\15\0\1\22\13\0\1\22"+
-    "\6\0\4\22\5\0\4\22\1\254\17\22\31\0\1\240"+
-    "\1\0\1\213\4\0\2\240\7\0\5\240\45\0\2\150"+
-    "\1\0\2\150\1\213\4\0\4\150\5\0\16\150\1\255"+
-    "\5\150\3\0\1\150\22\0\2\150\1\0\2\150\1\213"+
-    "\4\0\4\150\5\0\17\150\1\256\4\150\3\0\1\150"+
-    "\25\0\1\243\1\0\1\153\72\0\1\257\6\0\2\257"+
-    "\7\0\5\257\50\0\1\260\6\0\2\260\7\0\5\260"+
-    "\57\0\4\12\5\0\17\12\1\261\4\12\40\0\4\12"+
-    "\5\0\17\12\1\262\4\12\33\0\1\263\74\0\1\264"+
-    "\56\0\1\22\13\0\1\22\6\0\4\22\5\0\4\22"+
-    "\1\265\17\22\15\0\1\22\13\0\1\22\6\0\4\22"+
-    "\5\0\7\22\1\266\14\22\26\0\2\150\1\0\2\150"+
-    "\1\267\4\0\4\150\5\0\24\150\3\0\1\150\22\0"+
-    "\2\150\1\0\2\150\1\270\4\0\4\150\5\0\24\150"+
-    "\3\0\1\150\25\0\1\257\1\0\1\153\4\0\2\257"+
-    "\7\0\5\257\50\0\1\153\6\0\2\153\7\0\5\153"+
-    "\57\0\4\12\5\0\3\12\1\271\20\12\40\0\4\12"+
-    "\5\0\1\12\1\272\22\12\15\0\1\22\13\0\1\22"+
-    "\6\0\4\22\5\0\11\22\1\273\12\22\40\0\4\12"+
-    "\5\0\6\12\1\271\15\12\15\0\1\22\13\0\1\22"+
-    "\6\0\4\22\5\0\3\22\1\274\20\22\15\0\1\22"+
-    "\13\0\1\22\6\0\4\22\5\0\2\22\1\275\21\22"+
-    "\4\0";
+    "\13\0\1\22\6\0\4\22\5\0\3\22\1\237\20\22"+
+    "\15\0\1\22\13\0\1\22\6\0\4\22\5\0\3\22"+
+    "\1\240\20\22\15\0\1\22\13\0\1\22\6\0\4\22"+
+    "\5\0\2\22\1\241\21\22\31\0\1\212\1\0\1\214"+
+    "\72\0\1\242\6\0\2\242\7\0\5\242\45\0\2\150"+
+    "\1\0\2\150\1\214\4\0\4\150\5\0\12\150\1\243"+
+    "\11\150\3\0\1\150\22\0\2\150\1\0\2\150\1\214"+
+    "\4\0\4\150\5\0\12\150\1\244\11\150\3\0\1\150"+
+    "\25\0\1\245\11\0\1\246\27\0\1\246\27\0\2\220"+
+    "\1\0\2\220\1\153\4\0\4\220\5\0\24\220\3\0"+
+    "\1\220\25\0\1\247\6\0\2\247\7\0\5\247\72\0"+
+    "\1\223\2\0\1\223\1\0\1\223\6\0\1\223\1\0"+
+    "\4\223\4\0\2\160\4\0\67\160\34\0\4\12\5\0"+
+    "\1\250\23\12\40\0\4\12\5\0\3\12\1\251\20\12"+
+    "\67\0\1\252\75\0\1\253\21\0\1\22\13\0\1\22"+
+    "\6\0\4\22\5\0\3\22\1\254\20\22\15\0\1\22"+
+    "\13\0\1\22\6\0\4\22\5\0\1\255\23\22\15\0"+
+    "\1\22\13\0\1\22\6\0\4\22\5\0\12\22\1\256"+
+    "\11\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
+    "\4\22\1\257\17\22\31\0\1\242\1\0\1\214\4\0"+
+    "\2\242\7\0\5\242\45\0\2\150\1\0\2\150\1\214"+
+    "\4\0\4\150\5\0\16\150\1\260\5\150\3\0\1\150"+
+    "\22\0\2\150\1\0\2\150\1\214\4\0\4\150\5\0"+
+    "\17\150\1\261\4\150\3\0\1\150\25\0\1\245\1\0"+
+    "\1\153\72\0\1\262\6\0\2\262\7\0\5\262\50\0"+
+    "\1\263\6\0\2\263\7\0\5\263\57\0\4\12\5\0"+
+    "\17\12\1\264\4\12\40\0\4\12\5\0\17\12\1\265"+
+    "\4\12\33\0\1\266\74\0\1\267\56\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\11\22\1\270\12\22\15\0"+
+    "\1\22\13\0\1\22\6\0\4\22\5\0\4\22\1\271"+
+    "\17\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
+    "\7\22\1\272\14\22\26\0\2\150\1\0\2\150\1\273"+
+    "\4\0\4\150\5\0\24\150\3\0\1\150\22\0\2\150"+
+    "\1\0\2\150\1\274\4\0\4\150\5\0\24\150\3\0"+
+    "\1\150\25\0\1\262\1\0\1\153\4\0\2\262\7\0"+
+    "\5\262\50\0\1\153\6\0\2\153\7\0\5\153\57\0"+
+    "\4\12\5\0\3\12\1\275\20\12\40\0\4\12\5\0"+
+    "\1\12\1\276\22\12\15\0\1\22\13\0\1\22\6\0"+
+    "\4\22\5\0\1\22\1\277\22\22\15\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\11\22\1\300\12\22\40\0"+
+    "\4\12\5\0\6\12\1\275\15\12\15\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\3\22\1\301\20\22\15\0"+
+    "\1\22\13\0\1\22\6\0\4\22\5\0\3\22\1\302"+
+    "\20\22\15\0\1\22\13\0\1\22\6\0\4\22\5\0"+
+    "\12\22\1\303\11\22\15\0\1\22\13\0\1\22\6\0"+
+    "\4\22\5\0\2\22\1\304\21\22\15\0\1\22\13\0"+
+    "\1\22\6\0\4\22\5\0\4\22\1\305\17\22\4\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[7808];
+    int [] result = new int[8296];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -541,12 +551,12 @@ class _Angular2Lexer implements FlexLexer {
     "\1\11\1\1\2\0\1\1\3\11\1\0\2\1\1\11"+
     "\1\1\1\11\1\1\3\11\17\1\4\0\1\11\1\1"+
     "\1\0\1\11\1\1\2\0\2\1\2\11\2\0\2\11"+
-    "\1\1\3\11\12\1\1\11\2\0\1\11\4\0\1\11"+
-    "\2\1\1\0\2\1\2\0\10\1\5\0\3\1\2\0"+
-    "\3\1\3\0\3\1\2\11\2\1\2\11\5\1";
+    "\1\1\3\11\13\1\1\11\2\0\1\11\4\0\1\11"+
+    "\2\1\1\0\2\1\2\0\11\1\5\0\3\1\2\0"+
+    "\4\1\3\0\3\1\2\11\3\1\2\11\11\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[189];
+    int [] result = new int[197];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -945,92 +955,92 @@ class _Angular2Lexer implements FlexLexer {
             { yypushback(1); yybegin(YYEXPRESSION);
             }
           // fall through
-          case 90: break;
+          case 91: break;
           case 2:
             { return WHITE_SPACE;
             }
           // fall through
-          case 91: break;
+          case 92: break;
           case 3:
             { yybegin(YYEXPRESSION); if (shouldStartWithParameter()) return BLOCK_PARAMETER_NAME; else yypushback(yylength());
             }
           // fall through
-          case 92: break;
+          case 93: break;
           case 4:
             { return BAD_CHARACTER;
             }
           // fall through
-          case 93: break;
+          case 94: break;
           case 5:
             { return EXCL;
             }
           // fall through
-          case 94: break;
+          case 95: break;
           case 6:
             { yybegin(YYSTRING); quote = '"'; return STRING_LITERAL_PART;
             }
           // fall through
-          case 95: break;
+          case 96: break;
           case 7:
             { return SHARP;
             }
           // fall through
-          case 96: break;
+          case 97: break;
           case 8:
             { return IDENTIFIER;
             }
           // fall through
-          case 97: break;
+          case 98: break;
           case 9:
             { return PERC;
             }
           // fall through
-          case 98: break;
+          case 99: break;
           case 10:
             { return AND;
             }
           // fall through
-          case 99: break;
+          case 100: break;
           case 11:
             { yybegin(YYSTRING); quote = '\''; return STRING_LITERAL_PART;
             }
           // fall through
-          case 100: break;
+          case 101: break;
           case 12:
             { return LPAR;
             }
           // fall through
-          case 101: break;
+          case 102: break;
           case 13:
             { return RPAR;
             }
           // fall through
-          case 102: break;
+          case 103: break;
           case 14:
             { return MULT;
             }
           // fall through
-          case 103: break;
+          case 104: break;
           case 15:
             { return PLUS;
             }
           // fall through
-          case 104: break;
+          case 105: break;
           case 16:
             { return COMMA;
             }
           // fall through
-          case 105: break;
+          case 106: break;
           case 17:
             { return MINUS;
             }
           // fall through
-          case 106: break;
+          case 107: break;
           case 18:
             { return DOT;
             }
           // fall through
-          case 107: break;
+          case 108: break;
           case 19:
             { if (isRegexStart()) {
                                   yypushback(1);
@@ -1040,74 +1050,74 @@ class _Angular2Lexer implements FlexLexer {
                                 }
             }
           // fall through
-          case 108: break;
+          case 109: break;
           case 20:
             { return NUMERIC_LITERAL;
             }
           // fall through
-          case 109: break;
+          case 110: break;
           case 21:
             { return COLON;
             }
           // fall through
-          case 110: break;
+          case 111: break;
           case 22:
             { return SEMICOLON;
             }
           // fall through
-          case 111: break;
+          case 112: break;
           case 23:
             { return LT;
             }
           // fall through
-          case 112: break;
+          case 113: break;
           case 24:
             { return EQ;
             }
           // fall through
-          case 113: break;
+          case 114: break;
           case 25:
             { return GT;
             }
           // fall through
-          case 114: break;
+          case 115: break;
           case 26:
             { return QUEST;
             }
           // fall through
-          case 115: break;
+          case 116: break;
           case 27:
             { return LBRACKET;
             }
           // fall through
-          case 116: break;
+          case 117: break;
           case 28:
             { return RBRACKET;
             }
           // fall through
-          case 117: break;
+          case 118: break;
           case 29:
             { return XOR;
             }
           // fall through
-          case 118: break;
+          case 119: break;
           case 30:
             { yybegin(YYSTRING_TEMPLATE); return BACKQUOTE;
             }
           // fall through
-          case 119: break;
+          case 120: break;
           case 31:
             { if (myStateStack.size() > 0) pushState(YYEXPRESSION);
                                 yybegin(YYEXPRESSION);
                                 return LBRACE;
             }
           // fall through
-          case 120: break;
+          case 121: break;
           case 32:
             { return OR;
             }
           // fall through
-          case 121: break;
+          case 122: break;
           case 33:
             { int popped = popState();
                                 if (popped < 0) {
@@ -1116,147 +1126,147 @@ class _Angular2Lexer implements FlexLexer {
                                 return RBRACE;
             }
           // fall through
-          case 122: break;
+          case 123: break;
           case 34:
             { return STRING_LITERAL_PART;
             }
           // fall through
-          case 123: break;
+          case 124: break;
           case 35:
             { yypushback(yytext().length()); yybegin(YYEXPRESSION);
             }
           // fall through
-          case 124: break;
+          case 125: break;
           case 36:
             { if (quote == '"') yybegin(YYEXPRESSION); return STRING_LITERAL_PART;
             }
           // fall through
-          case 125: break;
+          case 126: break;
           case 37:
             { if (quote == '\'') yybegin(YYEXPRESSION); return STRING_LITERAL_PART;
             }
           // fall through
-          case 126: break;
+          case 127: break;
           case 38:
             { return STRING_TEMPLATE_PART;
             }
           // fall through
-          case 127: break;
+          case 128: break;
           case 39:
             { yybegin(YYEXPRESSION); return BACKQUOTE;
             }
           // fall through
-          case 128: break;
+          case 129: break;
           case 40:
             { pushState(YYSTRING_TEMPLATE); yybegin(YYEXPRESSION); return LBRACE;
             }
           // fall through
-          case 129: break;
+          case 130: break;
           case 41:
             { yybegin(YYEXPRESSION); return DIV;
             }
           // fall through
-          case 130: break;
+          case 131: break;
           case 42:
             { return NE;
             }
           // fall through
-          case 131: break;
+          case 132: break;
           case 43:
             { return PERCEQ;
             }
           // fall through
-          case 132: break;
+          case 133: break;
           case 44:
             { return ANDAND;
             }
           // fall through
-          case 133: break;
+          case 134: break;
           case 45:
             { return MULTMULT;
             }
           // fall through
-          case 134: break;
+          case 135: break;
           case 46:
             { return MULTEQ;
             }
           // fall through
-          case 135: break;
+          case 136: break;
           case 47:
             { return PLUSEQ;
             }
           // fall through
-          case 136: break;
+          case 137: break;
           case 48:
             { return MINUSEQ;
             }
           // fall through
-          case 137: break;
+          case 138: break;
           case 49:
             { return C_STYLE_COMMENT;
             }
           // fall through
-          case 138: break;
+          case 139: break;
           case 50:
             { return DIVEQ;
             }
           // fall through
-          case 139: break;
+          case 140: break;
           case 51:
             { return LE;
             }
           // fall through
-          case 140: break;
+          case 141: break;
           case 52:
             { return EQEQ;
             }
           // fall through
-          case 141: break;
+          case 142: break;
           case 53:
             { return EQGT;
             }
           // fall through
-          case 142: break;
+          case 143: break;
           case 54:
             { return GE;
             }
           // fall through
-          case 143: break;
+          case 144: break;
           case 55:
             { return ELVIS;
             }
           // fall through
-          case 144: break;
+          case 145: break;
           case 56:
             { return QUEST_QUEST;
             }
           // fall through
-          case 145: break;
+          case 146: break;
           case 57:
             { return AS_KEYWORD;
             }
           // fall through
-          case 146: break;
+          case 147: break;
           case 58:
             { return IF_KEYWORD;
             }
           // fall through
-          case 147: break;
+          case 148: break;
           case 59:
             { return IN_KEYWORD;
             }
           // fall through
-          case 148: break;
+          case 149: break;
           case 60:
             { return OROR;
             }
           // fall through
-          case 149: break;
+          case 150: break;
           case 61:
             { return ESCAPE_SEQUENCE;
             }
           // fall through
-          case 150: break;
+          case 151: break;
           case 62:
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
@@ -1266,42 +1276,42 @@ class _Angular2Lexer implements FlexLexer {
                                 return DOLLAR;
             }
           // fall through
-          case 151: break;
+          case 152: break;
           case 63:
             { yybegin(YYEXPRESSION); return REGEXP_LITERAL;
             }
           // fall through
-          case 152: break;
+          case 153: break;
           case 64:
             { return NEQEQ;
             }
           // fall through
-          case 153: break;
+          case 154: break;
           case 65:
             { return AND_AND_EQ;
             }
           // fall through
-          case 154: break;
+          case 155: break;
           case 66:
             { return MULTMULTEQ;
             }
           // fall through
-          case 155: break;
+          case 156: break;
           case 67:
             { return DOT_DOT_DOT;
             }
           // fall through
-          case 156: break;
+          case 157: break;
           case 68:
             { return EQEQEQ;
             }
           // fall through
-          case 157: break;
+          case 158: break;
           case 69:
             { return QUEST_QUEST_EQ;
             }
           // fall through
-          case 158: break;
+          case 159: break;
           case 70:
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
@@ -1309,102 +1319,107 @@ class _Angular2Lexer implements FlexLexer {
             { return IDENTIFIER;
             }
           // fall through
-          case 159: break;
+          case 160: break;
           case 71:
             { return LET_KEYWORD;
             }
           // fall through
-          case 160: break;
+          case 161: break;
           case 72:
             { return VAR_KEYWORD;
             }
           // fall through
-          case 161: break;
+          case 162: break;
           case 73:
             { return OR_OR_EQ;
             }
           // fall through
-          case 162: break;
+          case 163: break;
           case 74:
             { return XML_CHAR_ENTITY_REF;
             }
           // fall through
-          case 163: break;
+          case 164: break;
           case 75:
             { yypushback(1); return INVALID_ESCAPE_SEQUENCE;
             }
           // fall through
-          case 164: break;
+          case 165: break;
           case 76:
             { return INVALID_ESCAPE_SEQUENCE;
             }
           // fall through
-          case 165: break;
+          case 166: break;
           case 77:
             { return ELSE_KEYWORD;
             }
           // fall through
-          case 166: break;
+          case 167: break;
           case 78:
             { return NULL_KEYWORD;
             }
           // fall through
-          case 167: break;
+          case 168: break;
           case 79:
             { return THIS_KEYWORD;
             }
           // fall through
-          case 168: break;
+          case 169: break;
           case 80:
             { return TRUE_KEYWORD;
             }
           // fall through
-          case 169: break;
+          case 170: break;
           case 81:
             { if (enableVoidKeyword) return VOID_KEYWORD; else return IDENTIFIER;
             }
           // fall through
-          case 170: break;
+          case 171: break;
           case 82:
             { return FALSE_KEYWORD;
             }
           // fall through
-          case 171: break;
+          case 172: break;
           case 83:
             { yybegin(YYSTRING); quote = '\''; return XML_CHAR_ENTITY_REF;
             }
           // fall through
-          case 172: break;
+          case 173: break;
           case 84:
             { yybegin(YYSTRING); quote = '"'; return XML_CHAR_ENTITY_REF;
             }
           // fall through
-          case 173: break;
+          case 174: break;
           case 85:
             { return TYPEOF_KEYWORD;
             }
           // fall through
-          case 174: break;
+          case 175: break;
           case 86:
             { if (quote == '\'') yybegin(YYEXPRESSION); return XML_CHAR_ENTITY_REF;
             }
           // fall through
-          case 175: break;
+          case 176: break;
           case 87:
             { if (quote == '"') yybegin(YYEXPRESSION); return XML_CHAR_ENTITY_REF;
             }
           // fall through
-          case 176: break;
+          case 177: break;
           case 88:
             { if (shouldStartWithParameter()) return BLOCK_PARAMETER_NAME; else { yybegin(YYEXPRESSION); yypushback(yylength());}
             }
           // fall through
-          case 177: break;
+          case 178: break;
           case 89:
             { return UNDEFINED_KEYWORD;
             }
           // fall through
-          case 178: break;
+          case 179: break;
+          case 90:
+            { return INSTANCEOF_KEYWORD;
+            }
+          // fall through
+          case 180: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

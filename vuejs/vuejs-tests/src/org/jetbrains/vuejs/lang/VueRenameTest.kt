@@ -413,10 +413,6 @@ abstract class VueRenameTestBase(
       mainFile = mainFile,
       newName = newName,
       dir = true,
-      modules = arrayOf(
-        VueTestModule.VUE_3_5_0,
-        VueTestModule.VUE_TSCONFIG_0_8_1,
-      ),
       configurators = listOf(
         VueTsConfigFile(),
       ),

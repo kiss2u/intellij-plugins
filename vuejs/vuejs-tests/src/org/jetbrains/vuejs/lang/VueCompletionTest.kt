@@ -1478,9 +1478,16 @@ abstract class VueCompletionTestBase(
 
   @Test
   fun testComponentEmitsDefinitions() =
-    doLookupTest(renderPriority = true, renderTypeText = false,
-                 locations = listOf("define-emits @<caret>", "define-component @<caret>", "export-component @<caret>",
-                                    "define-emits-with-type @<caret>")) {
+    doLookupTest(
+      renderPriority = true,
+      renderTypeText = false,
+      locations = listOf(
+        "define-emits @<caret>",
+        "define-component @<caret>",
+        "export-component @<caret>",
+        "define-emits-with-type @<caret>",
+      ),
+    ) {
       it.isItemTextBold
     }
 

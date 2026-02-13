@@ -1,6 +1,7 @@
 // Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.angular2.options
 
+import com.intellij.javascript.util.JSLogOnceService
 import com.intellij.lang.typescript.compiler.TypeScriptCompilerConfigUtil.isEffectiveUseTypesFromServer
 import com.intellij.lang.typescript.compiler.TypeScriptCompilerSettings
 import com.intellij.lang.typescript.compiler.ui.TypeScriptServiceRestartService
@@ -13,6 +14,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import org.jetbrains.annotations.TestOnly
@@ -34,6 +36,10 @@ fun configureAngularSettingsService(project: Project, disposable: Disposable, se
 @State(name = "AngularSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class AngularSettings(val project: Project) : SimplePersistentStateComponent<AngularSettingsState>(AngularSettingsState()) {
 
+  companion object {
+    private val LOG = logger<AngularSettings>()
+  }
+
   var serviceType: AngularServiceSettings
     get() = state.innerServiceType
     set(value) {
@@ -48,7 +54,11 @@ class AngularSettings(val project: Project) : SimplePersistentStateComponent<Ang
 
   var useTypesFromServer: Boolean
     get() {
-      return TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer
+      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer).also {
+        with(project.service<JSLogOnceService>()) {
+          LOG.infoOnce { "'Service-powered type engine' option of AngularSettings: $it" }
+        }
+      }
     }
     set(value) {
       val prevUseTypesFromServer = state.useTypesFromServer

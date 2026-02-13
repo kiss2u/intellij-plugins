@@ -2,6 +2,7 @@
 package org.jetbrains.vuejs.options
 
 import com.intellij.javascript.nodejs.util.NodePackageRef
+import com.intellij.javascript.util.JSLogOnceService
 import com.intellij.lang.typescript.compiler.TypeScriptCompilerConfigUtil.isEffectiveUseTypesFromServer
 import com.intellij.lang.typescript.compiler.TypeScriptCompilerSettings
 import com.intellij.lang.typescript.compiler.ui.TypeScriptServiceRestartService
@@ -17,6 +18,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsSafe
@@ -41,6 +43,10 @@ fun configureVueService(project: Project, disposable: Disposable, serviceSetting
 @Service(Service.Level.PROJECT)
 @State(name = "VueSettings", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class VueSettings(val project: Project) : SimplePersistentStateComponent<VueSettingsState>(VueSettingsState()) {
+
+  companion object {
+    private val LOG = logger<VueSettings>()
+  }
 
   var serviceType: VueServiceSettings
     get() = state.innerServiceType
@@ -77,7 +83,11 @@ class VueSettings(val project: Project) : SimplePersistentStateComponent<VueSett
 
   var useTypesFromServer: Boolean
     get() {
-      return TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer
+      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer).also {
+        with(project.service<JSLogOnceService>()) {
+          LOG.infoOnce { "'Service-powered type engine' option of VueSettings: $it" }
+        }
+      }
     }
     set(value) {
       val prevUseTypesFromServer = state.useTypesFromServer

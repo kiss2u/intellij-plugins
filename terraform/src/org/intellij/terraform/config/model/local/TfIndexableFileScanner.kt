@@ -16,7 +16,7 @@ internal class TfIndexableFileScanner : IndexableFileScanner {
         }
         if (isValidTfDirectory(fileOrDir)) {
           Log.info("Excluding .terraform directory: $fileOrDir")
-          project.service<TfDirectoryExcludeService>().excludeTerraformDirs(setOf(fileOrDir))
+          project.service<TfDirectoryExcludeService>().excludeTerraformDirs(listOf(fileOrDir))
         }
       }
     }

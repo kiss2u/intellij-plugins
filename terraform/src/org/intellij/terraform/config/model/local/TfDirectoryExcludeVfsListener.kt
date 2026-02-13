@@ -25,7 +25,7 @@ internal class TfDirectoryExcludeVfsListener : AsyncFileListener {
         val projects = ProjectManager.getInstance().openProjects
         for (project in projects) {
           val fileIndex = ProjectFileIndex.getInstance(project)
-          val dirsToExclude = terraformDirs.filter { fileIndex.isInProject(it) }.toSet()
+          val dirsToExclude = terraformDirs.filter { fileIndex.isInProject(it) }
 
           if (dirsToExclude.isNotEmpty()) {
             project.service<TfDirectoryExcludeService>().excludeTerraformDirs(dirsToExclude)

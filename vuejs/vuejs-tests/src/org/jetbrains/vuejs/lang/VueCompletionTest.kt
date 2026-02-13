@@ -1,6 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.vuejs.lang
 
+import com.intellij.javascript.testFramework.web.WebFrameworkTestModule
 import com.intellij.javascript.testFramework.web.filterOutStandardHtmlSymbols
 import com.intellij.lang.javascript.JSTestUtils
 import com.intellij.lang.javascript.TypeScriptTestUtil
@@ -53,6 +54,16 @@ abstract class VueCompletionTestBase(
   }
 
   override val dirModeByDefault: Boolean = true
+
+  // TODO: check if we need sush tests
+  override fun adjustModules(
+    modules: Array<out WebFrameworkTestModule>,
+  ): Array<out WebFrameworkTestModule> {
+    if (name == "testNoVueCompletionWithoutVue")
+      return modules
+
+    return super.adjustModules(modules)
+  }
 
   @Test
   fun testCompleteCssClasses() =

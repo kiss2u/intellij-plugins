@@ -1,7 +1,7 @@
 // Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.model.local
 
-import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.readAndEdtWriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
@@ -22,26 +22,28 @@ internal class TfDirectoryExcludeService(val project: Project, val scope: Corout
     if (validTerraformDirs.isEmpty()) return
 
     scope.launch {
-      val groupedFolders = readAction {
+      readAndEdtWriteAction {
         val fileIndex = ProjectFileIndex.getInstance(project)
         val dirsToExclude = validTerraformDirs.filter { !fileIndex.isExcluded(it) }
         if (dirsToExclude.isEmpty())
-          return@readAction emptyMap()
+          return@readAndEdtWriteAction value(Unit)
 
-        val result = mutableMapOf<ModuleContentRoot, MutableList<String>>()
+        val groupedFolders = mutableMapOf<ModuleContentRoot, MutableList<String>>()
         for (dir in dirsToExclude) {
           val module = fileIndex.getModuleForFile(dir) ?: continue
           val contentRoot = fileIndex.getContentRootForFile(dir) ?: continue
 
           val key = ModuleContentRoot(module, contentRoot)
-          result.getOrPut(key) { mutableListOf() }.add(dir.url)
+          groupedFolders.getOrPut(key) { mutableListOf() }.add(dir.url)
         }
-        result
-      }
-      if (groupedFolders.isEmpty()) return@launch
+        if (groupedFolders.isEmpty())
+          return@readAndEdtWriteAction value(Unit)
 
-      for ((key, urls) in groupedFolders) {
-        ModuleRootModificationUtil.updateExcludedFolders(key.module, key.contentRoot, emptyList(), urls)
+        writeAction {
+          for ((key, urls) in groupedFolders) {
+            ModuleRootModificationUtil.updateExcludedFolders(key.module, key.contentRoot, emptyList(), urls)
+          }
+        }
       }
     }
   }

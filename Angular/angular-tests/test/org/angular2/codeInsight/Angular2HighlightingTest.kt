@@ -28,6 +28,7 @@ import org.angular2.Angular2TestModule.ANGULAR_CORE_19_2_0
 import org.angular2.Angular2TestModule.ANGULAR_CORE_20_0_0_NEXT_3
 import org.angular2.Angular2TestModule.ANGULAR_CORE_20_1_4
 import org.angular2.Angular2TestModule.ANGULAR_CORE_20_2_2
+import org.angular2.Angular2TestModule.ANGULAR_CORE_21_0_9
 import org.angular2.Angular2TestModule.ANGULAR_CORE_21_1_3
 import org.angular2.Angular2TestModule.ANGULAR_CORE_21_2_0
 import org.angular2.Angular2TestModule.ANGULAR_CORE_9_1_1_MIXED
@@ -484,6 +485,12 @@ class Angular2HighlightingTest : Angular2TestCase("highlighting", true) {
 
   fun testArrowFunctions() =
     checkHighlighting(ANGULAR_CORE_21_2_0, extension = "ts")
+
+  fun testRegexes_V20() =
+    checkHighlighting(ANGULAR_CORE_20_2_2, extension = "ts")
+
+  fun testRegexes() =
+    checkHighlighting(ANGULAR_CORE_21_0_9, extension = "ts")
 
   override fun setUp() {
     super.setUp()

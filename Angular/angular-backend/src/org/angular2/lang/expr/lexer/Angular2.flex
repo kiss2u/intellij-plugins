@@ -2,6 +2,7 @@ package org.angular2.lang.expr.lexer;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.containers.IntStack;
 
 import org.angular2.codeInsight.blocks.Angular2HtmlBlockUtilsKt;
@@ -19,16 +20,41 @@ import static org.angular2.lang.expr.lexer.Angular2TokenTypes.*;
   private String blockName;
   private int blockParamIndex;
   private boolean enableVoidKeyword;
+  private TokenSet keywords;
 
   private IntStack myStateStack = new IntStack(5);
+  private IElementType prevToken = null;
+  private IElementType beforePrevToken = null;
+
+  private static TokenSet REGEX_PREV_TOKEN_SET = TokenSet.orSet(OPERATIONS,
+   TokenSet.create(LPAR,LBRACKET,COMMA,COLON));
+
+  private static TokenSet REGEX_BEFORE_EXCL_NOT_ALLOWED_TOKEN_SET_NO_KEYWORDS = TokenSet.create(
+    IDENTIFIER, RPAR, RBRACKET
+  );
+
+  private TokenSet regexBeforeExclNotAllowedTokenSet;
 
   public _Angular2Lexer(Angular2Lexer.Config config) {
     this((java.io.Reader)null);
     enableVoidKeyword = config.getSyntax().getEnableVoidKeyword();
+    regexBeforeExclNotAllowedTokenSet = TokenSet.orSet(
+      REGEX_BEFORE_EXCL_NOT_ALLOWED_TOKEN_SET_NO_KEYWORDS,
+      config.getSyntax().getExpressionLanguage().getKeywords()
+    );
     if (config instanceof Angular2Lexer.BlockParameter blockParameter) {
       blockName = blockParameter.getName();
       blockParamIndex = blockParameter.getIndex();
     }
+  }
+
+  public IElementType advance() throws java.io.IOException {
+    IElementType result = advanceImpl();
+    if (result != WHITE_SPACE) {
+      beforePrevToken = prevToken;
+      prevToken = result;
+    }
+    return result;
   }
 
   public final void clearState() {
@@ -56,6 +82,23 @@ import static org.angular2.lang.expr.lexer.Angular2TokenTypes.*;
     return -1;
   }
 
+  private boolean isRegexStart() {
+    if (prevToken == null)
+      return true;
+    // If a slash is preceded by a `!` operator, we need to distinguish whether it's a
+    // negation or a non-null assertion. Regexes can only be precded by negations.
+    else if (prevToken == EXCL)
+      return beforePrevToken == null || !regexBeforeExclNotAllowedTokenSet.contains(beforePrevToken);
+    else
+    // Only consider the slash a regex if it's preceded either by:
+    // - Any operator, aside from `!` which is special-cased above.
+    // - Opening paren (e.g. `(/a/)`).
+    // - Opening bracket (e.g. `[/a/]`).
+    // - A comma (e.g. `[1, /a/]`).
+    // - A colon (e.g. `{foo: /a/}`).
+      return REGEX_PREV_TOKEN_SET.contains(prevToken);
+  }
+
 %}
 
 %unicode
@@ -64,7 +107,7 @@ import static org.angular2.lang.expr.lexer.Angular2TokenTypes.*;
 %implements FlexLexer
 %type IElementType
 
-%function advance
+%function advanceImpl
 
 WHITE_SPACE=([ \t\n\r\u000B\u00A0]|\\\n)+
 
@@ -76,6 +119,9 @@ FP_LITERAL3=({DIGIT})+({EXPONENT_PART})
 FP_LITERAL4=({DIGIT})+
 EXPONENT_PART=[Ee]["+""-"]?({DIGIT})*
 COMMENT="//"[^]*
+
+GROUP = "[" ( [^\]\\] | \\. )* "]"
+REGEXP_LITERAL="/"([^\*\\/\r\n\[]|{ESCAPE_SEQUENCE}|{GROUP})([^\\/\r\n\[]|{ESCAPE_SEQUENCE}|{GROUP})*("/"[gimxsuvyd]*)?
 
 ALPHA=[:letter:]
 TAG_NAME=({ALPHA}|"_"|":")({ALPHA}|{DIGIT}|"_"|":"|"."|"-")*
@@ -90,6 +136,7 @@ LINE_TERMINATOR_SEQUENCE=\R
 %state YYSTRING_TEMPLATE
 %state YYSTRING_TEMPLATE_DOLLAR
 %state YYINITIAL_WITH_NONEMPTY_STATE_STACK
+%state YYREGEX
 
 %%
 
@@ -133,7 +180,14 @@ LINE_TERMINATOR_SEQUENCE=\R
   "-"                         { return MINUS; }
   "*"                         { return MULT; }
   "**"                        { return MULTMULT; }
-  "/"                         { return DIV; }
+  "/"                         {
+                                if (isRegexStart()) {
+                                  yypushback(1);
+                                  yybegin(YYREGEX);
+                                } else {
+                                  return DIV;
+                                }
+                              }
   "%"                         { return PERC; }
   "^"                         { return XOR; }
   "="                         { return EQ; }
@@ -209,6 +263,11 @@ LINE_TERMINATOR_SEQUENCE=\R
   "&#"{DIGIT}+";"             { return XML_CHAR_ENTITY_REF; }
   [^&\'\"\n\r\\]+ | "&"       { return STRING_LITERAL_PART; }
   [^]                         { yypushback(yytext().length()); yybegin(YYEXPRESSION); }
+}
+
+<YYREGEX> {
+  {REGEXP_LITERAL}            { yybegin(YYEXPRESSION); return REGEXP_LITERAL; }
+  "/"                         { yybegin(YYEXPRESSION); return DIV; }
 }
 
 <YYSTRING_TEMPLATE> {

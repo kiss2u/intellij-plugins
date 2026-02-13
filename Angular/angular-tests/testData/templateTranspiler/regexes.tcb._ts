@@ -1,0 +1,12 @@
+/* Angular type checking code */
+
+/* TCB for regexes.ts */
+
+function _tcb1(this: RobotProfileComponent) {
+var _t1 = document.createElement("div");
+(/abc/.matches('foo') ? 'bar' : 'baz');
+"" + ("foo".match(/abc/);
+"" + ("foo".match(/abc/gig));
+"" + (/abc );
+"" + ("foo".match(/abc/gi));
+}

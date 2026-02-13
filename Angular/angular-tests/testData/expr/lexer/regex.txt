@@ -1,0 +1,225 @@
+// should tokenize a simple regex
+// /abc/
+JS:REGEXP_LITERAL ('/abc/')
+
+// should tokenize a regex with flags
+// /abc/gim
+JS:REGEXP_LITERAL ('/abc/gim')
+
+// should tokenize an identifier immediately after a regex
+// /abc/ g
+JS:REGEXP_LITERAL ('/abc/')
+WHITE_SPACE (' ')
+JS:IDENTIFIER ('g')
+
+// should tokenize a regex with an escaped slashes
+// /^http:\/\/foo\.bar/
+JS:REGEXP_LITERAL ('/^http:\/\/foo\.bar/')
+
+// should tokenize a regex with un-escaped slashes in a character class
+// /[a/]$/
+JS:REGEXP_LITERAL ('/[a/]$/')
+
+// should tokenize a regex with a backslash
+// /a\w+/
+JS:REGEXP_LITERAL ('/a\w+/')
+
+// should tokenize a regex after an operator
+// a = /b/
+JS:IDENTIFIER ('a')
+WHITE_SPACE (' ')
+JS:EQ ('=')
+WHITE_SPACE (' ')
+JS:REGEXP_LITERAL ('/b/')
+
+// should tokenize a regex inside parentheses
+// log(/a/)
+JS:IDENTIFIER ('log')
+JS:LPAR ('(')
+JS:REGEXP_LITERAL ('/a/')
+JS:RPAR (')')
+
+// should tokenize a regex at the beggining of an array
+// [/a/]
+JS:LBRACKET ('[')
+JS:REGEXP_LITERAL ('/a/')
+JS:RBRACKET (']')
+
+// should tokenize a regex in the middle of an array
+// [1, /a/, 2]
+JS:LBRACKET ('[')
+JS:NUMERIC_LITERAL ('1')
+JS:COMMA (',')
+WHITE_SPACE (' ')
+JS:REGEXP_LITERAL ('/a/')
+JS:COMMA (',')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('2')
+JS:RBRACKET (']')
+
+// should tokenize a regex inside an object literal
+// {a: /b/}
+JS:LBRACE ('{')
+JS:IDENTIFIER ('a')
+JS:COLON (':')
+WHITE_SPACE (' ')
+JS:REGEXP_LITERAL ('/b/')
+JS:RBRACE ('}')
+
+// should tokenize a regex after a negation operator
+// log(!/a/.test("1"))
+JS:IDENTIFIER ('log')
+JS:LPAR ('(')
+JS:EXCL ('!')
+JS:REGEXP_LITERAL ('/a/')
+JS:DOT ('.')
+JS:IDENTIFIER ('test')
+JS:LPAR ('(')
+JS:STRING_LITERAL ('"1"')
+JS:RPAR (')')
+JS:RPAR (')')
+
+// should tokenize a regex after several negation operators
+// log(!!!!!!/a/.test("1"))
+JS:IDENTIFIER ('log')
+JS:LPAR ('(')
+JS:EXCL ('!')
+JS:EXCL ('!')
+JS:EXCL ('!')
+JS:EXCL ('!')
+JS:EXCL ('!')
+JS:EXCL ('!')
+JS:REGEXP_LITERAL ('/a/')
+JS:DOT ('.')
+JS:IDENTIFIER ('test')
+JS:LPAR ('(')
+JS:STRING_LITERAL ('"1"')
+JS:RPAR (')')
+JS:RPAR (')')
+
+// should tokenize a method call on a regex
+// /abc/.test("foo")
+JS:REGEXP_LITERAL ('/abc/')
+JS:DOT ('.')
+JS:IDENTIFIER ('test')
+JS:LPAR ('(')
+JS:STRING_LITERAL ('"foo"')
+JS:RPAR (')')
+
+// should not tokenize a regex preceded by a square bracket
+// a[0] /= b/
+JS:IDENTIFIER ('a')
+JS:LBRACKET ('[')
+JS:NUMERIC_LITERAL ('0')
+JS:RBRACKET (']')
+WHITE_SPACE (' ')
+JS:DIVEQ ('/=')
+WHITE_SPACE (' ')
+JS:IDENTIFIER ('b')
+JS:DIV ('/')
+
+// should not tokenize a regex preceded by an identifier
+// a /b/
+JS:IDENTIFIER ('a')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+JS:IDENTIFIER ('b')
+JS:DIV ('/')
+
+// should not tokenize a regex preceded by a number
+// 1 /b/
+JS:NUMERIC_LITERAL ('1')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+JS:IDENTIFIER ('b')
+JS:DIV ('/')
+
+// should not tokenize a regex that is preceded by a string
+// "a" /b/
+JS:STRING_LITERAL ('"a"')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+JS:IDENTIFIER ('b')
+JS:DIV ('/')
+
+// should not tokenize a regex preceded by a closing parenthesis
+// (a) /b/
+JS:LPAR ('(')
+JS:IDENTIFIER ('a')
+JS:RPAR (')')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+JS:IDENTIFIER ('b')
+JS:DIV ('/')
+
+// should not tokenize a regex that is preceded by a keyword
+// this / b
+JS:THIS_KEYWORD ('this')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:IDENTIFIER ('b')
+
+// should not tokenize a regex preceded by a non-null assertion on an identifier
+// foo! / 2
+JS:IDENTIFIER ('foo')
+JS:EXCL ('!')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('2')
+
+// should not tokenize a regex preceded by a non-null assertion on a function call
+// foo()! / 2
+JS:IDENTIFIER ('foo')
+JS:LPAR ('(')
+JS:RPAR (')')
+JS:EXCL ('!')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('2')
+
+// should not tokenize a regex preceded by a non-null assertion on an array
+// [1]! / 2
+JS:LBRACKET ('[')
+JS:NUMERIC_LITERAL ('1')
+JS:RBRACKET (']')
+JS:EXCL ('!')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('2')
+
+// should not tokenize consecutive regexes
+// / 1 / 2 / 3 / 4
+JS:REGEXP_LITERAL ('/ 1 /')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('2')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('3')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('4')
+
+// should not tokenize regex-like characters inside of a pipe
+// foo / 1000 | date: 'M/d/yy'
+JS:IDENTIFIER ('foo')
+WHITE_SPACE (' ')
+JS:DIV ('/')
+WHITE_SPACE (' ')
+JS:NUMERIC_LITERAL ('1000')
+WHITE_SPACE (' ')
+JS:OR ('|')
+WHITE_SPACE (' ')
+JS:IDENTIFIER ('date')
+JS:COLON (':')
+WHITE_SPACE (' ')
+JS:STRING_LITERAL (''M/d/yy'')
+
+//should produce an unterminated regex
+// /a
+JS:REGEXP_LITERAL ('/a')

@@ -7,6 +7,7 @@ import com.intellij.lang.javascript.psi.JSBlockStatement
 import com.intellij.lang.javascript.psi.JSElementVisitor
 import com.intellij.lang.javascript.psi.JSExpressionWithOperationNode
 import com.intellij.lang.javascript.psi.JSFunctionExpression
+import com.intellij.lang.javascript.psi.JSLiteralExpression
 import com.intellij.lang.javascript.psi.JSSpreadExpression
 import com.intellij.lang.javascript.psi.ecma6.JSStringTemplateExpression
 import com.intellij.psi.PsiElement
@@ -68,6 +69,12 @@ class AngularUnsupportedSyntaxInspection : LocalInspectionTool() {
           }
           is JSStringTemplateExpression if isLessThanAngularVersion(element, AngularVersion.V_19_2) -> {
             holder.registerProblem(element, Angular2Bundle.htmlMessage("angular.inspection.unsupported-syntax-inspection.message.template"))
+          }
+          is JSLiteralExpression if element.isRegExpLiteral && isLessThanAngularVersion(element, AngularVersion.V_21_0) -> {
+            holder.registerProblem(
+              element,
+              Angular2Bundle.htmlMessage("angular.inspection.unsupported-syntax-inspection.message.reg-ex")
+            )
           }
           is JSSpreadExpression if isLessThanAngularVersion(element, AngularVersion.V_21_1) -> {
             holder.registerProblem(

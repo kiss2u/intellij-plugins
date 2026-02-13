@@ -79,6 +79,10 @@ open class Angular2LexerTest : AngularLexerTestCase() {
     doFileTest("js")
   }
 
+  fun testRegex() {
+    doPerLineTest()
+  }
+
   override fun createLexer(): Lexer = lexerFactory()
 
   override fun getDirPath(): String {
@@ -101,6 +105,19 @@ open class Angular2LexerTest : AngularLexerTestCase() {
     lexerFactory = factory
     doFileTest("js")
     lexerFactory = oldFactory
+  }
+
+  private fun doPerLineTest() {
+    val result = loadTestDataFile(".js")
+      .split("\n")
+      .joinToString("\n") {
+        if (it.startsWith("//"))
+          it
+        else
+          "// $it\n" +
+          printTokens(createLexer(), it, 0)
+      }
+    assertSameLinesWithFile(getPathToTestDataFile(expectedFileExtension), result)
   }
 
 

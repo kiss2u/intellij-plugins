@@ -1,0 +1,95 @@
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/abc/')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/[a/]$/')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/a\w+/')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/^http:\/\/foo\.bar/')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/abc/g')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSLiteralExpression
+      PsiElement(JS:REGEXP_LITERAL)('/[a/]$/gi')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        JSLiteralExpression
+          PsiElement(JS:REGEXP_LITERAL)('/abc/')
+        PsiElement(JS:DOT)('.')
+        PsiElement(JS:IDENTIFIER)('test')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        JSLiteralExpression
+          PsiElement(JS:STRING_LITERAL)('"foo"')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSCallExpression
+      JSReferenceExpression
+        JSIndexedPropertyAccessExpression
+          JSCallExpression
+            JSReferenceExpression
+              JSLiteralExpression
+                PsiElement(JS:STRING_LITERAL)('"foo"')
+              PsiElement(JS:DOT)('.')
+              PsiElement(JS:IDENTIFIER)('match')
+            JSArgumentList
+              PsiElement(JS:LPAR)('(')
+              JSLiteralExpression
+                PsiElement(JS:REGEXP_LITERAL)('/(abc)/')
+              PsiElement(JS:RPAR)(')')
+          PsiElement(JS:LBRACKET)('[')
+          JSLiteralExpression
+            PsiElement(JS:NUMERIC_LITERAL)('1')
+          PsiElement(JS:RBRACKET)(']')
+        PsiElement(JS:DOT)('.')
+        PsiElement(JS:IDENTIFIER)('toUpperCase')
+      JSArgumentList
+        PsiElement(JS:LPAR)('(')
+        PsiElement(JS:RPAR)(')')
+------
+JSFile:test.regex.binding
+  Angular2Binding
+    JSBinaryExpression
+      JSBinaryExpression
+        JSCallExpression
+          JSReferenceExpression
+            JSLiteralExpression
+              PsiElement(JS:REGEXP_LITERAL)('/abc/')
+            PsiElement(JS:DOT)('.')
+            PsiElement(JS:IDENTIFIER)('test')
+          JSArgumentList
+            PsiElement(JS:LPAR)('(')
+            JSLiteralExpression
+              PsiElement(JS:STRING_LITERAL)('"foo"')
+            PsiElement(JS:RPAR)(')')
+        PsiWhiteSpace(' ')
+        PsiElement(JS:ANDAND)('&&')
+        PsiWhiteSpace(' ')
+        JSReferenceExpression
+          PsiElement(JS:IDENTIFIER)('something')
+      PsiWhiteSpace(' ')
+      PsiElement(JS:OROR)('||')
+      PsiWhiteSpace(' ')
+      JSReferenceExpression
+        PsiElement(JS:IDENTIFIER)('somethingElse')

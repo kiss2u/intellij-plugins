@@ -129,7 +129,6 @@ jvm_library(
     "@community//platform/polySymbols",
     "@community//libraries/fastutil",
     "@community//images",
-    "@community//images:images_test_lib",
     "@community//tools/intellij.tools.ide.metrics.benchmark:ide-metrics-benchmark",
     "@community//tools/intellij.tools.ide.metrics.benchmark:ide-metrics-benchmark_test_lib",
     "//webcore/impl",

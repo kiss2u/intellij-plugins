@@ -86,7 +86,6 @@ jvm_library(
     "@community//platform/macro",
     "@community//platform/projectModel-api:projectModel",
     "@community//RegExpSupport:regexp",
-    "@community//RegExpSupport:regexp_test_lib",
     "@community//xml/xml-parser:parser",
     "//plugins/JavaScriptLanguage/javascript-parser",
     "//plugins/css/psi",

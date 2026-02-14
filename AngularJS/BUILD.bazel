@@ -90,7 +90,6 @@ jvm_library(
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//platform/execution-impl",
     "@community//RegExpSupport:regexp",
-    "@community//RegExpSupport:regexp_test_lib",
     "//plugins/JavaScriptLanguage/javascript-parser",
     "@community//xml/xml-parser:parser",
     "//plugins/css/psi",

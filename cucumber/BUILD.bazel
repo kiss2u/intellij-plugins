@@ -83,7 +83,6 @@ jvm_library(
     "@community//spellchecker:spellchecker_test_lib",
     "@community//libraries/gson",
     "@community//RegExpSupport:regexp",
-    "@community//RegExpSupport:regexp_test_lib",
     "@community//xml/impl",
     "@community//platform/indexing-impl",
     "@community//libraries/fastutil",

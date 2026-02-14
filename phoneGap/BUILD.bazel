@@ -64,7 +64,6 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-backend",
     "@community//platform/projectModel-api:projectModel",
     "@community//RegExpSupport:regexp",
-    "@community//RegExpSupport:regexp_test_lib",
     "@community//xml/xml-psi-api:psi",
     "@community//libraries/gson",
     "//plugins/JavaScriptLanguage/javascript-parser",

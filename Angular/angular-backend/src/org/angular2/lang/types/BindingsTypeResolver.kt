@@ -42,10 +42,8 @@ import com.intellij.lang.javascript.psi.types.evaluable.JSApplyCallType
 import com.intellij.lang.javascript.psi.types.guard.TypeScriptTypeRelations
 import com.intellij.lang.javascript.psi.types.typescript.TypeScriptCompilerType
 import com.intellij.lang.typescript.compiler.TypeScriptServiceHolder
-import com.intellij.lang.typescript.resolve.TypeScriptCompilerEvaluationFacade
 import com.intellij.lang.typescript.resolve.TypeScriptGenericTypesEvaluator
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.service
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
@@ -97,11 +95,8 @@ internal class BindingsTypeResolver private constructor(
   init {
     val declarationsScope = Angular2DeclarationsScope(element)
     val directives = provider.matched.filter { declarationsScope.contains(it) }
-    val service = if (element.project.service<TypeScriptCompilerEvaluationFacade>().isAnyEnabled())
-      TypeScriptServiceHolder.getForElement(element)?.service
-        ?.takeIf { it.isTypeEvaluationEnabled() }
-    else
-      null
+    val service = TypeScriptServiceHolder.getForElement(element)?.service
+      ?.takeIf { it.isTypeEvaluationEnabled() }
     analysisResult = when {
       directives.isEmpty() -> AnalysisResult.EMPTY
       // Use service to analyze the file if there is an associated component file.

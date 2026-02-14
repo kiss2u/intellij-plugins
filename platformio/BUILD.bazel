@@ -115,7 +115,6 @@ jvm_library(
     "@community//platform/core-ui",
     "@community//platform/xdebugger-api:debugger",
     "@community//platform/xdebugger-impl:debugger-impl",
-    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
     "@community//platform/editor-ui-api:editor-ui",
     "@community//platform/execution-impl",
     "@community//platform/external-system-api:externalSystem",

@@ -115,7 +115,6 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-testFramework",
     "//plugins/JavaScriptDebugger/common",
     "@community//platform/xdebugger-impl:debugger-impl",
-    "@community//platform/xdebugger-impl:debugger-impl_test_lib",
     "@community//platform/execution",
     "@community//platform/lang-api:lang",
   ]

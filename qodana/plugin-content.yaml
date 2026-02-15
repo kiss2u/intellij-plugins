@@ -122,3 +122,4 @@
   - name: intellij.qodana.jvm.maven
   - name: intellij.qodana.jvm.swagger
   - name: intellij.qodana.jvm.coverage
+  - name: intellij.qodana.inspectionKts.mcp

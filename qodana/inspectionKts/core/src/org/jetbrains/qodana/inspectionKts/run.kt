@@ -1,6 +1,14 @@
 package org.jetbrains.qodana.inspectionKts
 
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.GlobalInspectionContext
+import com.intellij.codeInspection.InspectionEngine
+import com.intellij.codeInspection.InspectionManagerBase
+import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.codeInspection.QuickFix
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lang.annotation.ProblemGroup
 import com.intellij.openapi.application.readAction

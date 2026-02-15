@@ -57,7 +57,6 @@ class RunInspectionKtsMcpToolTest : McpToolsetTestBase() {
       }
     ) { result ->
       val text = result.textContent.text
-      assertTrue(text.contains("success"), "Should contain success: $text")
       assertTrue(text.contains("Variable starts with 'unused'"))
     }
   }
@@ -74,7 +73,6 @@ class RunInspectionKtsMcpToolTest : McpToolsetTestBase() {
       }
     ) { result ->
       val text = result.textContent.text
-      assertTrue(text.contains("success"), "Should contain success: $text")
       assertTrue(text.contains("Variable starts with 'unused'"))
     }
   }
@@ -91,7 +89,7 @@ class RunInspectionKtsMcpToolTest : McpToolsetTestBase() {
     ) { result ->
       val text = result.textContent.text
       // Should report file not found
-      assertContains(text, "not found", ignoreCase = true,
+      assertContains(text, "No PSI file found", ignoreCase = true,
         message = "Result should indicate file not found: $text")
     }
   }

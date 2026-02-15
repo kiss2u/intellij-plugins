@@ -53,7 +53,6 @@ jvm_library(
     "@community//platform/statistics",
     "@community//platform/statistics:statistics_test_lib",
     "//contrib/qodana",
-    "//contrib/qodana:qodana_test_lib",
     "@community//java/testFramework",
     "//contrib/qodana-test-framework:qodana-testFramework",
     "@community//platform/testFramework",

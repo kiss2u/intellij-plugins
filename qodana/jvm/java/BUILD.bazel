@@ -66,7 +66,6 @@ jvm_library(
     "@community//platform/projectModel-api:projectModel",
     "@community//platform/refactoring",
     "//contrib/qodana",
-    "//contrib/qodana:qodana_test_lib",
     "@community//java/java-analysis-api:analysis",
     "@community//platform/statistics",
     "@community//platform/statistics:statistics_test_lib",
@@ -88,6 +87,7 @@ jvm_library(
     "@community//platform/backend/workspace",
     "@community//platform/workspace/storage",
     "//contrib/qodana/util",
+    "//contrib/qodana:qodana-core-tests_test_lib",
   ]
 )
 ### auto-generated section `build intellij.qodana.jvm.java` end

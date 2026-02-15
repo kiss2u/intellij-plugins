@@ -56,7 +56,6 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-backend",
     "@community//platform/projectModel-api:projectModel",
     "//contrib/qodana",
-    "//contrib/qodana:qodana_test_lib",
     "//contrib/qodana/coverage",
     "//contrib/qodana/coverage:coverage_test_lib",
     "//plugins/NodeJS:nodeJS",

@@ -40,11 +40,11 @@ jvm_library(
     "@community//plugins/groovy",
     "@community//plugins/groovy:groovy_test_lib",
     "//contrib/qodana",
-    "//contrib/qodana:qodana_test_lib",
     "@lib//:assert_j",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//platform/testFramework/extensions:testExtensions",
+    "//contrib/qodana:qodana-core-tests_test_lib",
   ]
 )
 ### auto-generated section `build intellij.qodana.jvm.groovy` end

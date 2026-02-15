@@ -46,8 +46,8 @@ jvm_library(
     "@community//plugins/dev/intellij.dev:dev",
     "@community//platform/util:util-ui",
     "//contrib/qodana",
-    "//contrib/qodana:qodana_test_lib",
     "@community//platform/util/coroutines",
+    "//contrib/qodana:qodana-core-tests_test_lib",
   ]
 )
 ### auto-generated section `build intellij.qodana.inspectionKts.js` end

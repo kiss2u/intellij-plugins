@@ -62,11 +62,6 @@ jvm_library(
 )
 
 jvm_provided_library(
-  name = "contrib_qodana_test_lib_provided",
-  lib = "//contrib/qodana:qodana_test_lib"
-)
-
-jvm_provided_library(
   name = "community_plugins_coverage_test_lib_provided",
   lib = "@community//plugins/coverage-common:coverage_test_lib"
 )
@@ -94,7 +89,6 @@ jvm_library(
     ":python_provided",
     ":community_plugins_coverage_provided",
     ":community_plugins_coverage-common_coverage-agent_provided",
-    ":contrib_qodana_test_lib_provided",
     ":community_plugins_coverage_test_lib_provided",
   ]
 )

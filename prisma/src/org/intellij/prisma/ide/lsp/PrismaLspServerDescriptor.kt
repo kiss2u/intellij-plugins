@@ -1,4 +1,4 @@
-// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.prisma.ide.lsp
 
 import com.intellij.application.options.CodeStyle
@@ -7,6 +7,8 @@ import com.intellij.markdown.utils.convertMarkdownToHtml
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.customization.LspCodeLensCustomizer
+import com.intellij.platform.lsp.api.customization.LspCodeLensDisabled
 import com.intellij.platform.lsp.api.customization.LspCompletionDisabled
 import com.intellij.platform.lsp.api.customization.LspCustomization
 import com.intellij.platform.lsp.api.customization.LspDiagnosticsCustomizer
@@ -51,6 +53,7 @@ class PrismaLspServerDescriptor(project: Project)
     override val documentSymbolCustomizer: LspDocumentSymbolCustomizer = LspDocumentSymbolDisabled
     override val signatureHelpCustomizer: LspSignatureHelpCustomizer = LspSignatureHelpDisabled
     override val selectionRangeCustomizer: LspSelectionRangeCustomizer = LspSelectionRangeDisabled
+    override val codeLensCustomizer: LspCodeLensCustomizer = LspCodeLensDisabled
 
     override val diagnosticsCustomizer: LspDiagnosticsCustomizer = object : LspDiagnosticsSupport() {
       override fun getTooltip(diagnostic: Diagnostic): @NlsSafe String = convertMarkdownToHtml(diagnostic.message)

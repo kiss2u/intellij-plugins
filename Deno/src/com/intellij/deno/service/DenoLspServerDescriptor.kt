@@ -45,6 +45,7 @@ import com.intellij.platform.lsp.api.LspServerSupportProvider
 import com.intellij.platform.lsp.api.ProjectWideLspServerDescriptor
 import com.intellij.platform.lsp.api.customization.LspCallHierarchyCustomizer
 import com.intellij.platform.lsp.api.customization.LspCallHierarchyDisabled
+import com.intellij.platform.lsp.api.customization.LspCodeLensDisabled
 import com.intellij.platform.lsp.api.customization.LspCommandsSupport
 import com.intellij.platform.lsp.api.customization.LspCustomization
 import com.intellij.platform.lsp.api.customization.LspDiagnosticsCustomizer
@@ -208,6 +209,7 @@ class DenoLspServerDescriptor(project: Project) : ProjectWideLspServerDescriptor
     override val documentHighlightsCustomizer: LspDocumentHighlightsCustomizer = LspDocumentHighlightsDisabled
     override val callHierarchyCustomizer: LspCallHierarchyCustomizer = LspCallHierarchyDisabled
     override val selectionRangeCustomizer: LspSelectionRangeCustomizer = LspSelectionRangeDisabled
+    override val codeLensCustomizer = LspCodeLensDisabled
 
     override val formattingCustomizer = object : LspFormattingSupport() {
       override fun shouldFormatThisFileExclusivelyByServer(file: VirtualFile, ideCanFormatThisFileItself: Boolean, serverExplicitlyWantsToFormatThisFile: Boolean): Boolean {

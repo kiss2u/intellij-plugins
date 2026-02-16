@@ -81,7 +81,6 @@ abstract class PlatformioActionBase(private  val text:  () -> @TabTitle String,
           processHandler.waitFor()
         }
       }
-      @Suppress("HardCodedStringLiteral") // annotation not tracked on lambda
       doRun(project.service<PlatformioService>(), text(), commandLine, reloadProject)
     }
   }

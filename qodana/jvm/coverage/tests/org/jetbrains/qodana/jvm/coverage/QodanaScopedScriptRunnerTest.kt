@@ -16,10 +16,19 @@ import kotlin.io.path.writeText
 class QodanaScopedScriptRunnerTest : QodanaRunnerTestCase() {
   override val testData: Path = Paths.get(PluginPathManager.getPluginHomePath("qodana"), "jvm", "coverage", "test-data")
 
+  override fun setUp() {
+    super.setUp()
+    System.setProperty(COVERAGE_DATA, getTestDataPath("coverage").toString())
+  }
+
+  override fun tearDown() {
+    System.clearProperty(COVERAGE_DATA)
+    super.tearDown()
+  }
+
   @Test
   fun testWithoutChangesData() {
     val scope = qodanaConfig.projectPath.resolve("scope")
-    System.setProperty(COVERAGE_DATA, getTestDataPath("coverage").toString())
 
     updateQodanaConfig {
       it.copy(
@@ -51,7 +60,6 @@ class QodanaScopedScriptRunnerTest : QodanaRunnerTestCase() {
   @Test
   fun testXmlReport() {
     val scope = qodanaConfig.projectPath.resolve("scope")
-    System.setProperty(COVERAGE_DATA, getTestDataPath("coverage").toString())
 
     updateQodanaConfig {
       it.copy(
@@ -90,7 +98,6 @@ class QodanaScopedScriptRunnerTest : QodanaRunnerTestCase() {
   @Test
   fun testFirstStepComputesNothing() {
     val scope = qodanaConfig.projectPath.resolve("scope")
-    System.setProperty(COVERAGE_DATA, getTestDataPath("coverage").toString())
 
     updateQodanaConfig {
       it.copy(

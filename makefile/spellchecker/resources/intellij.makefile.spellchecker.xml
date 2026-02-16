@@ -1,0 +1,12 @@
+<idea-plugin>
+  <dependencies>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <plugin id="name.kropp.intellij.makefile"/>
+    <module name="intellij.spellchecker"/>
+    <!-- endregion -->
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <spellchecker.support language="Makefile" implementationClass="com.jetbrains.lang.makefile.MakefileSpellcheckingStrategy" />
+  </extensions>
+</idea-plugin>

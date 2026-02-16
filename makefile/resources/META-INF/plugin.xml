@@ -29,10 +29,10 @@ Plugin source code was previously located at <a href="https://github.com/kropp/i
 
   <dependencies>
     <plugin id="com.intellij.modules.lang"/>
-    <module name="intellij.spellchecker"/>
   </dependencies>
 
   <content>
+    <module name="intellij.makefile.spellchecker"/>
     <module name="intellij.makefile.terminal"/>
   </content>
 
@@ -69,7 +69,6 @@ Plugin source code was previously located at <a href="https://github.com/kropp/i
     <lang.elementManipulator implementationClass="com.jetbrains.lang.makefile.psi.MakefileVariableUsageManipulator"
                              forClass="com.jetbrains.lang.makefile.psi.MakefileVariableUsage"/>
     <documentationProvider implementation="com.jetbrains.lang.makefile.MakefileDocumentationProvider"/>
-    <spellchecker.support language="Makefile" implementationClass="com.jetbrains.lang.makefile.MakefileSpellcheckingStrategy" />
     <multiHostInjector implementation="com.jetbrains.lang.makefile.MakefileShellLanguageInjector"/>
 
     <stubElementTypeHolder class="com.jetbrains.lang.makefile.psi.MakefileTypes" />

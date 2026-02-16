@@ -62,6 +62,7 @@ import com.intellij.platform.lsp.api.customization.LspGoToTypeDefinitionDisabled
 import com.intellij.platform.lsp.api.customization.LspHoverDisabled
 import com.intellij.platform.lsp.api.customization.LspInlayHintCustomizer
 import com.intellij.platform.lsp.api.customization.LspInlayHintDisabled
+import com.intellij.platform.lsp.api.customization.LspOptimizeImportsDisabled
 import com.intellij.platform.lsp.api.customization.LspSelectionRangeCustomizer
 import com.intellij.platform.lsp.api.customization.LspSelectionRangeDisabled
 import com.intellij.platform.lsp.api.customization.LspSemanticTokensDisabled
@@ -217,6 +218,8 @@ class DenoLspServerDescriptor(project: Project) : ProjectWideLspServerDescriptor
                && isDenoEnableForContextDirectory(project, file)
       }
     }
+
+    override val optimizeImportsCustomizer = LspOptimizeImportsDisabled
 
     override val commandsCustomizer = object : LspCommandsSupport() {
       override fun executeCommand(server: LspServer, contextFile: VirtualFile, command: Command) {

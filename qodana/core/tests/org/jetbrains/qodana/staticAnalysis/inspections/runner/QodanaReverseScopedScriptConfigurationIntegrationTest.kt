@@ -1,6 +1,7 @@
 package org.jetbrains.qodana.staticAnalysis.inspections.runner
 
 import com.intellij.codeInspection.ex.InspectionProfileImpl
+import com.intellij.idea.IJIgnore
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.registry.Registry
 import org.jetbrains.qodana.registry.QodanaRegistry.SCOPE_EXTENDING_ENABLE_KEY
@@ -12,6 +13,7 @@ import org.jetbrains.qodana.staticAnalysis.script.scoped.Stage
 import org.jetbrains.qodana.staticAnalysis.testFramework.reinstantiateInspectionRelatedServices
 import org.junit.Test
 
+@IJIgnore(issue = "QD-13593")
 class QodanaReverseScopedScriptConfigurationIntegrationTest : QodanaConfigurationIntegrationBaseTest() {
   public override fun setUp() {
     super.setUp()

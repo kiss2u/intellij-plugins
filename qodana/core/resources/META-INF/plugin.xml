@@ -200,6 +200,9 @@
       <reference ref="CollapseAll"/>
       <action id="Qodana.ProblemsView.OpenWebUI" class="org.jetbrains.qodana.actions.ProblemsViewOpenWebUiAction"
               icon="AllIcons.Actions.InlayGlobe"/>
+      <action id="Qodana.ProblemsView.ExportSarif"
+              class="org.jetbrains.qodana.actions.ProblemsViewExportSarifAction"
+              icon="AllIcons.ToolbarDecorator.Export"/>
       <group id="Qodana.ProblemsView.OtherActions" class="org.jetbrains.qodana.actions.ProblemsViewOtherActionsGroup"
              icon="AllIcons.Actions.More" popup="true"/>
     </group>

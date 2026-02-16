@@ -32,6 +32,7 @@ import org.angular2.inspections.AngularInvalidAnimationTriggerAssignmentInspecti
 import org.angular2.inspections.AngularInvalidI18nAttributeInspection
 import org.angular2.inspections.AngularInvalidSelectorInspection
 import org.angular2.inspections.AngularInvalidTemplateReferenceVariableInspection
+import org.angular2.inspections.AngularMisconfiguredDeferTriggerInspection
 import org.angular2.inspections.AngularMissingEventHandlerInspection
 import org.angular2.inspections.AngularMissingRequiredDirectiveInputBindingInspection
 import org.angular2.inspections.AngularMultipleStructuralDirectivesInspection
@@ -41,6 +42,7 @@ import org.angular2.inspections.AngularUndefinedBindingInspection
 import org.angular2.inspections.AngularUndefinedTagInspection
 import org.angular2.inspections.AngularUnsupportedSyntaxInspection
 import org.angular2.lang.Angular2Bundle
+import kotlin.jvm.java
 
 /**
  * @see Angular2TsInspectionsTest
@@ -414,6 +416,63 @@ class Angular2TemplateInspectionsTest : Angular2TestCase("inspections/template",
       files = listOf("arrowFunctionWithBlockBody.ts"),
       configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
     )
+
+  fun testMisconfiguredDeferTriggers1() =
+    doTest(
+      testNr = 1,
+      location = "on immediate; on ti<caret>mer(100ms) ; on viewport(ref)",
+      quickFixName = Angular2Bundle.message("angular.inspection.defer-trigger-misconfiguration.remove-trigger.fix"),
+      inspections = listOf(AngularMisconfiguredDeferTriggerInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("misconfiguredDeferTriggers.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testMisconfiguredDeferTriggers2() =
+    doTest(
+      testNr = 2,
+      location = "on immediate; on timer(100ms) ; o<caret>n viewport(ref)",
+      quickFixName = Angular2Bundle.message("angular.inspection.defer-trigger-misconfiguration.remove-trigger.fix"),
+      inspections = listOf(AngularMisconfiguredDeferTriggerInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("misconfiguredDeferTriggers.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testMisconfiguredDeferTriggers3() =
+    doTest(
+      testNr = 3,
+      location = "on immediate;  prefetch on<caret> viewport",
+      quickFixName = Angular2Bundle.message("angular.inspection.defer-trigger-misconfiguration.remove-trigger.fix"),
+      inspections = listOf(AngularMisconfiguredDeferTriggerInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("misconfiguredDeferTriggers.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+  fun testMisconfiguredDeferTriggers4() =
+    doTest(
+      testNr = 4,
+      location = "on timer(1s); prefetch on<caret> timer(2000ms)",
+      quickFixName = Angular2Bundle.message("angular.inspection.defer-trigger-misconfiguration.remove-trigger.fix"),
+      inspections = listOf(AngularMisconfiguredDeferTriggerInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("misconfiguredDeferTriggers.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
+
+  fun testMisconfiguredDeferTriggers5() =
+    doTest(
+      testNr = 5,
+      location = "on viewport(ref); prefetch on view<caret>port(ref)",
+      quickFixName = Angular2Bundle.message("angular.inspection.defer-trigger-misconfiguration.remove-trigger.fix"),
+      inspections = listOf(AngularMisconfiguredDeferTriggerInspection::class.java),
+      dependencies = listOf(ANGULAR_CORE_21_2_0),
+      files = listOf("misconfiguredDeferTriggers.ts"),
+      configurators = listOf(Angular2TsConfigFile(strictNullChecks = true)),
+    )
+
 
   private fun doTestNoFix(
     location: String,

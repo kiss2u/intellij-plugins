@@ -33,6 +33,7 @@ import org.angular2.inspections.AngularIncorrectTemplateDefinitionInspection
 import org.angular2.inspections.AngularInsecureBindingToEventInspection
 import org.angular2.inspections.AngularInvalidAnimationTriggerAssignmentInspection
 import org.angular2.inspections.AngularInvalidTemplateReferenceVariableInspection
+import org.angular2.inspections.AngularMisconfiguredDeferTriggerInspection
 import org.angular2.inspections.AngularMissingEventHandlerInspection
 import org.angular2.inspections.AngularMissingRequiredDirectiveInputBindingInspection
 import org.angular2.inspections.AngularMultipleStructuralDirectivesInspection
@@ -73,6 +74,7 @@ class Angular2TemplateInspectionsProvider(private val strict: Boolean = false) :
       AngularUnsupportedSyntaxInspection::class.java,
       AngularIllegalForLoopTrackAccess::class.java,
       AngularUncalledSignalLengthPropertyAccessInspection::class.java,
+      AngularMisconfiguredDeferTriggerInspection::class.java,
       // TS
       TypeScriptUnresolvedReferenceInspection::class.java,
       TypeScriptValidateTypesInspection::class.java,

@@ -1,6 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.angular2.lang.expr.psi.impl
 
+import com.intellij.lang.javascript.JSTokenTypes
 import com.intellij.lang.javascript.psi.JSExpression
 import com.intellij.lang.javascript.psi.JSStatement
 import com.intellij.lang.javascript.psi.JSVarStatement
@@ -8,6 +9,7 @@ import com.intellij.lang.javascript.psi.JSVariable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.IncorrectOperationException
 import org.angular2.codeInsight.blocks.Angular2BlockParameterPrefixSymbol
@@ -16,6 +18,7 @@ import org.angular2.lang.expr.lexer.Angular2TokenTypes
 import org.angular2.lang.expr.psi.Angular2BlockParameter
 import org.angular2.lang.expr.psi.Angular2ElementVisitor
 import org.angular2.lang.expr.psi.impl.Angular2BindingImpl.Companion.getExpression
+import org.angular2.lang.html.lexer.Angular2HtmlTokenTypes
 import org.angular2.lang.html.psi.Angular2HtmlBlock
 
 class Angular2BlockParameterImpl(elementType: IElementType?) : Angular2EmbeddedExpressionImpl(elementType), Angular2BlockParameter {
@@ -80,5 +83,24 @@ class Angular2BlockParameterImpl(elementType: IElementType?) : Angular2EmbeddedE
 
   override fun setName(name: String): PsiElement {
     throw IncorrectOperationException()
+  }
+
+  override fun delete() {
+    // Find and remove the semicolon that follows or precedes this parameter, along with surrounding whitespace
+    val toDelete = parent ?: return
+    val nextNonWhitespace = PsiTreeUtil.skipWhitespacesForward(toDelete)
+    val prevNonWhitespace = PsiTreeUtil.skipWhitespacesBackward(toDelete)
+
+    when {
+      // Case 1: Semicolon follows the parameter (remove it and whitespace between)
+      nextNonWhitespace != null && nextNonWhitespace.node?.elementType == Angular2HtmlTokenTypes.BLOCK_SEMICOLON -> {
+        toDelete.parent.deleteChildRange(toDelete.nextSibling, nextNonWhitespace)
+      }
+      // Case 2: Semicolon precedes the parameter (remove it and whitespace between)
+      prevNonWhitespace != null && prevNonWhitespace.node?.elementType == Angular2HtmlTokenTypes.BLOCK_SEMICOLON -> {
+        toDelete.parent.deleteChildRange(prevNonWhitespace, toDelete.prevSibling)
+      }
+    }
+    toDelete.delete()
   }
 }

@@ -12,6 +12,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.childrenOfType
+import com.intellij.psi.util.childrenSequence
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.parentOfType
@@ -61,6 +62,13 @@ const val PARAMETER_TRACK: String = "track"
 
 const val PARAMETER_PREFIX_PREFETCH: String = "prefetch"
 const val PARAMETER_PREFIX_HYDRATE: String = "hydrate"
+
+const val TRIGGER_IDLE: String = "idle"
+const val TRIGGER_VIEWPORT: String = "viewport"
+const val TRIGGER_INTERACTION: String = "interaction"
+const val TRIGGER_HOVER: String = "hover"
+const val TRIGGER_IMMEDIATE: String = "immediate"
+const val TRIGGER_TIMER: String = "timer"
 
 object Angular2HtmlBlockUtils {
 

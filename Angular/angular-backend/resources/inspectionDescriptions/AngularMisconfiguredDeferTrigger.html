@@ -1,0 +1,31 @@
+<html>
+<body>
+Reports misconfigured <code>@defer</code> block triggers that may lead to unexpected behavior.
+<p>
+  The inspection detects the following issues:
+</p>
+<ul>
+  <li>The <code>immediate</code> trigger makes additional triggers redundant</li>
+  <li>Prefetch triggers have no effect when <code>immediate</code> is used</li>
+  <li>Prefetch timer delay that is greater than or equal to the main timer delay</li>
+  <li>Prefetch triggers that match the main trigger and provide no benefit</li>
+</ul>
+<p>
+  Example:
+</p>
+<pre><code>
+@defer (on immediate; on hover) {
+  &lt;!-- 'hover' trigger is redundant --&gt;
+}
+
+@defer (on timer(1000); prefetch on timer(2000)) {
+  &lt;!-- Prefetch won't run before main trigger --&gt;
+}
+
+@defer (on interaction(btn); prefetch on interaction(btn)) {
+  &lt;!-- Prefetch provides no benefit --&gt;
+}
+</code></pre>
+<!-- tooltip end -->
+</body>
+</html>

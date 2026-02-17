@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.vfs.VfsUtil.markDirtyAndRefresh
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.jetbrains.qodana.sarif.SarifUtil
 import kotlinx.coroutines.launch
@@ -47,7 +48,9 @@ private class ProblemsViewExportSarifAction : DumbAwareAction() {
           val wrapper = saveDialog.save("qodana.sarif.json") ?: return@withContext
 
           launch(QodanaDispatchers.Default) {
-            SarifUtil.writeReport(wrapper.file.toPath(), sarifReport)
+            val file = wrapper.file
+            SarifUtil.writeReport(file.toPath(), sarifReport)
+            markDirtyAndRefresh(true, false, false, file)
           }
         }
       }

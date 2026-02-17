@@ -2,37 +2,32 @@
 import type {Language} from "@volar/language-core"
 import {forEachEmbeddedCode} from "@volar/language-core"
 import {RangeTransform, ScriptMapper} from "./script-mapper"
+import {firstNotNull} from "./generators"
 
 export function toSourceRangeTransform(
   language: Language<string>,
   fileName: string,
 ): RangeTransform {
-  return (startOffset, endOffset) => {
-    for (const {toSourceRange} of scriptMappers(language, fileName)) {
-      const range = toSourceRange(startOffset, endOffset)
-
-      if (range !== undefined)
-        return range
-    }
-
-    return undefined
-  }
+  return toRangeTransform(language, fileName, mapper => mapper.toSourceRange)
 }
 
 export function toGeneratedRangeTransform(
   language: Language<string>,
   fileName: string,
 ): RangeTransform {
-  return (startOffset, endOffset) => {
-    for (const {toGeneratedRange} of scriptMappers(language, fileName)) {
-      const range = toGeneratedRange(startOffset, endOffset)
+  return toRangeTransform(language, fileName, mapper => mapper.toGeneratedRange)
+}
 
-      if (range !== undefined)
-        return range
-    }
-
-    return undefined
-  }
+function toRangeTransform(
+  language: Language<string>,
+  fileName: string,
+  getRangeTransform: (mapper: ScriptMapper) => RangeTransform,
+): RangeTransform {
+  return (startOffset, endOffset) =>
+    firstNotNull(
+      scriptMappers(language, fileName),
+      mapper => getRangeTransform(mapper)(startOffset, endOffset),
+    )
 }
 
 function* scriptMappers(

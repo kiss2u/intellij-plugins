@@ -49,7 +49,7 @@ class VuePluginTypeScriptServiceManual(
   ),
 )
 
-abstract class VuePluginTypeScriptService(
+sealed class VuePluginTypeScriptService(
   project: Project,
   servicePlugin: DownloadableTypeScriptServicePlugin,
 ) : PluggableTypeScriptService(

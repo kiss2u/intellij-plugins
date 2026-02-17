@@ -1,0 +1,12 @@
+<idea-plugin>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <plugin id="com.jetbrains.rust"/>
+  </dependencies>
+  <!-- endregion -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="org.intellij.qodana.rust.QodanaRustLoaderProjectActivity"/>
+    <activityTracker implementation="org.intellij.qodana.rust.QodanaRustLoaderActivityTracker"/>
+  </extensions>
+</idea-plugin>

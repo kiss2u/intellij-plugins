@@ -319,23 +319,6 @@ public final class CucumberJavaUtil {
     return result;
   }
 
-  /**
-   * Computes value of Step Definition Annotation. If {@code annotationClassName provided} value of the annotation with corresponding class
-   * will be returned. Operations with string constants are also handled.
-   */
-  public static List<String> getStepAnnotationValues(PsiMethod method, @Nullable String annotationClassName) {
-    List<String> result = new ArrayList<>();
-    final List<PsiAnnotation> stepAnnotations = getCucumberStepAnnotations(method, annotationClassName);
-    for (PsiAnnotation stepAnnotation : stepAnnotations) {
-      String annotationValue = getAnnotationValue(stepAnnotation);
-      if (annotationValue != null) {
-        result.add(annotationValue);
-      }
-    }
-
-    return result;
-  }
-
   public static @Nullable String getAnnotationValue(PsiAnnotation stepAnnotation) {
     return AnnotationUtil.getDeclaredStringAttributeValue(stepAnnotation, "value");
   }

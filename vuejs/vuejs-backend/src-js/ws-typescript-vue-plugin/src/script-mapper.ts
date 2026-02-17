@@ -9,6 +9,11 @@ export type SimpleRange = [
 const LOCATION_FILTER: (data: CodeInformation) => boolean =
   data => !!data.verification
 
+type RangeTransform = (
+  startOffset: number,
+  endOffset: number,
+) => SimpleRange
+
 type OffsetTransform = (offset: number) => number | undefined
 
 export class ScriptMapper {
@@ -18,16 +23,10 @@ export class ScriptMapper {
   ) {
   }
 
-  toSourceRange = (
-    startOffset: number,
-    endOffset: number,
-  ): SimpleRange =>
+  toSourceRange: RangeTransform = (startOffset, endOffset) =>
     this.#toRange(startOffset, endOffset, this.#toSourceOffset)
 
-  toGeneratedRange = (
-    startOffset: number,
-    endOffset: number,
-  ): SimpleRange =>
+  toGeneratedRange: RangeTransform = (startOffset, endOffset) =>
     this.#toRange(startOffset, endOffset, this.#toGeneratedOffset)
 
   #toRange = (

@@ -9,7 +9,7 @@ export type SimpleRange = [
 const LOCATION_FILTER: (data: CodeInformation) => boolean =
   data => !!data.verification
 
-type RangeTransform = (
+export type RangeTransform = (
   startOffset: number,
   endOffset: number,
 ) => SimpleRange

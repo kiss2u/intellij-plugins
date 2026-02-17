@@ -6,7 +6,10 @@ import type {ReverseMapper} from "tsc-ide-plugin/ide-get-element-type"
 import type {Position, Range} from "tsc-ide-plugin/protocol"
 import {ScriptMapper, SimpleRange} from "./script-mapper"
 
+type TypeScript = typeof ts
+
 export function createReverseMapper(
+  ts: TypeScript,
   language: Language<string>,
 ): ReverseMapper {
   return (sourceFile, generatedRange) => {

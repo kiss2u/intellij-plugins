@@ -26,8 +26,6 @@ export function decorateIdeLanguageServiceExtensions(
     || webStormGetResolvedSignature === undefined
   ) return
 
-  const reverseMapper = createReverseMapper(language)
-
   function withReverseMapper<
     O extends ts.WebStormGetOptions,
     R extends Record<never, never> | undefined,
@@ -35,7 +33,7 @@ export function decorateIdeLanguageServiceExtensions(
     return (options) =>
       source({
         ...options,
-        reverseMapper,
+        reverseMapper: createReverseMapper(options.ts, language),
       })
   }
 
@@ -54,7 +52,7 @@ export function decorateIdeLanguageServiceExtensions(
       ...options,
       startOffset,
       endOffset,
-      reverseMapper,
+      reverseMapper: createReverseMapper(options.ts, language),
     })
   }
 

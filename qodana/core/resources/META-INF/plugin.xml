@@ -185,6 +185,10 @@
     <action id = "Qodana.ShowBrowserPage" class="org.jetbrains.qodana.actions.QodanaOpenBrowserPageAction" icon="com.intellij.icons.AllIcons.General.Export">
       <add-to-group group-id="ProblemsView.ToolWindow.TreePopup"/>
     </action>
+    <action id="Qodana.CopyTreeNode" class="org.jetbrains.qodana.actions.QodanaCopyTreeNodeAction"
+            icon="com.intellij.icons.AllIcons.Actions.Copy">
+      <add-to-group group-id="ProblemsView.ToolWindow.TreePopup"/>
+    </action>
 
     <group id="Qodana.ProblemsView">
       <action id="Qodana.ProblemsViewCloseReportAction" class="org.jetbrains.qodana.actions.ProblemsViewCloseReportAction"

@@ -13,10 +13,12 @@ import org.jetbrains.qodana.staticAnalysis.profile.QodanaInspectionProfileManage
 import org.jetbrains.qodana.staticAnalysis.sarif.SUPPRESS_TOOL_ID_PARAMETER
 import org.jetbrains.qodana.staticAnalysis.sarif.textFormat.markdownToHtml
 
+data class InspectionCategoryInfo(val id: String, @param:Nls val name: String)
+
 class InspectionInfoProvider(
   private val project: Project,
   private val inspectionsIdsWithoutToolsToDescription: Map<String, String>,
-  private val inspectionIdsToCategory: Map<String, String>,
+  private val inspectionIdsToCategoryInfo: Map<String, InspectionCategoryInfo>,
   private val inspectionIdsToName: Map<String, String>,
   private val inspectionsIdsToSuppressToolIds: Map<String, String>
 ) {
@@ -33,14 +35,14 @@ class InspectionInfoProvider(
       val inspectionIdsWithoutToolsToDescription = createInspectionsDescriptionsMap(
         rules = toolsComponents.allRulesMatchingInspectionsIds(inspectionIdsWithoutTools)
       )
-      val inspectionIdsToCategory = createInspectionsCategoriesMap(rules, tools.flatMap { it.driver?.taxa ?: emptyList() })
+      val inspectionIdsToCategoryInfo = createInspectionsCategoriesMap(rules, tools.flatMap { it.driver?.taxa ?: emptyList() })
       val inspectionIdsToName = createInspectionsNamesMap(rules)
       val inspectionIdsToSuppressToolId = createInspectionsSuppressToolIdsMap(rules)
 
       return InspectionInfoProvider(
         project,
         inspectionIdsWithoutToolsToDescription,
-        inspectionIdsToCategory,
+        inspectionIdsToCategoryInfo,
         inspectionIdsToName,
         inspectionIdsToSuppressToolId
       )
@@ -54,7 +56,15 @@ class InspectionInfoProvider(
 
   @Nls
   fun getCategory(inspectionId: String): String? {
-    return inspectionIdsToCategory[inspectionId]
+    return inspectionIdsToCategoryInfo[inspectionId]?.name
+  }
+
+  fun getCategoryId(inspectionId: String): String? {
+    return inspectionIdsToCategoryInfo[inspectionId]?.id
+  }
+
+  fun getCategoryInfo(inspectionId: String): InspectionCategoryInfo? {
+    return inspectionIdsToCategoryInfo[inspectionId]
   }
 
   @InspectionMessage
@@ -96,13 +106,13 @@ private fun createInspectionsDescriptionsMap(rules: Sequence<ReportingDescriptor
     .toMap()
 }
 
-private fun createInspectionsCategoriesMap(rules: List<ReportingDescriptor>, taxa: List<ReportingDescriptor>): Map<String, String> {
+private fun createInspectionsCategoriesMap(rules: List<ReportingDescriptor>, taxa: List<ReportingDescriptor>): Map<String, InspectionCategoryInfo> {
   return rules
     .mapNotNull { rule ->
       val categoryId = rule.relationships?.firstOrNull()?.target?.id ?: return@mapNotNull null
-      val category = taxa.firstOrNull { it.id == categoryId }?.name ?: return@mapNotNull null
+      val categoryName = taxa.firstOrNull { it.id == categoryId }?.name ?: return@mapNotNull null
 
-      rule.id to category
+      rule.id to InspectionCategoryInfo(id = categoryId, name = categoryName)
     }
     .toMap()
 }

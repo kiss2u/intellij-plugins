@@ -23,11 +23,12 @@ class QodanaTreeInspectionCategoryNodeImpl private constructor(
 ) : QodanaTreeInspectionCategoryNode {
   companion object {
     fun newEmpty(
+      categoryId: String?,
       inspectionCategory: @Nls String?,
       treeContext: QodanaTreeContext,
       excludedData: Set<ConfigExcludeItem>
     ): QodanaTreeInspectionCategoryNode {
-      val primaryData = QodanaTreeInspectionCategoryNode.PrimaryData(inspectionCategory)
+      val primaryData = QodanaTreeInspectionCategoryNode.PrimaryData(categoryId, inspectionCategory)
       val nodeExcludedData = filterExcludedData(primaryData, excludedData)
       return QodanaTreeInspectionCategoryNodeImpl(
         treeContext.inspectionInfoProvider,
@@ -47,7 +48,7 @@ class QodanaTreeInspectionCategoryNodeImpl private constructor(
   }
 
   override fun isRelatedToProblem(problem: SarifProblem): Boolean {
-    return inspectionInfoProvider.getCategory(problem.inspectionId) == primaryData.inspectionCategory
+    return inspectionInfoProvider.getCategoryId(problem.inspectionId) == primaryData.categoryId
   }
 
   override fun processTreeEvent(event: QodanaTreeEvent, pathBuilder: QodanaTreePath.Builder): QodanaTreeInspectionCategoryNode {

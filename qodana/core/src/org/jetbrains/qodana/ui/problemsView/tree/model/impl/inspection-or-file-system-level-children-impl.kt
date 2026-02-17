@@ -38,12 +38,12 @@ private class InspectionCategoryNodesImpl(
     return when (event) {
       is QodanaTreeProblemEvent -> {
         val primaryDataToEvents = event.sarifProblemsToProperties
-          .groupBy { treeContext.inspectionInfoProvider.getCategory(it.problem.inspectionId) }
-          .mapKeys { QodanaTreeInspectionCategoryNode.PrimaryData(it.key) }
+          .groupBy { treeContext.inspectionInfoProvider.getCategoryInfo(it.problem.inspectionId) }
+          .mapKeys { QodanaTreeInspectionCategoryNode.PrimaryData(it.key?.id, it.key?.name) }
           .mapValues { QodanaTreeProblemEvent(it.value.toSet()) }
 
         val nodesToEvents = nodes.nodesToEvents(primaryDataToEvents, pathBuilder) { primaryData, _ ->
-          QodanaTreeInspectionCategoryNodeImpl.newEmpty(primaryData.inspectionCategory, treeContext, excludedData)
+          QodanaTreeInspectionCategoryNodeImpl.newEmpty(primaryData.categoryId, primaryData.inspectionCategory, treeContext, excludedData)
         }
 
         val newNodes = computeNewQodanaChildrenNodesProblemEvent(pathBuilder, nodesToEvents, nodes) ?: return null

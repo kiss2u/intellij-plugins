@@ -44,7 +44,7 @@ sealed interface QodanaTreeInspectionOrFileSystemLevelChildren : QodanaTreeNode.
 }
 
 interface QodanaTreeInspectionCategoryNode : QodanaTreeNode<QodanaTreeInspectionCategoryNode, QodanaTreeInspectionCategoryNode.Children, QodanaTreeInspectionCategoryNode.PrimaryData> {
-  data class PrimaryData(@NlsContexts.Label val inspectionCategory: String?) : QodanaTreeNode.PrimaryData
+  data class PrimaryData(val categoryId: String?, @NlsContexts.Label val inspectionCategory: String?) : QodanaTreeNode.PrimaryData
 
   interface Children : QodanaTreeNode.Children<Children> {
     val nodes: List<QodanaTreeInspectionNode>

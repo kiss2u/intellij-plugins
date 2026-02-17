@@ -1,4 +1,4 @@
-// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.intellij.terraform.config.model
 
 import com.intellij.openapi.components.service
@@ -22,7 +22,7 @@ class MissingModuleInspectionTest : BasePlatformTestCase() {
   @org.junit.Test
   fun setOfModules() {
     myFixture.enableInspections(TfMissingModuleInspection::class.java)
-    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/.terraform", ".terraform")
+    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/terraform", ".terraform")
     myFixture.configureByText("main.tf", """
       module "registry_short" {
         source = "terraform-aws-modules/vpc/aws"

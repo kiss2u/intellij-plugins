@@ -5,7 +5,7 @@ import {firstNotNull} from "./generators"
 export type SimpleRange = [
   startOffset: number,
   endOffset: number,
-] | undefined
+]
 
 const LOCATION_FILTER: (data: CodeInformation) => boolean =
   data => !!data.verification
@@ -13,7 +13,7 @@ const LOCATION_FILTER: (data: CodeInformation) => boolean =
 export type RangeTransform = (
   startOffset: number,
   endOffset: number,
-) => SimpleRange
+) => SimpleRange | undefined
 
 type OffsetTransform = (offset: number) => number | undefined
 
@@ -34,12 +34,14 @@ export class ScriptMapper {
     startOffset: number,
     endOffset: number,
     transformOffset: OffsetTransform,
-  ): SimpleRange => {
+  ): SimpleRange | undefined => {
     const start = transformOffset(startOffset)
-    if (start === undefined) return undefined
+    if (start === undefined)
+      return undefined
 
     const end = transformOffset(endOffset)
-    if (end === undefined) return undefined
+    if (end === undefined)
+      return undefined
 
     return [start, end]
   }

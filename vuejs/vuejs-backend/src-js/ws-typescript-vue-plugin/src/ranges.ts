@@ -58,7 +58,7 @@ export function toGeneratedRange(
   fileName: string,
   startOffset: number,
   endOffset: number,
-): SimpleRange {
+): SimpleRange | undefined {
   const toGeneratedRange = toGeneratedRangeTransform(language, fileName)
   return toGeneratedRange(startOffset, endOffset)
 }

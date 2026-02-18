@@ -2,5 +2,9 @@
 export function isVueFile(
   fileName: string,
 ): boolean {
-  return fileName.endsWith(".vue")
+  const extension = fileName
+    .slice(-4)
+    .toLowerCase()
+
+  return extension === ".vue"
 }

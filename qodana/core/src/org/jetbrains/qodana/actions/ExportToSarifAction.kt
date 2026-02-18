@@ -13,6 +13,7 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtilRt
+import com.intellij.openapi.util.text.LineColumn
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.project.stateStore
 import com.jetbrains.qodana.sarif.SarifUtil.writeReport
@@ -105,9 +106,24 @@ class ExportToSarifAction : InspectionResultsExportActionProvider(Supplier { "Sa
 
             if (descriptor is ProblemDescriptorBase) {
               descriptor.psiElement?.let {
-                val lineColumn = StringUtil.offsetToLineColumn(it.containingFile.text, it.textOffset)
-                val lineColumnEnd = StringUtil.offsetToLineColumn(it.containingFile.text, it.textOffset + it.textLength)
                 val relativePath = FileUtilRt.getRelativePath(basePath, it.containingFile.virtualFile.url, File.separatorChar)
+
+                val region = Region()
+                  .withCharOffset(it.textOffset)
+                  .withCharLength(it.textLength)
+                  .withSnippet(ArtifactContent().withText(it.text))
+
+                val lineColumn = StringUtil.offsetToLineColumn(it.containingFile.text, it.textOffset)
+                lineColumn?.let { start ->
+                  region.startLine = start.line + 1
+                  region.startColumn = start.column + 1
+                }
+
+                val lineColumnEnd: LineColumn? = StringUtil.offsetToLineColumn(it.containingFile.text, it.textOffset + it.textLength)
+                lineColumnEnd?.let { end ->
+                  region.endLine = end.line + 1
+                  region.endColumn = end.column + 1
+                }
 
                 // Location (file & PSI element location)
                 result.locations = listOf(
@@ -119,16 +135,7 @@ class ExportToSarifAction : InspectionResultsExportActionProvider(Supplier { "Sa
                           else relativePath
                         )
                       )
-                      .withRegion(
-                        Region()
-                          .withCharOffset(it.textOffset)
-                          .withCharLength(it.textLength)
-                          .withStartLine(lineColumn.line + 1)
-                          .withStartColumn(lineColumn.column + 1)
-                          .withEndLine(lineColumnEnd.line + 1)
-                          .withEndColumn(lineColumnEnd.column + 1)
-                          .withSnippet(ArtifactContent().withText(it.text))
-                      )
+                      .withRegion(region)
                   )
                 )
               }

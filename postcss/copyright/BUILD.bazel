@@ -18,4 +18,16 @@ jvm_library(
     "//plugins/css/copyright",
   ]
 )
+
+jvm_library(
+  name = "copyright_test_lib",
+  module_name = "intellij.postcss.copyright",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":copyright",
+    "@community//plugins/copyright:copyright_test_lib",
+    "//plugins/css/copyright:copyright_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.postcss.copyright` end

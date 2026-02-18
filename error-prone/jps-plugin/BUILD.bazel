@@ -31,10 +31,14 @@ jvm_library(
   associates = [":errorProne-jps"],
   deps = [
     "@community//jps/jps-builders:build",
+    "@community//jps/jps-builders:build_test_lib",
     "@community//platform/util",
+    "@community//platform/util:util_test_lib",
     "@community//build:build-javac-rt",
+    "@community//build:build-javac-rt_test_lib",
     "@lib//:jetbrains-annotations",
     "@community//jps/model-serialization",
+    "@community//jps/model-serialization:model-serialization_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
   ]

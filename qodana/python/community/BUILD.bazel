@@ -24,4 +24,21 @@ jvm_library(
     "@community//platform/backend/observation",
   ]
 )
+
+jvm_library(
+  name = "community_test_lib",
+  module_name = "intellij.qodana.python.community",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":community",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "//contrib/qodana:qodana_test_lib",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//python:python-community-impl_test_lib",
+    "@community//platform/backend/observation:observation_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.qodana.python.community` end

@@ -13,4 +13,12 @@ jvm_library(
   srcs = glob([], allow_empty = True),
   resources = [":vuejs_resources"]
 )
+
+jvm_library(
+  name = "vuejs_test_lib",
+  module_name = "intellij.vuejs",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [":vuejs"]
+)
 ### auto-generated section `build intellij.vuejs` end

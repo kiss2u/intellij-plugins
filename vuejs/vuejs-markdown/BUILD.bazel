@@ -24,4 +24,21 @@ jvm_library(
     "@community//platform/util",
   ]
 )
+
+jvm_library(
+  name = "markdown_test_lib",
+  module_name = "intellij.vuejs.markdown",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":markdown",
+    "//contrib/vuejs/vuejs-common:common_test_lib",
+    "@community//plugins/markdown/core:markdown_test_lib",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "//plugins/JavaScriptLanguage/web-platform:javascript-web_test_lib",
+    "@community//xml/xml-parser:parser_test_lib",
+    "@community//platform/util:util_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.vuejs.markdown` end

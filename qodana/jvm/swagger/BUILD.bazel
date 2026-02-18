@@ -22,4 +22,19 @@ jvm_library(
     "//plugins/frameworks/swagger",
   ]
 )
+
+jvm_library(
+  name = "swagger_test_lib",
+  module_name = "intellij.qodana.jvm.swagger",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":swagger",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/platform-api:ide_test_lib",
+    "@community//platform/ide-core:ide-core_test_lib",
+    "//contrib/qodana:qodana_test_lib",
+    "//plugins/frameworks/swagger:swagger_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.qodana.jvm.swagger` end

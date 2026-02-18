@@ -18,4 +18,16 @@ jvm_library(
     "//contrib/jhipster",
   ]
 )
+
+jvm_library(
+  name = "frontend_test_lib",
+  module_name = "intellij.jhipster.frontend",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":frontend",
+    "//remote-dev/cwm-guest:frontend-split_test_lib",
+    "//contrib/jhipster:jhipster_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.jhipster.frontend` end

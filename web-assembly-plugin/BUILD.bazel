@@ -43,20 +43,32 @@ jvm_library(
   associates = [":webassembly"],
   deps = [
     "@community//platform/analysis-api:analysis",
+    "@community//platform/analysis-api:analysis_test_lib",
     "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
     "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
     "@community//platform/indexing-api:indexing",
+    "@community//platform/indexing-api:indexing_test_lib",
     "@community//platform/lang-api:lang",
+    "@community//platform/lang-api:lang_test_lib",
     "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
     "@community//platform/execution-impl",
+    "@community//platform/execution-impl:execution-impl_test_lib",
     "@community//platform/core-impl",
+    "@community//platform/core-impl:core-impl_test_lib",
     "@community//libraries/gson",
+    "@community//libraries/gson:gson_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//platform/core-ui",
+    "@community//platform/core-ui:core-ui_test_lib",
     "@community//platform/platform-util-io:ide-util-io",
     "@community//platform/util/jdom",
-  ]
+    "@community//platform/util/jdom:jdom_test_lib",
+  ],
+  runtime_deps = ["@community//platform/platform-util-io:ide-util-io_test_lib"]
 )
 ### auto-generated section `build intellij.webassembly` end
 

@@ -13,4 +13,12 @@ jvm_library(
   srcs = glob([], allow_empty = True),
   resources = [":angular_resources"]
 )
+
+jvm_library(
+  name = "angular_test_lib",
+  module_name = "intellij.angular",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [":angular"]
+)
 ### auto-generated section `build intellij.angular` end

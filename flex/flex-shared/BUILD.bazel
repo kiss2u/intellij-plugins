@@ -26,4 +26,24 @@ jvm_library(
     "@community//libraries/hash4j",
   ]
 )
+
+jvm_library(
+  name = "shared_test_lib",
+  module_name = "intellij.flex.shared",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  kotlinc_opts = "@community//:k11",
+  runtime_deps = [
+    ":shared",
+    "@community//platform/util:util_test_lib",
+    "@community//jps/model-api:model_test_lib",
+    "@community//jps/model-impl:model-impl_test_lib",
+    "@community//jps/model-serialization:model-serialization_test_lib",
+    "@community//jps/jps-builders:build_test_lib",
+    "@community//libraries/fastutil:fastutil_test_lib",
+    "@community//platform/util/jdom:jdom_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//libraries/hash4j:hash4j_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.flex.shared` end

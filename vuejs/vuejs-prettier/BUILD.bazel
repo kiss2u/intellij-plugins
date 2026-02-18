@@ -26,4 +26,22 @@ jvm_library(
     "@lib//:jetbrains-annotations",
   ]
 )
+
+jvm_library(
+  name = "prettier_test_lib",
+  module_name = "intellij.vuejs.prettier",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":prettier",
+    "//contrib/prettierJS:prettierJS_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/code-style-api:codeStyle_test_lib",
+    "//contrib/vuejs/vuejs-backend:backend_test_lib",
+    "//plugins/JavaScriptLanguage/web-platform:javascript-web_test_lib",
+    "@community//platform/util:util_test_lib",
+    "//contrib/vuejs/vuejs-common:common_test_lib",
+    "@community//xml/xml-parser:parser_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.vuejs.prettier` end

@@ -29,4 +29,26 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-plugin",
   ]
 )
+
+jvm_library(
+  name = "common_test_lib",
+  module_name = "intellij.vuejs.common",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":common",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/util:util_test_lib",
+    "//plugins/JavaScriptLanguage/web-platform:javascript-web_test_lib",
+    "@community//xml/xml-parser:parser_test_lib",
+    "//plugins/JavaScriptLanguage/javascript-parser:javascript-parser_test_lib",
+    "@community//xml/xml-psi-api:psi_test_lib",
+    "@community//libraries/stream:stream_test_lib",
+    "@community//platform/polySymbols:polySymbols_test_lib",
+    "@community//xml/xml-psi-impl:psi-impl_test_lib",
+    "//plugins/JavaScriptLanguage/javascript-psi-impl:javascript-psi-impl_test_lib",
+    "@community//platform/ide-core:ide-core_test_lib",
+    "//plugins/JavaScriptLanguage:javascript-plugin_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.vuejs.common` end

@@ -19,4 +19,18 @@ jvm_library(
     "//plugins/JavaScriptLanguage:javascript-plugin",
   ]
 )
+
+jvm_library(
+  name = "angular-plugin_test_lib",
+  module_name = "intellij.angular.plugin",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":angular-plugin",
+    "//contrib/Angular/angular-backend:angular-backend_test_lib",
+    "//contrib/Angular/angular-free:angular-free_test_lib",
+    "//contrib/Angular/angular-tslint:angular-tslint_test_lib",
+    "//plugins/JavaScriptLanguage:javascript-plugin_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.angular.plugin` end

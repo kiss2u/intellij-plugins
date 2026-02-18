@@ -35,4 +35,33 @@ jvm_library(
     "@community//libraries/kotlinx/serialization/json",
   ]
 )
+
+jvm_library(
+  name = "clion-diagnostics_test_lib",
+  module_name = "intellij.clion.diagnostics",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":clion-diagnostics",
+    "//CIDR/cidr-projectModel:cidr-projectModel_test_lib",
+    "//CIDR/cidr-psi-base:cidr-psi-base_test_lib",
+    "//CIDR/cidr-util:cidr-util_test_lib",
+    "//CIDR/cidr-util/execution:execution_test_lib",
+    "//CIDR/cidr-workspaceModel:cidr-workspaceModel_test_lib",
+    "//CIDR/clion-toolchains:clion-toolchains_test_lib",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/core-impl:core-impl_test_lib",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//platform/platform-util-io:ide-util-io_test_lib",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "@community//platform/remote-core:remote-core_test_lib",
+    "//platform/ssh-ui:ssh-ui_test_lib",
+    "@community//platform/util-ex:util-ex_test_lib",
+    "@community//platform/util/jdom:jdom_test_lib",
+    "@community//libraries/kotlinx/serialization/core:core_test_lib",
+    "@community//libraries/kotlinx/serialization/json:json_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.clion.diagnostics` end

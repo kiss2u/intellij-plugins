@@ -35,18 +35,26 @@ jvm_library(
   deps = [
     "@lib//:kotlin-stdlib",
     "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
     "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
     "@community//platform/lang-core",
+    "@community//platform/lang-core:lang-core_test_lib",
     "@community//platform/projectModel-api:projectModel",
+    "@community//platform/projectModel-api:projectModel_test_lib",
     "@community//platform/refactoring",
+    "@community//platform/refactoring:refactoring_test_lib",
     "//ruby/backend",
+    "//ruby/backend:backend_test_lib",
     "@community//plugins/ide-features-trainer:featuresTrainer",
     "@community//plugins/ide-features-trainer:featuresTrainer_test_lib",
     "@community//platform/platform-impl:ide-impl",
     "@community//platform/core-ui",
+    "@community//platform/core-ui:core-ui_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
-  ]
+  ],
+  runtime_deps = ["@community//platform/platform-impl:ide-impl_test_lib"]
 )
 ### auto-generated section `build intellij.ruby.featuresTrainer` end
 

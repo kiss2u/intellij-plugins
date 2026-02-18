@@ -22,4 +22,19 @@ jvm_library(
     "@community//platform/platform-impl:ide-impl",
   ]
 )
+
+jvm_library(
+  name = "util_test_lib",
+  module_name = "intellij.qodana.util",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":util",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/lang-api:lang_test_lib",
+    "@community//libraries/kotlinx/coroutines/core:core_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.qodana.util` end

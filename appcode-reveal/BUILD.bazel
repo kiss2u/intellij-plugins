@@ -46,4 +46,34 @@ jvm_library(
   ],
   runtime_deps = ["//CIDR-appcode/appcode/swiftDebugger"]
 )
+
+jvm_library(
+  name = "appcode-reveal_test_lib",
+  module_name = "intellij.appcode.reveal",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":appcode-reveal",
+    "//CIDR-appcode/apple-sdk:apple-sdk_test_lib",
+    "//CIDR-appcode/appcode:appcode_test_lib",
+    "//CIDR-appcode/appcode/swiftDebugger:swiftDebugger_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "@community//platform/statistics:statistics_test_lib",
+    "@community//platform/ide-core-impl:ide-core-impl_test_lib",
+    "@community//platform/platform-util-io:ide-util-io_test_lib",
+    "//CIDR/cidr-debugger/core:core_test_lib",
+    "@community//platform/util/jdom:jdom_test_lib",
+    "@community//platform/util:util-ui_test_lib",
+    "//CIDR/cidr-projectModel:cidr-projectModel_test_lib",
+    "//CIDR/cidr-runner:cidr-runner_test_lib",
+    "//CIDR/cidr-workspaceModel:cidr-workspaceModel_test_lib",
+    "@community//platform/core-impl:core-impl_test_lib",
+    "@community//platform/platform-api:ide_test_lib",
+    "@community//platform/execution:execution_test_lib",
+    "@community//platform/execution-impl:execution-impl_test_lib",
+    "//CIDR/cidr-util/execution:execution_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.appcode.reveal` end

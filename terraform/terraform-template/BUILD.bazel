@@ -44,22 +44,34 @@ jvm_library(
   associates = [":template"],
   deps = [
     "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
     "@community//platform/core-impl",
+    "@community//platform/core-impl:core-impl_test_lib",
     "@community//platform/analysis-api:analysis",
+    "@community//platform/analysis-api:analysis_test_lib",
     "@community//platform/indexing-api:indexing",
+    "@community//platform/indexing-api:indexing_test_lib",
     "@community//platform/projectModel-api:projectModel",
+    "@community//platform/projectModel-api:projectModel_test_lib",
     "@community//platform/util",
+    "@community//platform/util:util_test_lib",
     "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
     "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
     "@community//platform/editor-ui-ex:editor-ex",
+    "@community//platform/editor-ui-ex:editor-ex_test_lib",
     "//contrib/terraform",
     "//contrib/terraform:terraform_test_lib",
     "@community//platform/util:util-ui",
+    "@community//platform/util:util-ui_test_lib",
     "@community//platform/testFramework",
     "@community//platform/testFramework:testFramework_test_lib",
     "@community//platform/ide-core",
     "@community//platform/lang-api:lang",
-  ]
+    "@community//platform/lang-api:lang_test_lib",
+  ],
+  runtime_deps = ["@community//platform/ide-core:ide-core_test_lib"]
 )
 ### auto-generated section `build intellij.terraform.template` end
 

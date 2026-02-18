@@ -21,4 +21,18 @@ jvm_library(
     "@community//spellchecker",
   ]
 )
+
+jvm_library(
+  name = "spellchecker_test_lib",
+  module_name = "intellij.makefile.spellchecker",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":spellchecker",
+    "//contrib/makefile:makefile_test_lib",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/util:util_test_lib",
+    "@community//spellchecker:spellchecker_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.makefile.spellchecker` end

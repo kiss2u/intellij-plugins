@@ -17,4 +17,15 @@ jvm_library(
     "@community//plugins/copyright",
   ]
 )
+
+jvm_library(
+  name = "copyright_test_lib",
+  module_name = "intellij.vuejs.copyright",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":copyright",
+    "@community//plugins/copyright:copyright_test_lib",
+  ]
+)
 ### auto-generated section `build intellij.vuejs.copyright` end

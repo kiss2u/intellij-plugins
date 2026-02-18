@@ -2,6 +2,7 @@
 import type ts from "typescript/lib/tsserverlibrary"
 import type {Language} from "@volar/language-core"
 import {createReverseMapper, toGeneratedRange} from "./ranges"
+import {isVueFile} from "./vue"
 
 export function decorateIdeLanguageServiceExtensions(
   language: Language<string>,
@@ -39,7 +40,7 @@ export function decorateIdeLanguageServiceExtensions(
 
   languageService.webStormGetElementType = (options) => {
     const {fileName} = options
-    if (!fileName.endsWith(".vue"))
+    if (!isVueFile(fileName))
       return webStormGetElementType(options)
 
     const generatedOffsets = toGeneratedRange(language, fileName, options.startOffset, options.endOffset)

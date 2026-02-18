@@ -7,6 +7,7 @@ import {SimpleRange} from "./script-mapper"
 import {toGeneratedRangeTransform, toSourceRangeTransform} from "./range-transform"
 import {firstNotNull} from "./generators"
 import {getNodeAtRange, isVolarTypeAliasDeclaration} from "./volar"
+import {isVueFile} from "./vue"
 
 type TypeScript = typeof ts
 
@@ -15,6 +16,10 @@ export function createReverseMapper(
   language: Language<string>,
 ): ReverseMapper {
   return (sourceFile, generatedRange) => {
+    const fileName = sourceFile.fileName
+    if (!isVueFile(fileName))
+      return undefined
+
     const sourceRange = toSourceRange(ts, language, sourceFile, generatedRange)
 
     if (!sourceRange)
@@ -22,7 +27,7 @@ export function createReverseMapper(
 
     return {
       sourceRange,
-      fileName: sourceFile.fileName,
+      fileName,
     }
   }
 }

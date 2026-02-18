@@ -22,7 +22,6 @@ jvm_library(
   resources = [":tests_test_resources"],
   deps = [
     "@lib//:kotlin-stdlib",
-    "//CIDR/devBuild/tests",
     "@community//platform/core-api:core",
     "@community//platform/core-api:core_test_lib",
     "@community//platform/testFramework",

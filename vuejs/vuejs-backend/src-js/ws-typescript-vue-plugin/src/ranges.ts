@@ -6,6 +6,7 @@ import type {Position, Range} from "tsc-ide-plugin/protocol"
 import {SimpleRange} from "./script-mapper"
 import {toGeneratedRangeTransform, toSourceRangeTransform} from "./range-transform"
 import {firstNotNull} from "./generators"
+import {getNodeAtRange, isVolarTypeAliasDeclaration} from "./volar"
 
 type TypeScript = typeof ts
 
@@ -14,7 +15,7 @@ export function createReverseMapper(
   language: Language<string>,
 ): ReverseMapper {
   return (sourceFile, generatedRange) => {
-    const sourceRange = toSourceRange(language, sourceFile, generatedRange)
+    const sourceRange = toSourceRange(ts, language, sourceFile, generatedRange)
 
     if (!sourceRange)
       return undefined
@@ -27,6 +28,7 @@ export function createReverseMapper(
 }
 
 function toSourceRange(
+  ts: TypeScript,
   language: Language<string>,
   sourceFile: ts.SourceFile,
   generatedRange: Range,
@@ -34,7 +36,7 @@ function toSourceRange(
   const toSourceRange = toSourceRangeTransform(language, sourceFile.fileName)
 
   const sourceRange = firstNotNull(
-    getGeneratedRanges(sourceFile, generatedRange),
+    getGeneratedRanges(ts, sourceFile, generatedRange),
     ([startOffset, endOffset]) => toSourceRange(startOffset, endOffset),
   )
 
@@ -48,6 +50,7 @@ function toSourceRange(
 }
 
 function* getGeneratedRanges(
+  ts: TypeScript,
   sourceFile: ts.SourceFile,
   generatedRange: Range,
 ): Generator<SimpleRange, void, undefined> {
@@ -55,6 +58,12 @@ function* getGeneratedRanges(
   const endOffset = getOffset(sourceFile, generatedRange.end)
 
   yield [startOffset, endOffset]
+
+  const node = getNodeAtRange(ts, sourceFile, startOffset, endOffset)
+  if (isVolarTypeAliasDeclaration(ts, node)) {
+    const type = node.type
+    yield [type.getStart(sourceFile), type.getEnd()]
+  }
 }
 
 function getOffset(

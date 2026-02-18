@@ -24,6 +24,11 @@ public class ExternalSteps {
   public void custom(String size) {
   }
 
+  @Given("I have multiple custom {customParameter} parameters - this is first")
+  @Given("I have multiple custom {customParameter} parameters - this is second")
+  public void customMultiple(String size) {
+  }
+
   @ParameterType(".*")
   public String customParameter(String arg) {
     return arg;

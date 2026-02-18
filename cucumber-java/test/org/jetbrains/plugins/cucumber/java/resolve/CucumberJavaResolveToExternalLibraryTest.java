@@ -9,8 +9,7 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.PsiTestUtil;
 import com.intellij.testFramework.fixtures.DefaultLightProjectDescriptor;
 import org.jetbrains.annotations.NotNull;
-
-import static org.jetbrains.plugins.cucumber.java.CucumberJavaTestUtil.attachCucumberExpressionsLibrary;
+import org.jetbrains.plugins.cucumber.java.CucumberJavaTestUtil;
 
 public class CucumberJavaResolveToExternalLibraryTest extends BaseCucumberJavaResolveTest {
 
@@ -23,6 +22,8 @@ public class CucumberJavaResolveToExternalLibraryTest extends BaseCucumberJavaRe
     checkReference("<caret>I have or not parameter", "optional");
     checkReference("<caret>I have or not", "optional");
     checkReference("<caret>I have a custom blah parameter", "custom");
+    checkReference("<caret>I have multiple custom blah parameters - this is first", "customMultiple");
+    checkReference("<caret>I have multiple custom blah parameters - this is second", "customMultiple");
   }
 
   @Override
@@ -37,7 +38,7 @@ public class CucumberJavaResolveToExternalLibraryTest extends BaseCucumberJavaRe
         libraryRoots = IntelliJProjectConfiguration.getModuleLibrary("intellij.cucumber.java", "cucumber-java-5.5");
         PsiTestUtil.addProjectLibrary(model, "my-cucumber-java", libraryRoots.getClassesPaths());
 
-        attachCucumberExpressionsLibrary(model);
+        CucumberJavaTestUtil.attachCucumberExpressionsLibrary(model);
 
         PsiTestUtil.addLibrary(model, "my-cucumber-java8",
                                getTestDataPath() + "/resolveManySteps",

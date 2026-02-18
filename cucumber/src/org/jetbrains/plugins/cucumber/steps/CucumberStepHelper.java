@@ -147,43 +147,4 @@ public final class CucumberStepHelper {
     }
     return definition.getPattern();
   }
-
-  //region Deprecated and to be removed
-
-  /// @deprecated Use [#loadStepsFor(PsiFile, Module)] instead.
-  @Deprecated(forRemoval = true)
-  public static List<AbstractStepDefinition> getAllStepDefinitions(PsiFile featureFile) {
-    final Module module = ModuleUtilCore.findModuleForPsiElement(featureFile);
-    if (module == null) {
-      return Collections.emptyList();
-    }
-    return loadStepsFor(featureFile, module);
-  }
-
-  /// Searches for all step definitions that are available from `featureFile` and returns them.
-  ///
-  /// @see CucumberJvmExtensionPoint#loadStepsFor(PsiFile, Module)
-  /// @deprecated Use [#loadStepsFor] instead.
-  @Deprecated(forRemoval = true)
-  public static Collection<AbstractStepDefinition> findAllStepDefinitions(PsiFile featureFile) {
-    final Module module = ModuleUtilCore.findModuleForPsiElement(featureFile);
-    if (module == null) {
-      return Collections.emptyList();
-    }
-    return loadStepsFor(featureFile, module);
-  }
-
-  /// @deprecated Use `CucumberJvmExtensionPoint.EP_NAME.getExtensionList()` directly.
-  @Deprecated(forRemoval = true)
-  public static List<CucumberJvmExtensionPoint> getCucumberExtensions() {
-    return CucumberJvmExtensionPoint.EP_NAME.getExtensionList();
-  }
-
-  /// @deprecated Use `CucumberJvmExtensionPoint.EP_NAME.getExtensionList().size()` directly.
-  @Deprecated(forRemoval = true)
-  public static int getExtensionCount() {
-    return getCucumberExtensions().size();
-  }
-
-  //endregion
 }

@@ -19,6 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
+import com.intellij.psi.PsiArrayInitializerMemberValue;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiClassOwner;
@@ -294,9 +295,13 @@ public final class CucumberJavaUtil {
     return null;
   }
 
-  /// Returns all Cucumber step annotation (like `@Given`, `@When`, and `@Then`) for `method`.
+  /// Returns all Cucumber step annotations (like `@Given`, `@When`, and `@Then`) for `method`.
   ///
   /// Usually, there's only 1 Cucumber step annotation per step definition method, but it's not a hard requirement.
+  ///
+  /// When step definitions come from compiled JARs and use Java's repeatable annotations,
+  /// the compiler wraps them in a container annotation (e.g. `@Whens({@When("A"), @When("B")})`).
+  /// This method unwraps such container annotations and returns the individual inner annotations.
   public static List<PsiAnnotation> getCucumberStepAnnotations(PsiMethod method) {
     return getCucumberStepAnnotations(method, null);
   }
@@ -312,11 +317,34 @@ public final class CucumberJavaUtil {
     for (PsiAnnotation annotation : annotations) {
       if (annotationClassName == null || annotationClassName.equals(annotation.getQualifiedName())) {
         if (isCucumberStepAnnotation(annotation)) {
-          result.add(annotation);
+          if (getAnnotationValue(annotation) != null) {
+            result.add(annotation);
+          }
+          else {
+            // Container annotation for repeatable step annotations (e.g. @Whens wrapping @When("A"), @When("B")).
+            // In compiled JARs, @When("A") @When("B") becomes @Whens({@When("A"), @When("B")}).
+            result.addAll(unwrapRepeatableAnnotations(annotation));
+          }
         }
       }
     }
     return result;
+  }
+
+  /// Extracts and returns individual step annotations from a container annotation for repeatable step annotations.
+  ///
+  /// For example, given `@Whens({@When("A"), @When("B")})`, this method returns a list containing `@When("A")` and `@When("B")`.
+  private static List<PsiAnnotation> unwrapRepeatableAnnotations(PsiAnnotation containerAnnotation) {
+    List<PsiAnnotation> found = new ArrayList<>();
+    PsiAnnotationMemberValue annotationMemberValue = containerAnnotation.findDeclaredAttributeValue("value");
+    if (annotationMemberValue instanceof PsiArrayInitializerMemberValue arrayValue) {
+      for (PsiAnnotationMemberValue initializer : arrayValue.getInitializers()) {
+        if (initializer instanceof PsiAnnotation innerAnnotation && isCucumberStepAnnotation(innerAnnotation)) {
+          found.add(innerAnnotation);
+        }
+      }
+    }
+    return found;
   }
 
   public static @Nullable String getAnnotationValue(PsiAnnotation stepAnnotation) {
@@ -686,19 +714,35 @@ public final class CucumberJavaUtil {
   /// - Polish: `@io.cucumber.java.pl.Zakładając`, `@io.cucumber.java.pl.Jeżeli`, `@io.cucumber.java.pl.Wtedy`
   /// - and so on
   public static Collection<PsiClass> getAllStepAnnotationClasses(Module module, GlobalSearchScope scope) {
-    final String[] cucumberStepAnnotationClasses = new String[]{
-      "io.cucumber.java.StepDefinitionAnnotation", "cucumber.runtime.java.StepDefAnnotation"
-    };
+    List<PsiClass> allStepAnnotationClasses = new ArrayList<>();
+    // Add normal annotation classes
+    {
+      // The package structure has changed significantly in Cucumber v5.
+      // See https://github.com/cucumber/cucumber-jvm/blob/main/release-notes/v5.0.0.md#new-package-structure.
+      final String[] stepAnnotationClasses =
+        new String[]{"io.cucumber.java.StepDefinitionAnnotation", "cucumber.runtime.java.StepDefAnnotation"};
 
-    // Find the first StepDefinitionAnnotation class that exists in the project.
-    PsiClass stepDefinitionAnnotationClass = Arrays.stream(cucumberStepAnnotationClasses)
-      .map((className) -> JavaPsiFacade.getInstance(module.getProject()).findClass(className, scope))
-      .filter(Objects::nonNull)
-      .findFirst()
-      .orElse(null);
+      // Find the first StepDefinitionAnnotation class that exists in the project.
+      PsiClass singleStepDefinitionAnnotationClass = Arrays.stream(stepAnnotationClasses)
+        .map((className) -> JavaPsiFacade.getInstance(module.getProject()).findClass(className, scope)).filter(Objects::nonNull).findFirst()
+        .orElse(null);
 
-    if (stepDefinitionAnnotationClass == null) return Collections.emptyList();
-    final Query<PsiClass> query = AnnotatedElementsSearch.searchPsiClasses(stepDefinitionAnnotationClass, scope);
-    return query.findAll();
+      if (singleStepDefinitionAnnotationClass != null) {
+        final Query<PsiClass> query = AnnotatedElementsSearch.searchPsiClasses(singleStepDefinitionAnnotationClass, scope);
+        allStepAnnotationClasses.addAll(query.findAll());
+      }
+    }
+
+    // Add repeatable annotation class
+    {
+      final String annotationClassName = "io.cucumber.java.StepDefinitionAnnotations"; // mind the trailing "S"!
+      final PsiClass annotationClass = JavaPsiFacade.getInstance(module.getProject()).findClass(annotationClassName, scope);
+      if (annotationClass != null) {
+        final Query<PsiClass> query = AnnotatedElementsSearch.searchPsiClasses(annotationClass, scope);
+        allStepAnnotationClasses.addAll(query.findAll());
+      }
+    }
+
+    return allStepAnnotationClasses;
   }
 }

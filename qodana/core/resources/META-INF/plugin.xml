@@ -186,7 +186,7 @@
       <add-to-group group-id="ProblemsView.ToolWindow.TreePopup"/>
     </action>
     <action id="Qodana.CopyTreeNode" class="org.jetbrains.qodana.actions.QodanaCopyTreeNodeAction"
-            icon="com.intellij.icons.AllIcons.Actions.Copy">
+            icon="com.intellij.icons.AllIcons.Actions.Copy" internal="true">
       <add-to-group group-id="ProblemsView.ToolWindow.TreePopup"/>
     </action>
 

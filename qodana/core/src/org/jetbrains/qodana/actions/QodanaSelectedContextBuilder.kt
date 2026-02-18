@@ -1,0 +1,169 @@
+package org.jetbrains.qodana.actions
+
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import com.jetbrains.qodana.sarif.model.Result
+import org.jetbrains.qodana.QodanaBundle
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import org.jetbrains.qodana.highlight.HighlightedReportData
+import org.jetbrains.qodana.highlight.QodanaHighlightedReportService
+import org.jetbrains.qodana.highlight.highlightedReportDataIfSelected
+import org.jetbrains.qodana.problem.SarifProblem
+import org.jetbrains.qodana.problem.SarifTrace
+import org.jetbrains.qodana.staticAnalysis.sarif.QodanaSeverity
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNode
+import org.jetbrains.qodana.notifications.QodanaNotifications
+import org.jetbrains.qodana.ui.problemsView.tree.ui.*
+import org.jetbrains.qodana.ui.problemsView.viewModel.QodanaProblemsViewModel
+import javax.swing.JTree
+import kotlin.io.path.createTempFile
+import kotlin.io.path.writeText
+
+typealias Selector = (SarifProblem) -> Boolean
+
+private val json = Json {
+  prettyPrint = true
+  explicitNulls = false
+}
+
+@Serializable
+data class ContextReport (
+  val reportRevision: String?,
+  val problems: List<ContextProblem>,
+)
+
+
+@Serializable
+data class ContextReportWithPath (
+  val reportRevision: String?,
+  val path: String,
+)
+
+@Serializable
+data class ContextProblem(
+  val startLine: Int?,
+  val startColumn: Int?,
+  val path: String,
+  val traces: Collection<SarifTrace>?,
+  val message: String,
+  val qodanaSeverity: QodanaSeverity,
+  val inspectionId: String,
+  val baselineState: Result.BaselineState,
+)
+
+fun buildContextString(e: AnActionEvent): String? {
+  val project = e.project ?: return null
+  val reportData = QodanaHighlightedReportService.getInstance(project).highlightedReportState.value.highlightedReportDataIfSelected
+  if (reportData == null) {
+    QodanaNotifications.General.notification(
+      null,
+      QodanaBundle.message("qodana.store.report.to.context.no.report"),
+      NotificationType.WARNING,
+    ).notify(project)
+    return null
+  }
+  val selectedProblems = calcSelectedProblems(e, reportData)?.map { it.toContextProblem() }
+  if (selectedProblems == null) {
+    QodanaNotifications.General.notification(
+      null,
+      QodanaBundle.message("qodana.store.report.to.context.no.problems"),
+      NotificationType.WARNING,
+    ).notify(project)
+    return null
+  }
+
+  val revision = reportData.vcsData.revision
+
+  if (selectedProblems.size < 100) {
+    val report = ContextReport(
+      reportRevision = revision,
+      problems = selectedProblems
+    )
+    return json.encodeToString(ContextReport.serializer(), report)
+  }
+
+  val problemsJson = json.encodeToString(selectedProblems)
+  val reportPath = createTempFile("qodana-problems-context", ".json")
+  reportPath.writeText(problemsJson)
+
+  val context = ContextReportWithPath(reportRevision = revision, path = reportPath.toAbsolutePath().toString())
+
+  return json.encodeToString(ContextReportWithPath.serializer(), context)
+}
+
+private fun SarifProblem.toContextProblem(): ContextProblem {
+  return ContextProblem(
+    startLine,
+    startColumn,
+    relativePathToFile,
+    traces.ifEmpty { null },
+    message,
+    qodanaSeverity,
+    inspectionId,
+    baselineState
+  )
+}
+
+fun isQodanaTreeSelectionAvailable(e: AnActionEvent): Boolean {
+  val isLoaded = e.qodanaProblemsViewModel?.uiStateFlow?.value is QodanaProblemsViewModel.UiState.Loaded
+  val tree = e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT) as? JTree
+  val hasSelection = tree?.selectionPaths?.any { it.lastPathComponent is QodanaUiTreeNode<*, *> } == true
+  return isLoaded && hasSelection
+}
+
+private fun calcSelectedProblems(e: AnActionEvent, reportData: HighlightedReportData): List<SarifProblem>? {
+  val tree = e.getData(PlatformCoreDataKeys.CONTEXT_COMPONENT) as? JTree ?: return null
+  val selectedNodes = tree.selectionPaths?.mapNotNull { it.lastPathComponent as? QodanaUiTreeNode<*, *> } ?: return null
+  if (selectedNodes.isEmpty()) return null
+
+  return filterProblems(selectedNodes, reportData.allProblems)
+}
+
+private fun filterProblems(uiNodes: List<QodanaUiTreeNode<*, *>>, allProblems: Set<SarifProblem>): List<SarifProblem> {
+  if (uiNodes.any { it is QodanaUiTreeRoot }) {
+    return allProblems.toList()
+  }
+
+  val selectedSet = uiNodes.toSet()
+  val topSelectedNodes = uiNodes.filter { node ->
+    generateSequence(node.parent) { it.parent }.none { it in selectedSet }
+  }
+
+  val (categoryNodes, problemNodes) = topSelectedNodes.partition { it !is QodanaUiTreeProblemNode }
+
+  val selectors = categoryNodes.map { toSelector(it) }
+  val selectedProblems = allProblems.filter { selectors.any { selector -> selector(it) } }
+  val directSelectedProblems = problemNodes.map { (it as QodanaUiTreeProblemNode).primaryData.sarifProblem }
+
+  return selectedProblems + directSelectedProblems
+}
+
+private fun toSelector(node: QodanaUiTreeNode<*, *>): Selector {
+  var pathNode: QodanaTreeNode<*, *, *>? = null
+  var inspectionNode: QodanaTreeNode<*, *, *>? = null
+
+  val filteringNodes = mutableListOf<QodanaTreeNode<*, *, *>?>()
+  for (n in generateSequence(node) { it.parent }) {
+    when (n) {
+      is QodanaUiTreeFileNode -> pathNode = n.modelTreeNode
+      is QodanaUiTreeDirectoryNode -> if (pathNode == null) pathNode = n.modelTreeNode
+      // Path dominates module
+      is QodanaUiTreeModuleNode -> if (pathNode == null) pathNode = n.modelTreeNode
+
+      is QodanaUiTreeNodesWithoutModuleNode -> if (pathNode == null) pathNode = n.modelTreeNode
+      is QodanaUiTreeInspectionNode -> inspectionNode = n.modelTreeNode
+      // Inspection dominates category
+      is QodanaUiTreeInspectionCategoryNode -> if (inspectionNode == null) filteringNodes.add(n.modelTreeNode)
+      is QodanaUiTreeSeverityNode -> filteringNodes.add(n.modelTreeNode)
+      is QodanaUiTreeRoot -> {}
+    }
+  }
+
+  filteringNodes.add(pathNode)
+  filteringNodes.add(inspectionNode)
+  val filters = filteringNodes.filterNotNull()
+
+  return { problem -> filters.any { it.isRelatedToProblem(problem) } }
+}

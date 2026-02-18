@@ -16,6 +16,7 @@ import com.jetbrains.qodana.sarif.model.Location
 import com.jetbrains.qodana.sarif.model.OriginalUriBaseIds
 import com.jetbrains.qodana.sarif.model.Result
 import com.jetbrains.qodana.sarif.model.Run
+import kotlinx.serialization.Serializable
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.qodana.QodanaBundle
 import org.jetbrains.qodana.report.ValidatedSarif
@@ -349,7 +350,9 @@ private fun Result.buildTraces(
 @VisibleForTesting
 fun Run.revisionId(): String? = versionControlProvenance?.firstOrNull()?.revisionId
 
+@Serializable
 data class SarifTrace(val description: String, val nodes: Collection<Node>) {
+  @Serializable
   data class Node(
     val startLine: Int?, val startColumn: Int?, val charLength: Int?, val relativePathToFile: String?)
 }

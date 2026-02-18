@@ -5,6 +5,7 @@ import type {ReverseMapper} from "tsc-ide-plugin/ide-get-element-type"
 import type {Position, Range} from "tsc-ide-plugin/protocol"
 import {SimpleRange} from "./script-mapper"
 import {toGeneratedRangeTransform, toSourceRangeTransform} from "./range-transform"
+import {firstNotNull} from "./generators"
 
 type TypeScript = typeof ts
 
@@ -32,9 +33,9 @@ function toSourceRange(
 ): Range | undefined {
   const toSourceRange = toSourceRangeTransform(language, sourceFile.fileName)
 
-  const sourceRange = toSourceRange(
-    getOffset(sourceFile, generatedRange.start),
-    getOffset(sourceFile, generatedRange.end),
+  const sourceRange = firstNotNull(
+    getGeneratedRanges(sourceFile, generatedRange),
+    ([startOffset, endOffset]) => toSourceRange(startOffset, endOffset),
   )
 
   if (sourceRange === undefined)
@@ -44,6 +45,16 @@ function toSourceRange(
     start: sourceFile.getLineAndCharacterOfPosition(sourceRange[0]),
     end: sourceFile.getLineAndCharacterOfPosition(sourceRange[1]),
   }
+}
+
+function* getGeneratedRanges(
+  sourceFile: ts.SourceFile,
+  generatedRange: Range,
+): Generator<SimpleRange, void, undefined> {
+  const startOffset = getOffset(sourceFile, generatedRange.start)
+  const endOffset = getOffset(sourceFile, generatedRange.end)
+
+  yield [startOffset, endOffset]
 }
 
 function getOffset(

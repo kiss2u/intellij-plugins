@@ -36,11 +36,11 @@ export class ScriptMapper {
     transformOffset: OffsetTransform,
   ): SimpleRange | undefined => {
     const start = transformOffset(startOffset)
-    if (start === undefined) 
+    if (start === undefined)
       return undefined
 
     const end = transformOffset(endOffset)
-    if (end === undefined) 
+    if (end === undefined)
       return undefined
 
     return [start, end]

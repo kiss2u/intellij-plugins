@@ -4,17 +4,18 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.jetbrains.qodana.sarif.model.Result
-import org.jetbrains.qodana.QodanaBundle
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.jetbrains.annotations.VisibleForTesting
+import org.jetbrains.qodana.QodanaBundle
 import org.jetbrains.qodana.highlight.HighlightedReportData
 import org.jetbrains.qodana.highlight.QodanaHighlightedReportService
 import org.jetbrains.qodana.highlight.highlightedReportDataIfSelected
+import org.jetbrains.qodana.notifications.QodanaNotifications
 import org.jetbrains.qodana.problem.SarifProblem
 import org.jetbrains.qodana.problem.SarifTrace
 import org.jetbrains.qodana.staticAnalysis.sarif.QodanaSeverity
-import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNode
-import org.jetbrains.qodana.notifications.QodanaNotifications
+import org.jetbrains.qodana.ui.problemsView.tree.model.*
 import org.jetbrains.qodana.ui.problemsView.tree.ui.*
 import org.jetbrains.qodana.ui.problemsView.viewModel.QodanaProblemsViewModel
 import javax.swing.JTree
@@ -93,7 +94,8 @@ fun buildContextString(e: AnActionEvent): String? {
   return json.encodeToString(ContextReportWithPath.serializer(), context)
 }
 
-private fun SarifProblem.toContextProblem(): ContextProblem {
+@VisibleForTesting
+internal fun SarifProblem.toContextProblem(): ContextProblem {
   return ContextProblem(
     startLine,
     startColumn,
@@ -122,42 +124,78 @@ private fun calcSelectedProblems(e: AnActionEvent, reportData: HighlightedReport
 }
 
 private fun filterProblems(uiNodes: List<QodanaUiTreeNode<*, *>>, allProblems: Set<SarifProblem>): List<SarifProblem> {
-  if (uiNodes.any { it is QodanaUiTreeRoot }) {
+  val chains = uiNodes.mapNotNull { node ->
+    node.computeAncestorsAndThisModelNodes().ifEmpty { null }
+  }
+  return filterProblemsFromNodeChains(chains, allProblems)
+}
+
+/**
+ * Filters problems based on selected model tree node chains.
+ *
+ * Each chain is a path from the tree root to a selected node (as returned by
+ * [QodanaUiTreeNode.computeAncestorsAndThisModelNodes]).
+ */
+@VisibleForTesting
+internal fun filterProblemsFromNodeChains(
+  selectedChains: List<List<QodanaTreeNode<*, *, *>>>,
+  allProblems: Set<SarifProblem>,
+): List<SarifProblem> {
+  if (selectedChains.any { it.lastOrNull() is QodanaTreeRoot }) {
     return allProblems.toList()
   }
 
-  val selectedSet = uiNodes.toSet()
-  val topSelectedNodes = uiNodes.filter { node ->
-    generateSequence(node.parent) { it.parent }.none { it in selectedSet }
+  // Keep only top-level chains: remove chains nested under another selected chain
+  val topChains = selectedChains.filter { chain ->
+    selectedChains.none { other ->
+      other !== chain && isProperPrefixByPrimaryData(other, chain)
+    }
   }
 
-  val (categoryNodes, problemNodes) = topSelectedNodes.partition { it !is QodanaUiTreeProblemNode }
+  val (categoryChains, problemChains) = topChains.partition { it.lastOrNull() !is QodanaTreeProblemNode }
 
-  val selectors = categoryNodes.map { toSelector(it) }
-  val selectedProblems = allProblems.filter { selectors.any { selector -> selector(it) } }
-  val directSelectedProblems = problemNodes.map { (it as QodanaUiTreeProblemNode).primaryData.sarifProblem }
+  val selectors = categoryChains.map { buildSelectorFromNodeChain(it) }
+  val selectedProblems = allProblems.filter { problem -> selectors.any { selector -> selector(problem) } }
+  val directSelectedProblems = problemChains.mapNotNull {
+    (it.lastOrNull() as? QodanaTreeProblemNode)?.primaryData?.sarifProblem
+  }
 
   return selectedProblems + directSelectedProblems
 }
 
-private fun toSelector(node: QodanaUiTreeNode<*, *>): Selector {
+private fun isProperPrefixByPrimaryData(
+  shorter: List<QodanaTreeNode<*, *, *>>,
+  longer: List<QodanaTreeNode<*, *, *>>,
+): Boolean {
+  if (shorter.size >= longer.size) return false
+  return shorter.indices.all { i -> shorter[i].primaryData == longer[i].primaryData }
+}
+
+/**
+ * Builds a problem selector from a chain of model tree nodes (root to selected node).
+ *
+ * Walks the chain in reverse (selected node → root) to give priority to the most specific nodes:
+ * file dominates directory which dominates module; inspection dominates category.
+ */
+@VisibleForTesting
+internal fun buildSelectorFromNodeChain(chain: List<QodanaTreeNode<*, *, *>>): Selector {
   var pathNode: QodanaTreeNode<*, *, *>? = null
   var inspectionNode: QodanaTreeNode<*, *, *>? = null
 
   val filteringNodes = mutableListOf<QodanaTreeNode<*, *, *>?>()
-  for (n in generateSequence(node) { it.parent }) {
+  for (n in chain.asReversed()) {
     when (n) {
-      is QodanaUiTreeFileNode -> pathNode = n.modelTreeNode
-      is QodanaUiTreeDirectoryNode -> if (pathNode == null) pathNode = n.modelTreeNode
+      is QodanaTreeFileNode -> pathNode = n
+      is QodanaTreeDirectoryNode -> if (pathNode == null) pathNode = n
       // Path dominates module
-      is QodanaUiTreeModuleNode -> if (pathNode == null) pathNode = n.modelTreeNode
+      is QodanaTreeModuleNode -> if (pathNode == null) pathNode = n
 
-      is QodanaUiTreeNodesWithoutModuleNode -> if (pathNode == null) pathNode = n.modelTreeNode
-      is QodanaUiTreeInspectionNode -> inspectionNode = n.modelTreeNode
+      is QodanaTreeNodesWithoutModuleNode -> if (pathNode == null) pathNode = n
+      is QodanaTreeInspectionNode -> inspectionNode = n
       // Inspection dominates category
-      is QodanaUiTreeInspectionCategoryNode -> if (inspectionNode == null) filteringNodes.add(n.modelTreeNode)
-      is QodanaUiTreeSeverityNode -> filteringNodes.add(n.modelTreeNode)
-      is QodanaUiTreeRoot -> {}
+      is QodanaTreeInspectionCategoryNode -> if (inspectionNode == null) filteringNodes.add(n)
+      is QodanaTreeSeverityNode -> filteringNodes.add(n)
+      is QodanaTreeRoot -> {}
     }
   }
 

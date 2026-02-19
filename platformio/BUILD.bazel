@@ -182,6 +182,12 @@ jvm_library(
     "@community//platform/core-impl:core-impl_test_lib",
     "@community//platform/execution",
     "@community//platform/execution:execution_test_lib",
+    "@community//platform/testFramework/junit5",
+    "@community//platform/testFramework/junit5:junit5_test_lib",
+    "//CIDR/clion-testFramework-nolang/junit5/core",
+    "//CIDR/clion-testFramework-nolang/junit5/core:core_test_lib",
+    "@community//libraries/assertj-core",
+    "@community//libraries/assertj-core:assertj-core_test_lib",
   ],
   runtime_deps = [
     "@community//platform/ide-core-impl:ide-core-impl_test_lib",

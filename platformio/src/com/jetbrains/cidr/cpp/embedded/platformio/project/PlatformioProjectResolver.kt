@@ -58,16 +58,19 @@ import com.jetbrains.cidr.cpp.embedded.platformio.ui.PlatformioProjectResolvePol
 import com.jetbrains.cidr.cpp.embedded.platformio.ui.showUntrustedProjectLoadDialog
 import com.jetbrains.cidr.cpp.execution.manager.CLionRunConfigurationManager
 import com.jetbrains.cidr.cpp.external.system.project.attachExternalModule
+import com.jetbrains.cidr.cpp.toolchains.CPPCompilerSwitchesUtil
 import com.jetbrains.cidr.external.system.model.ExternalLanguageConfiguration
 import com.jetbrains.cidr.external.system.model.ExternalModule
 import com.jetbrains.cidr.external.system.model.impl.ExternalLanguageConfigurationImpl
 import com.jetbrains.cidr.external.system.model.impl.ExternalModuleImpl
 import com.jetbrains.cidr.external.system.model.impl.ExternalResolveConfigurationBuilder
 import com.jetbrains.cidr.lang.CLanguageKind
+import com.jetbrains.cidr.lang.toolchains.CidrSwitchBuilder
 import com.jetbrains.cidr.lang.workspace.compiler.GCCCompilerKind
 import com.jetbrains.cidr.lang.workspace.compiler.OCCompilerKind
 import com.jetbrains.cidr.lang.workspace.compiler.UnknownCompilerKind
 import org.jetbrains.annotations.Nls
+import org.jetbrains.annotations.VisibleForTesting
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -214,14 +217,15 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
 
         checkCancelled()
 
-        val languageConfigurations = configureLanguages(pioActiveMetadata, confBuilder)
+        val workspace = project.service<PlatformioWorkspace>()
+        val languageConfigurations = configureLanguages(pioActiveMetadata, confBuilder, workspace)
 
         checkCancelled()
 
         val compDbJson = getCompDbJson(pioResolvePolicy, platformioService, id, project, activeEnvName, listener, projectPath)
 
         checkCancelled()
-        scanner.scanSources(compDbJson, project.service<PlatformioWorkspace>(), languageConfigurations, confBuilder)
+        scanner.scanSources(compDbJson, workspace, languageConfigurations, confBuilder)
         checkCancelled()
 
         platformioService.librariesPaths = scanner.scanLibraries(pioActiveMetadata)
@@ -317,44 +321,6 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
     }
 
     return compDbJson
-  }
-
-  private fun configureLanguages(
-    jsonConfig: Map<String, Any>,
-    confBuilder: ExternalResolveConfigurationBuilder
-  ): List<ExternalLanguageConfiguration> {
-    val compilerKind: OCCompilerKind = if (jsonConfig["compiler_type"] == "gcc") GCCCompilerKind else UnknownCompilerKind
-
-    fun extractCompilerSwitches(key: String, includeSwitches: List<String>, defineSwitches: List<String>): MutableList<String> {
-      val switches = when (val rawSwitches = jsonConfig[key]) {
-        is String -> rawSwitches.split(' ')
-        is List<*> -> rawSwitches.map { it.toString() }.toList()
-        else -> emptyList()
-      }
-      return switches.toMutableList().apply { addAll(includeSwitches); addAll(defineSwitches) }
-    }
-
-    val includeSwitches: List<String> = jsonConfig["includes"]
-                                          .asSafely<Map<String, List<String>>>()
-                                          ?.flatMap { it.value }
-                                          ?.toSet()
-                                          ?.map { "-I$it" } ?: emptyList()
-    val defineSwitches: List<String> = jsonConfig["defines"]
-                                         .asSafely<List<String>>()
-                                         ?.map { "-D$it" } ?: emptyList()
-    val cLanguageConfiguration = ExternalLanguageConfigurationImpl(
-      languageKind = CLanguageKind.C, compilerKind = compilerKind,
-      compilerExecutable = jsonConfig["cc_path"].asSafely<String>()?.let(::File),
-      compilerSwitches = extractCompilerSwitches("cc_flags", includeSwitches, defineSwitches)
-    )
-    confBuilder.withLanguageConfiguration(cLanguageConfiguration)
-    val cxxLanguageConfiguration = ExternalLanguageConfigurationImpl(
-      languageKind = CLanguageKind.CPP, compilerKind = compilerKind,
-      compilerExecutable = jsonConfig["cxx_path"].asSafely<String>()?.let(::File),
-      compilerSwitches = extractCompilerSwitches("cxx_flags", includeSwitches, defineSwitches)
-    )
-    confBuilder.withLanguageConfiguration(cxxLanguageConfiguration)
-    return listOf(cLanguageConfiguration, cxxLanguageConfiguration)
   }
 
   private fun calcBuildDir(projectDir: VirtualFile, platformioSection: Map<String, Any>): Path {
@@ -536,4 +502,50 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
     else {
       targets + PlatformioTargetData("upload", "Upload", null, "Platform")
     }
+
+  companion object {
+    @VisibleForTesting
+    internal fun configureLanguages(
+      jsonConfig: Map<String, Any>,
+      confBuilder: ExternalResolveConfigurationBuilder,
+      workspace: PlatformioWorkspace
+    ): List<ExternalLanguageConfiguration> {
+      val compilerKind: OCCompilerKind = if (jsonConfig["compiler_type"] == "gcc") GCCCompilerKind else UnknownCompilerKind
+      val switchFormat = CPPCompilerSwitchesUtil.getFlagsFormat(workspace.environment)
+
+      fun extractCompilerSwitches(key: String, extraRawSwitches: String): MutableList<String> {
+        val joinedSwitches = when (val rawSwitches = jsonConfig[key]) {
+          is String -> rawSwitches
+          is List<*> -> rawSwitches.joinToString(" ")
+          else -> ""
+        }
+        val allSwitches = "$joinedSwitches $extraRawSwitches"
+        return CidrSwitchBuilder.parseArgs(allSwitches, switchFormat)
+      }
+
+      val includeSwitches: List<String> = jsonConfig["includes"]
+                                            .asSafely<Map<String, List<String>>>()
+                                            ?.flatMap { it.value }
+                                            ?.toSet()
+                                            ?.map { "-I$it" } ?: emptyList()
+      val defineSwitches: List<String> = jsonConfig["defines"]
+                                           .asSafely<List<String>>()
+                                           ?.map { "-D$it" } ?: emptyList()
+      val extraRawSwitches = (includeSwitches + defineSwitches).joinToString(" ")
+
+      val cLanguageConfiguration = ExternalLanguageConfigurationImpl(
+        languageKind = CLanguageKind.C, compilerKind = compilerKind,
+        compilerExecutable = jsonConfig["cc_path"].asSafely<String>()?.let(::File),
+        compilerSwitches = extractCompilerSwitches("cc_flags", extraRawSwitches)
+      )
+      confBuilder.withLanguageConfiguration(cLanguageConfiguration)
+      val cxxLanguageConfiguration = ExternalLanguageConfigurationImpl(
+        languageKind = CLanguageKind.CPP, compilerKind = compilerKind,
+        compilerExecutable = jsonConfig["cxx_path"].asSafely<String>()?.let(::File),
+        compilerSwitches = extractCompilerSwitches("cxx_flags", extraRawSwitches)
+      )
+      confBuilder.withLanguageConfiguration(cxxLanguageConfiguration)
+      return listOf(cLanguageConfiguration, cxxLanguageConfiguration)
+    }
+  }
 }

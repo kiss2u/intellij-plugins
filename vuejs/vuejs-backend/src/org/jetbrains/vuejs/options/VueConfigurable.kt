@@ -8,20 +8,23 @@ import com.intellij.lang.typescript.lsp.createBundledNodePackageField
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.UiDslUnnamedConfigurable
 import com.intellij.openapi.project.Project
-import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.Panel
+import com.intellij.ui.dsl.builder.SegmentedButton
+import com.intellij.ui.dsl.builder.bind
+import com.intellij.ui.dsl.builder.selected
+import com.intellij.ui.dsl.builder.toMutableProperty
 import com.intellij.ui.layout.ComponentPredicate
-import com.intellij.ui.layout.selected
 import org.jetbrains.vuejs.VueBundle
 import org.jetbrains.vuejs.lang.typescript.service.getVueTSPluginNodePackages
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspServerLoader
-import javax.swing.JRadioButton
 
 class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.Simple(), Configurable {
   private val settings = VueSettings.instance(project)
 
   override fun Panel.createContent() {
     group(VueBundle.message("vue.configurable.service.group")) {
-      lateinit var rbManual: JRadioButton
+      lateinit var manualSelected: ComponentPredicate
 
       buttonsGroup {
         row {
@@ -31,12 +34,11 @@ class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.S
         row {
           radioButton(VueBundle.message("vue.configurable.service.auto"), VueLSMode.AUTO)
             .comment(VueBundle.message("vue.configurable.service.auto.help"))
-            .component
         }
         row {
-          rbManual = radioButton(VueBundle.message("vue.configurable.service.manual"), VueLSMode.MANUAL)
+          radioButton(VueBundle.message("vue.configurable.service.manual"), VueLSMode.MANUAL)
             .comment(VueBundle.message("vue.configurable.service.manual.help"))
-            .component
+            .also { manualSelected = it.selected }
         }
 
         indent {
@@ -74,7 +76,7 @@ class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.S
             VueSettings.ManualMode.ONLY_TS_PLUGIN,
           ))
 
-        }.visibleIf(rbManual.selected)
+        }.visibleIf(manualSelected)
 
       }.bind(settings::serviceType)
     }

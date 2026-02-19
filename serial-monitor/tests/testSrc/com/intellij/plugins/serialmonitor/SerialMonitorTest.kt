@@ -24,7 +24,7 @@ import org.junit.jupiter.api.assertThrows
 import java.util.function.Consumer
 
 @TestApplication
-class TestSerialMonitor {
+class SerialMonitorTest {
   @Nested
   inner class Basic {
     private val providerFixture = serialPortProviderFixture("/dev/ttyUSB0")

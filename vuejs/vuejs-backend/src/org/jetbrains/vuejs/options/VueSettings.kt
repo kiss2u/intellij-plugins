@@ -59,13 +59,19 @@ class VueSettings(private val project: Project) :
 
   var useTypesFromServer: Boolean
     get() {
-      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: false).also {
+      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer).also {
         with(project.service<JSLogOnceService>()) {
           LOG.infoOnce { "'Service-powered type engine' option of VueSettings: $it" }
         }
       }
     }
-    set(_) {}
+    set(value) {
+      if (value == state.useTypesFromServer)
+        return
+
+      updateState { state -> state.copy(useTypesFromServer = value) }
+      restartTypeScriptServicesAsync(project)
+    }
 
   val manualSettings: ManualSettings = ManualSettings()
 
@@ -151,6 +157,7 @@ class VueSettings(private val project: Project) :
   @Serializable
   data class State(
     val serviceType: VueLSMode = VueLSMode.AUTO,
+    val useTypesFromServer: Boolean = false,
     val manual: ManualSettingsState = ManualSettingsState(),
   )
 

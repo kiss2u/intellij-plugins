@@ -53,8 +53,8 @@ class VueSettings(private val project: Project) :
       if (value == state.serviceType)
         return
 
-      restartTypeScriptServicesAsync(project)
       updateState { state -> state.copy(serviceType = value) }
+      restartTypeScriptServicesAsync(project)
     }
 
   var useTypesFromServer: Boolean
@@ -76,8 +76,8 @@ class VueSettings(private val project: Project) :
         if (value == state.manual.mode)
           return
 
-        restartTypeScriptServicesAsync(project)
         updateState { state -> state.copy(manual = state.manual.copy(mode = value)) }
+        restartTypeScriptServicesAsync(project)
       }
 
     var lspServerPackageRef: NodePackageRef
@@ -92,12 +92,12 @@ class VueSettings(private val project: Project) :
         if (refText == state.manual.lspServerPackagePath)
           return
 
-        restartTypeScriptServicesAsync(project)
         updateState { state ->
           state.copy(
             manual = state.manual.copy(lspServerPackagePath = refText)
           )
         }
+        restartTypeScriptServicesAsync(project)
       }
 
     var tsPluginPackageRef: NodePackageRef
@@ -134,12 +134,12 @@ class VueSettings(private val project: Project) :
         if (newTSPluginPackage == state.manual.tsPluginPackage)
           return
 
-        restartTypeScriptServicesAsync(project)
         updateState { state ->
           state.copy(
             manual = state.manual.copy(tsPluginPackage = newTSPluginPackage)
           )
         }
+        restartTypeScriptServicesAsync(project)
       }
   }
 

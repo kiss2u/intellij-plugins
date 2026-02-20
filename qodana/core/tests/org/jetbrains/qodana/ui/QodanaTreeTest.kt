@@ -8,7 +8,17 @@ import org.jetbrains.qodana.problem.SarifProblemWithPropertiesAndFile
 import org.jetbrains.qodana.runDispatchingOnUi
 import org.jetbrains.qodana.settings.ConfigExcludeItem
 import org.jetbrains.qodana.staticAnalysis.sarif.QodanaSeverity
-import org.jetbrains.qodana.ui.problemsView.tree.model.*
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeDirectoryNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeExcludeEvent
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeFileNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeInspectionNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNodesWithoutModuleNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreePath
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeProblemEvent
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeProblemNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeRoot
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeSeverityNode
 import org.jetbrains.qodana.ui.problemsView.viewModel.impl.QodanaTreeBuildConfiguration
 import java.io.File
 import java.nio.file.Path
@@ -614,9 +624,9 @@ class QodanaTreeTest : QodanaPluginLightTestBase() {
               project,
               null
             )
-        }.toSet()),
-        QodanaTreePath.Builder()
-      )
+          }.toSet()),
+      QodanaTreePath.Builder()
+    )
 
     val intermediateNodes = root.getTree()
     assertThat(intermediateNodes.size).isLessThan(nodes1.size)
@@ -642,7 +652,7 @@ class QodanaTreeTest : QodanaPluginLightTestBase() {
               project,
               testDir.resolve("project/Main.java").refreshAndFindVirtualFile()
             )
-        }.toSet()),
+          }.toSet()),
       QodanaTreePath.Builder()
     )
 

@@ -11,7 +11,14 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.jetbrains.qodana.highlight.HighlightedReportData
 import org.jetbrains.qodana.highlight.HighlightedReportDataImpl
 import org.jetbrains.qodana.problem.SarifProblemWithProperties
-import org.jetbrains.qodana.report.*
+import org.jetbrains.qodana.report.AggregatedReportMetadata
+import org.jetbrains.qodana.report.BannerContentProvider
+import org.jetbrains.qodana.report.BrowserViewProvider
+import org.jetbrains.qodana.report.LoadedReport
+import org.jetbrains.qodana.report.NoProblemsContentProvider
+import org.jetbrains.qodana.report.NotificationCallback
+import org.jetbrains.qodana.report.ReportDescriptor
+import org.jetbrains.qodana.report.ValidatedSarif
 import org.jetbrains.qodana.ui.problemsView.tree.model.ModuleDataProvider
 import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeContext
 import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeRoot
@@ -45,7 +52,8 @@ class QodanaTreeTestUtil(private val project: Project, private val projectDir: P
 
     val moduleDataProvider = if (treeConfiguration.groupByModule) {
       ModuleDataProvider.create(project, sarifProblemsWithVirtualFiles.map { it.first.problem to it.second })
-    } else {
+    }
+    else {
       null
     }
     val treeContext = QodanaTreeContext(

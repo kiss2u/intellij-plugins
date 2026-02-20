@@ -7,7 +7,14 @@ import org.jetbrains.qodana.problem.SarifProblem
 import org.jetbrains.qodana.runDispatchingOnUi
 import org.jetbrains.qodana.staticAnalysis.sarif.QodanaSeverity
 import org.jetbrains.qodana.ui.QodanaTreeTestUtil
-import org.jetbrains.qodana.ui.problemsView.tree.model.*
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeDirectoryNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeFileNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeInspectionCategoryNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeInspectionNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeProblemNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeRoot
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeSeverityNode
 import org.jetbrains.qodana.ui.problemsView.viewModel.impl.QodanaTreeBuildConfiguration
 import kotlin.io.path.Path
 

@@ -15,8 +15,17 @@ import org.jetbrains.qodana.notifications.QodanaNotifications
 import org.jetbrains.qodana.problem.SarifProblem
 import org.jetbrains.qodana.problem.SarifTrace
 import org.jetbrains.qodana.staticAnalysis.sarif.QodanaSeverity
-import org.jetbrains.qodana.ui.problemsView.tree.model.*
-import org.jetbrains.qodana.ui.problemsView.tree.ui.*
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeDirectoryNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeFileNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeInspectionCategoryNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeInspectionNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeModuleNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeNodesWithoutModuleNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeProblemNode
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeRoot
+import org.jetbrains.qodana.ui.problemsView.tree.model.QodanaTreeSeverityNode
+import org.jetbrains.qodana.ui.problemsView.tree.ui.QodanaUiTreeNode
 import org.jetbrains.qodana.ui.problemsView.viewModel.QodanaProblemsViewModel
 import javax.swing.JTree
 import kotlin.io.path.createTempFile
@@ -30,14 +39,14 @@ private val json = Json {
 }
 
 @Serializable
-data class ContextReport (
+data class ContextReport(
   val reportRevision: String?,
   val problems: List<ContextProblem>,
 )
 
 
 @Serializable
-data class ContextReportWithPath (
+data class ContextReportWithPath(
   val reportRevision: String?,
   val path: String,
 )

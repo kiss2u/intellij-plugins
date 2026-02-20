@@ -22,7 +22,7 @@ class MissingModuleInspectionTest : BasePlatformTestCase() {
   @org.junit.Test
   fun setOfModules() {
     myFixture.enableInspections(TfMissingModuleInspection::class.java)
-    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/terraform", ".terraform")
+    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/.terraform", ".terraform")
     myFixture.configureByText("main.tf", """
       module "registry_short" {
         source = "terraform-aws-modules/vpc/aws"

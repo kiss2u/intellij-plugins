@@ -12,6 +12,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.project.waitForSmartMode
 import com.intellij.openapi.rd.util.lifetime
 import com.intellij.openapi.startup.ProjectActivity
+import com.intellij.openapi.startup.StartupActivity
 import com.intellij.platform.backend.observation.ActivityTracker
 import com.intellij.util.PlatformUtils
 import kotlinx.coroutines.CompletableDeferred
@@ -48,7 +49,7 @@ internal class QodanaRustLoader(private val project: Project, coroutineScope: Co
   companion object {
     fun getInstance(project: Project): QodanaRustLoader = project.service()
     suspend fun getInstanceAsync(project: Project): QodanaRustLoader = project.serviceAsync()
-    private val log = logger<QodanaRustLoader>()
+    internal val log = logger<QodanaRustLoader>()
   }
 
   private val configureJob = coroutineScope.launch(start = CoroutineStart.LAZY) {
@@ -59,12 +60,16 @@ internal class QodanaRustLoader(private val project: Project, coroutineScope: Co
     }
   }
 
-  suspend fun awaitConfiguration() {
+  internal suspend fun awaitConfiguration() {
     configureJob.join()
   }
   val isRunning get() = configureJob.isActive
 
   private suspend fun configure() {
+    if (!PlatformUtils.isQodana()) {
+      log.error("QodanaRustLoader must only run in a Qodana environment")
+    }
+
     val projectRoot = project.guessProjectDir()?.toNioPath()
     if (projectRoot == null) {
       log.error("Unable to guess project root")
@@ -172,6 +177,10 @@ internal class QodanaRustLoader(private val project: Project, coroutineScope: Co
 
 internal class QodanaRustLoaderProjectActivity : ProjectActivity {
   override suspend fun execute(project: Project) {
+    if (!PlatformUtils.isQodana()) {
+      QodanaRustLoader.log.debug("QodanaRustLoader will not run: not a Qodana environment")
+      return
+    }
     QodanaRustLoader.getInstanceAsync(project).awaitConfiguration()
   }
 }
@@ -179,16 +188,16 @@ internal class QodanaRustLoaderProjectActivity : ProjectActivity {
 class QodanaRustLoaderActivityTracker : ActivityTracker {
   override val presentableName: String = "Qodana for Rust startup awaiter"
 
-  private val isAwaitingEnabled by lazy {
-    PlatformUtils.isQodana()
-  }
-
   override suspend fun isInProgress(project: Project): Boolean {
-    return isAwaitingEnabled && QodanaRustLoader.getInstanceAsync(project).isRunning
+    return QodanaRustLoader.getInstanceAsync(project).isRunning
   }
 
   override suspend fun awaitConfiguration(project: Project) {
-    if (!isAwaitingEnabled) return
-    QodanaRustLoader.getInstanceAsync(project).awaitConfiguration()
+    val activity = StartupActivity.POST_STARTUP_ACTIVITY.findExtension(QodanaRustLoaderProjectActivity::class.java)
+    if (activity == null) {
+      QodanaRustLoader.log.error("QodanaRustLoaderProjectActivity extension not found")
+      return
+    }
+    activity.execute(project)
   }
 }

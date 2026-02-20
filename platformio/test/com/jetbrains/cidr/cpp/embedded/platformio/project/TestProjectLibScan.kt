@@ -89,8 +89,10 @@ class TestProjectLibScan : LightPlatformTestCase() {
                                    pioRunEventId: String,
                                    project: Project,
                                    activeEnvName: String,
-                                   listener: ExternalSystemTaskNotificationListener): String =
-      projectDir.findChild("pio-project-metadata.json")!!.readText().replace("T:", projectDir.path)
+                                   listener: ExternalSystemTaskNotificationListener): String {
+      val osSuffix = if (OS.CURRENT == OS.Windows) "_win" else ""
+      return projectDir.findChild("pio-project-metadata${osSuffix}.json")!!.readText().replace("T:", projectDir.path)
+    }
 
     override fun createRunConfigurationIfRequired(project: Project) {}
 

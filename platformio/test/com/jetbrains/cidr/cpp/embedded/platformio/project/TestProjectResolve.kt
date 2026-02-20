@@ -93,10 +93,13 @@ class TestProjectResolve : LightPlatformTestCase() {
 
     val service = project.service<PlatformioService>()
 
-    assertEquals("Target Executable Path",
-                 "D:\\work\\platformio-test\\contrib\\platformio\\testData\\project1\\.pio\\build\\esp-wrover-kit\\firmware.elf",
-                 service.targetExecutablePath)
-    assertEquals("Svd Path", "D:\\svd.svd", service.svdPath)
+    val expectedTargetExePath = if (OS.CURRENT == OS.Windows)
+      "D:\\work\\platformio-test\\contrib\\platformio\\testData\\project1\\.pio\\build\\esp-wrover-kit\\firmware.elf"
+    else
+      "/home/user/platformio-test/contrib/platformio/testData/project1/.pio/build/esp-wrover-kit/firmware.elf"
+    assertEquals("Target Executable Path", expectedTargetExePath, service.targetExecutablePath)
+    val expectedSvdPath = if (OS.CURRENT == OS.Windows) "D:\\svd.svd" else "/tmp/svd.svd"
+    assertEquals("Svd Path", expectedSvdPath, service.svdPath)
 
 
     assertEquals("Environments", listOf(PlatformioExecutionTarget("esp-wrover-kit")), service.envs)
@@ -114,8 +117,11 @@ class TestProjectResolve : LightPlatformTestCase() {
 
     verifySources(projectNode!!)
 
-    val commonSwitches = listOf("-DESP_PLATFORM", "-ggdb",
-                                "-IC:\\Users\\user\\.platformio\\packages\\framework-arduinoespressif32\\libraries\\Wire\\src")
+    val expectedIncludePath = if (OS.CURRENT == OS.Windows)
+      "-IC:\\Users\\user\\.platformio\\packages\\framework-arduinoespressif32\\libraries\\Wire\\src"
+    else
+      "-I/home/user/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src"
+    val commonSwitches = listOf("-DESP_PLATFORM", "-ggdb", expectedIncludePath)
     val cSwitches = listOf("-std=gnu99")
     val cppSwitches = listOf("-std=gnu++11")
 
@@ -182,7 +188,8 @@ class TestProjectResolve : LightPlatformTestCase() {
                                    project: Project,
                                    activeEnvName: String,
                                    listener: ExternalSystemTaskNotificationListener): String {
-      return projectDir.findChild("pio-project-metadata-esp-wrover-kit${suffix}.json")!!.readText()
+      val osSuffix = if (OS.CURRENT == OS.Windows) "_win" else ""
+      return projectDir.findChild("pio-project-metadata-esp-wrover-kit${suffix}${osSuffix}.json")!!.readText()
     }
 
     override fun createRunConfigurationIfRequired(project: Project) {}

@@ -24,7 +24,7 @@ class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.S
 
   override fun Panel.createContent() {
     group(VueBundle.message("vue.configurable.service.group")) {
-      lateinit var manualSelected: ComponentPredicate
+      lateinit var manualModeSelected: ComponentPredicate
 
       buttonsGroup {
         row {
@@ -38,7 +38,7 @@ class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.S
         row {
           radioButton(VueBundle.message("vue.configurable.service.manual"), VueLSMode.MANUAL)
             .comment(VueBundle.message("vue.configurable.service.manual.help"))
-            .also { manualSelected = it.selected }
+            .also { manualModeSelected = it.selected }
         }
 
         indent {
@@ -76,7 +76,7 @@ class VueConfigurable(private val project: Project) : UiDslUnnamedConfigurable.S
             VueSettings.ManualMode.ONLY_TS_PLUGIN,
           ))
 
-        }.visibleIf(manualSelected)
+        }.visibleIf(manualModeSelected)
 
       }.bind(settings::serviceType)
     }

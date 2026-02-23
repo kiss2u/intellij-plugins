@@ -17,8 +17,14 @@
       ]]>
    </description>
 
-  <depends>com.intellij.modules.lang</depends>
-  <depends>com.intellij.modules.vcs</depends>
+  <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+  <dependencies>
+    <module name="intellij.platform.vcs.dvcs"/>
+    <module name="intellij.platform.vcs.dvcs.impl"/>
+    <module name="intellij.platform.vcs.impl"/>
+    <module name="intellij.platform.vcs.impl.shared"/>
+  </dependencies>
+  <!-- endregion -->
   <depends optional="true" config-file="git-plugin-extensions.xml">Git4Idea</depends>
 
   <actions>

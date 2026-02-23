@@ -100,9 +100,8 @@ public final class CucumberJavaUtil {
 
   public static final String PARAMETER_TYPE_ANNOTATION_FQN = "io.cucumber.java.ParameterType";
 
-  private static final CallMatcher FROM_ENUM_METHOD = CallMatcher.anyOf(
-    CallMatcher.staticCall("io.cucumber.cucumberexpressions.ParameterType", "fromEnum")
-  );
+  private static final CallMatcher FROM_ENUM_METHOD =
+    CallMatcher.anyOf(CallMatcher.staticCall("io.cucumber.cucumberexpressions.ParameterType", "fromEnum"));
 
   public static final Set<String> STEP_MARKERS = Set.of("Given", "Then", "And", "But", "When");
   public static final Set<String> HOOK_MARKERS = Set.of("Before", "After");
@@ -133,15 +132,11 @@ public final class CucumberJavaUtil {
   /// - Backslashes become `\\\\`
   /// - Quotes become `\\"`
   public static String escapeCucumberRegex(String regex) {
-    return regex
-      .replace("\\\\", "\\")
-      .replace("\\\"", "\"");
+    return regex.replace("\\\\", "\\").replace("\\\"", "\"");
   }
 
   public static String unescapeCucumberRegex(String pattern) {
-    return pattern
-      .replace("\\", "\\\\")
-      .replace("\"", "\\\"");
+    return pattern.replace("\\", "\\\\").replace("\"", "\\\"");
   }
 
   public static String replaceRegexpWithCucumberExpression(String snippet, String step) {
@@ -460,8 +455,9 @@ public final class CucumberJavaUtil {
     VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
     PsiDirectory psiDirectory = projectDir != null ? manager.findDirectory(projectDir) : null;
     if (psiDirectory != null) {
-      return CachedValuesManager.getCachedValue(psiDirectory, () ->
-        CachedValueProvider.Result.create(doGetAllParameterTypes(module), PsiModificationTracker.MODIFICATION_COUNT));
+      return CachedValuesManager.getCachedValue(psiDirectory, () -> {
+        return CachedValueProvider.Result.create(doGetAllParameterTypes(module), PsiModificationTracker.MODIFICATION_COUNT);
+      });
     }
 
     return DEFAULT_JAVA_PARAMETER_TYPE_MANAGER;
@@ -663,8 +659,7 @@ public final class CucumberJavaUtil {
       PsiClass psiClass = javaPsiFacade.findClass(fullyQualifiedAnnotationName, dependenciesScope);
 
       if (psiClass != null) {
-        Query<PsiMethod> psiMethods = AnnotatedElementsSearch
-          .searchPsiMethods(psiClass, GlobalSearchScope.allScope(element.getProject()));
+        Query<PsiMethod> psiMethods = AnnotatedElementsSearch.searchPsiMethods(psiClass, GlobalSearchScope.allScope(element.getProject()));
         Collection<PsiMethod> methods = psiMethods.findAll();
         methods.forEach(it -> {
           PsiClassOwner file = (PsiClassOwner)it.getContainingFile();

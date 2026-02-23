@@ -43,6 +43,7 @@ public class CucumberJavaExtension extends AbstractCucumberJavaExtension {
 
   @Override
   public List<AbstractStepDefinition> loadStepsFor(@Nullable PsiFile featureFile, Module module) {
+    // TODO: IDEA-386242 Use a file-based index instead of CachedValue
     final GlobalSearchScope dependenciesScope = module.getModuleWithDependenciesAndLibrariesScope(true);
 
     final long stepLoadingStart = System.currentTimeMillis();

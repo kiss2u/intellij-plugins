@@ -76,7 +76,7 @@ public final class CucumberStepHelper {
     }
 
     final Map<Class<? extends AbstractStepDefinition>, AbstractStepDefinition> definitionsByClass = new HashMap<>();
-    final List<AbstractStepDefinition> allSteps = loadStepsFor(featureFile, module);
+    final List<AbstractStepDefinition> allSteps = loadStepsFor(module);
 
     for (final AbstractStepDefinition stepDefinition : allSteps) {
       final boolean matches = stepDefinition.matches(substitutedName);
@@ -93,13 +93,13 @@ public final class CucumberStepHelper {
     return definitionsByClass.values();
   }
 
-  /// Returns all step definitions available from `featureFile`.
+  /// Returns all step definitions reachable from `module`.
   ///
   /// This is a helper method that calls [AbstractCucumberExtension#loadStepsFor] of all installed language-specific Cucumber plugins.
-  public static List<AbstractStepDefinition> loadStepsFor(@Nullable PsiFile featureFile, Module module) {
+  public static List<AbstractStepDefinition> loadStepsFor(Module module) {
     final ArrayList<AbstractStepDefinition> result = new ArrayList<>();
     for (final CucumberJvmExtensionPoint ep : CucumberJvmExtensionPoint.EP_NAME.getExtensionList()) {
-      result.addAll(ep.loadStepsFor(featureFile, module));
+      result.addAll(ep.loadStepsFor(module));
     }
     return result;
   }

@@ -31,12 +31,18 @@ public interface CucumberJvmExtensionPoint {
   /// Returns an object that can create step implementations in a specific language.
   StepDefinitionCreator getStepDefinitionCreator();
 
-  /// Returns all step definitions available from `featureFile`.
+  /// Returns all step definitions reachable from `module`.
   ///
   /// In large projects there can be a huge number of step definitions, so implementations are encouraged to
   /// [cache the results][com.intellij.psi.util.CachedValue], [use an index][com.intellij.util.indexing.FileBasedIndexExtension],
   /// or use other performance-enhancing techniques.
-  List<AbstractStepDefinition> loadStepsFor(@Nullable PsiFile featureFile, Module module);
+  List<AbstractStepDefinition> loadStepsFor(Module module);
+
+  /// @deprecated Use {@link #loadStepsFor(Module)} instead. See IDEA-386257 for more details about the deprecation.
+  @Deprecated(forRemoval = true)
+  default List<AbstractStepDefinition> loadStepsFor(@SuppressWarnings("unused") @Nullable PsiFile featureFile, Module module) {
+    return loadStepsFor(module);
+  }
 
   Collection<? extends PsiFile> getStepDefinitionContainers(GherkinFile file);
 

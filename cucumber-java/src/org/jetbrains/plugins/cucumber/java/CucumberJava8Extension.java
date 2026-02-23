@@ -13,7 +13,6 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.jetbrains.annotations.NotNullByDefault;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.cucumber.BDDFrameworkType;
 import org.jetbrains.plugins.cucumber.StepDefinitionCreator;
 import org.jetbrains.plugins.cucumber.java.steps.Java8StepDefinition;
@@ -38,13 +37,13 @@ public class CucumberJava8Extension extends AbstractCucumberJavaExtension {
   }
 
   @Override
-  public List<AbstractStepDefinition> loadStepsFor(@Nullable PsiFile featureFile, Module module) {
+  public List<AbstractStepDefinition> loadStepsFor(Module module) {
     LOG.debug("Loading step definitions for module " + module.getName() + ": started");
     final long stepLoadingStart = System.currentTimeMillis();
 
     final List<AbstractStepDefinition> stepDefinitions = new ArrayList<>();
     final FileBasedIndex fileBasedIndex = FileBasedIndex.getInstance();
-    GlobalSearchScope scope = featureFile != null ? featureFile.getResolveScope() : module.getModuleWithDependenciesAndLibrariesScope(true);
+    GlobalSearchScope scope = module.getModuleWithDependenciesAndLibrariesScope(true);
 
     fileBasedIndex.processValues(CucumberJava8StepIndex.INDEX_ID, true, null, (file, value) -> {
       ProgressManager.checkCanceled();

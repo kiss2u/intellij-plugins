@@ -266,7 +266,7 @@ public final class CucumberCompletionContributor extends CompletionContributor {
     if (module == null) {
       return;
     }
-    final Collection<AbstractStepDefinition> stepDefinitions = CucumberStepHelper.loadStepsFor(file, module);
+    final Collection<AbstractStepDefinition> stepDefinitions = CucumberStepHelper.loadStepsFor(module);
     for (AbstractStepDefinition stepDefinition : stepDefinitions) {
       String expression = stepDefinition.getExpression();
       if (expression == null) {

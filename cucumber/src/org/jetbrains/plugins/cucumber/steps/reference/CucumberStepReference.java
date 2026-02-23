@@ -84,6 +84,7 @@ public class CucumberStepReference implements PsiPolyVariantReference {
 
   @Override
   public String toString() {
+    // TODO: IDEA-385035 get rid of the cast
     if (step instanceof GherkinStep gherkinStep) {
       return "CucumberStepReference(" + gherkinStep.getName() + ")";
     }
@@ -138,6 +139,7 @@ public class CucumberStepReference implements PsiPolyVariantReference {
   }
 
   public Collection<AbstractStepDefinition> resolveToDefinitions() {
+    // TODO: IDEA-385035 get rid of the cast
     return CucumberStepHelper.findStepDefinitions(step.getContainingFile(), ((GherkinStep)step));
   }
 

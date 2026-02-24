@@ -5,8 +5,8 @@ import com.intellij.ide.starter.extended.allure.Subsystems
 import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.project.LocalProjectInfo
+import com.intellij.ide.starter.report.ErrorIgnorer
 import com.intellij.ide.starter.report.ErrorReporter
-import com.intellij.ide.starter.runner.IDERunContext
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.rustrover.integration.testFramework.createRustRoverTestContext
@@ -110,11 +110,7 @@ abstract class IntegrationTest {
   fun setUp() {
     di = DI {
       extend(di)
-      bindSingleton<ErrorReporter>(overrides = true) {
-        object : ErrorReporter {
-          override fun reportErrorsAsFailedTests(runContext: IDERunContext) {}
-        }
-      }
+      bindSingleton<ErrorReporter>(overrides = true) { ErrorIgnorer }
     }
     tempDirTestFixture.setUp()
   }

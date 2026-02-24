@@ -10,14 +10,11 @@ import com.intellij.lang.typescript.compiler.languageService.TypeScriptServerSer
 import com.intellij.lang.typescript.tsc.TypeScriptServiceTestMixin
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.testFramework.runInEdtAndWait
-import com.intellij.util.xmlb.SettingsInternalApi
 import org.jetbrains.vuejs.index.VUE_MODULE
 import org.jetbrains.vuejs.lang.VueTestModule
 import org.jetbrains.vuejs.lang.getVueTestDataPath
 import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceBundled
-import org.jetbrains.vuejs.options.VueLSMode
-import org.jetbrains.vuejs.options.VueSettings
 
 enum class VueTestMode {
   DEFAULT,
@@ -51,7 +48,6 @@ abstract class VueTestCase(
       .toTypedArray()
   }
 
-  @OptIn(SettingsInternalApi::class)
   override fun beforeConfiguredTest(configuration: TestConfiguration) {
     val tsPluginVersion = when (testMode) {
       VueTestMode.DEFAULT,
@@ -66,9 +62,6 @@ abstract class VueTestCase(
       VueTestMode.NO_PLUGIN,
         -> return
     }
-
-    val settings = VueSettings.instance(project)
-    settings.state = settings.state.copy(serviceType = VueLSMode.AUTO)
 
     val service = TypeScriptServiceTestMixin.setUpTypeScriptService(myFixture) {
       it is VuePluginTypeScriptServiceBundled

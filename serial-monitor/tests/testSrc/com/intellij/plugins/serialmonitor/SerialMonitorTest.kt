@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.function.Consumer
+import kotlin.time.Duration.Companion.milliseconds
 
 @TestApplication
 class SerialMonitorTest {
@@ -135,7 +136,7 @@ class SerialMonitorTest {
       // No echo should occur because not connected and localEcho is false by default
       suspendCancellableCoroutine { cont ->
         launch {
-          delay(500)
+          delay(500.milliseconds)
           cont.resumeWith(Result.success(Unit))
         }
         conn.dataListener = Consumer {
@@ -169,7 +170,7 @@ class SerialMonitorTest {
         }
         conn.write(data)
         launch {
-          delay(1000)
+          delay(500.milliseconds)
           cont.resumeWith(Result.success(Unit))
         }
       }

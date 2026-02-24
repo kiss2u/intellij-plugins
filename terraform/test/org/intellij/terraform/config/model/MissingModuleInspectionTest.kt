@@ -22,7 +22,8 @@ class MissingModuleInspectionTest : BasePlatformTestCase() {
   @org.junit.Test
   fun setOfModules() {
     myFixture.enableInspections(TfMissingModuleInspection::class.java)
-    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/.terraform", ".terraform")
+    // Renamed to `dot_terraform` to satisfy the `no excludes under source roots` smoke test requirement
+    myFixture.copyDirectoryToProject("terraform/inspections/missing_module/dot-terraform", ".terraform")
     myFixture.configureByText("main.tf", """
       module "registry_short" {
         source = "terraform-aws-modules/vpc/aws"

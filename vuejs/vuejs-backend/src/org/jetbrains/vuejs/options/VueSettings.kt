@@ -21,6 +21,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.text.SemVer
 import kotlinx.serialization.Serializable
 import org.jetbrains.annotations.TestOnly
@@ -57,19 +58,32 @@ class VueSettings(private val project: Project) :
       restartTypeScriptServicesAsync(project)
     }
 
-  var useTypesFromServer: Boolean
+  val useTypesFromServer: Boolean
     get() {
-      return (TypeScriptCompilerSettings.useTypesFromServerInTests ?: state.useTypesFromServer).also {
-        with(project.service<JSLogOnceService>()) {
-          LOG.infoOnce { "'Service-powered type engine' option of VueSettings: $it" }
-        }
+      val result =
+        TypeScriptCompilerSettings.useTypesFromServerInTests
+        ?: useServicePoweredTypesManualOverride
+        ?: Registry.`is`("vue.service.powered.type.engine.enabled.by.default")
+      with(project.service<JSLogOnceService>()) {
+        LOG.infoOnce { "'Service-powered type engine' option of VueSettings: $result" }
       }
+      return result
+    }
+
+  var useServicePoweredTypesManualOverride: Boolean?
+    get() = when {
+      state.useServicePoweredTypesEnabledManually -> true
+      state.useServicePoweredTypesDisabledManually -> false
+      else -> null
     }
     set(value) {
-      if (value == state.useTypesFromServer)
-        return
-
-      updateState { state -> state.copy(useTypesFromServer = value) }
+      if (value == useTypesFromServer) return
+      updateState { state ->
+        state.copy(
+          useServicePoweredTypesEnabledManually = value == true,
+          useServicePoweredTypesDisabledManually = value == false,
+        )
+      }
       restartTypeScriptServicesAsync(project)
     }
 
@@ -157,7 +171,8 @@ class VueSettings(private val project: Project) :
   @Serializable
   data class State(
     val serviceType: VueLSMode = VueLSMode.AUTO,
-    val useTypesFromServer: Boolean = false,
+    val useServicePoweredTypesEnabledManually: Boolean = false,
+    val useServicePoweredTypesDisabledManually: Boolean = false,
     val manual: ManualSettingsState = ManualSettingsState(),
   )
 

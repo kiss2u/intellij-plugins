@@ -33,6 +33,7 @@ jvm_library(
     "@community//platform/util:util-ui",
     "@community//platform/ide-core",
     "@community//platform/lang-api:lang",
+    "@community//platform/util/jdom",
   ]
 )
 
@@ -70,6 +71,8 @@ jvm_library(
     "@community//platform/ide-core",
     "@community//platform/lang-api:lang",
     "@community//platform/lang-api:lang_test_lib",
+    "@community//platform/util/jdom",
+    "@community//platform/util/jdom:jdom_test_lib",
   ],
   runtime_deps = ["@community//platform/ide-core:ide-core_test_lib"]
 )

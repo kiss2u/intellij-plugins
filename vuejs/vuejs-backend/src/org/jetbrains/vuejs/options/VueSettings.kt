@@ -10,7 +10,6 @@ import com.intellij.lang.typescript.lsp.createPackageRef
 import com.intellij.lang.typescript.lsp.extractPath
 import com.intellij.lang.typescript.lsp.extractRefText
 import com.intellij.lang.typescript.lsp.restartTypeScriptServicesAsync
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.SerializablePersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
@@ -19,31 +18,14 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.text.SemVer
 import kotlinx.serialization.Serializable
-import org.jetbrains.annotations.TestOnly
 import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.lsp.VueLspServerLoader
 import org.jetbrains.vuejs.lang.typescript.service.plugin.VueTSPluginBundledLoaderFactory.getLoader
 import org.jetbrains.vuejs.lang.typescript.service.vueTSPluginPackageName
-
-@TestOnly
-fun configureVueService(
-  project: Project,
-  disposable: Disposable,
-  serviceType: VueLSMode,
-) {
-  val settings = VueSettings.instance(project)
-  val oldServiceType = settings.serviceType
-  settings.serviceType = serviceType
-
-  Disposer.register(disposable) {
-    settings.serviceType = oldServiceType
-  }
-}
 
 @Service(Service.Level.PROJECT)
 @State(

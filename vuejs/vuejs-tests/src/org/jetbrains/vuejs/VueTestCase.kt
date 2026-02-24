@@ -12,6 +12,8 @@ import com.intellij.testFramework.runInEdtAndWait
 import org.jetbrains.vuejs.index.VUE_MODULE
 import org.jetbrains.vuejs.lang.VueTestModule
 import org.jetbrains.vuejs.lang.getVueTestDataPath
+import org.jetbrains.vuejs.lang.typescript.service.VueServiceTestMixin.setForceLegacyPluginUsage
+import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceBundled
 
 enum class VueTestMode {
@@ -49,6 +51,8 @@ abstract class VueTestCase(
   override fun beforeConfiguredTest(configuration: TestConfiguration) {
     val tsPluginVersion = getRequiredTypescriptPluginVersion(myFixture, testMode)
                           ?: return
+
+    setForceLegacyPluginUsage(tsPluginVersion == VueTSPluginVersion.LEGACY, testRootDisposable)
 
     val service = TypeScriptServiceTestMixin.setUpTypeScriptService(myFixture) {
       it is VuePluginTypeScriptServiceBundled

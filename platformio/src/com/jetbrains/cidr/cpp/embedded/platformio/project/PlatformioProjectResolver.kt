@@ -513,14 +513,15 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
       val compilerKind: OCCompilerKind = if (jsonConfig["compiler_type"] == "gcc") GCCCompilerKind else UnknownCompilerKind
       val switchFormat = CPPCompilerSwitchesUtil.getFlagsFormat(workspace.environment)
 
-      fun extractCompilerSwitches(key: String, extraRawSwitches: String): MutableList<String> {
-        val joinedSwitches = when (val rawSwitches = jsonConfig[key]) {
-          is String -> rawSwitches
-          is List<*> -> rawSwitches.joinToString(" ")
-          else -> ""
+      fun extractCompilerSwitches(key: String, extraRawSwitches: List<String>): MutableList<String> {
+        val builder = CidrSwitchBuilder()
+
+        when (val rawSwitches = jsonConfig[key]) {
+          is String -> builder.parseAndAdd(rawSwitches, switchFormat)
+          is List<*> -> rawSwitches.forEach { builder.parseAndAdd(it.toString(), switchFormat) }
         }
-        val allSwitches = "$joinedSwitches $extraRawSwitches"
-        return CidrSwitchBuilder.parseArgs(allSwitches, switchFormat)
+        builder.addAllRaw(extraRawSwitches)
+        return builder.build().getList(switchFormat).toMutableList()
       }
 
       val includeSwitches: List<String> = jsonConfig["includes"]
@@ -531,7 +532,7 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
       val defineSwitches: List<String> = jsonConfig["defines"]
                                            .asSafely<List<String>>()
                                            ?.map { "-D$it" } ?: emptyList()
-      val extraRawSwitches = (includeSwitches + defineSwitches).joinToString(" ")
+      val extraRawSwitches = (includeSwitches + defineSwitches)
 
       val cLanguageConfiguration = ExternalLanguageConfigurationImpl(
         languageKind = CLanguageKind.C, compilerKind = compilerKind,

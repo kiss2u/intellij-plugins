@@ -308,8 +308,8 @@ class SerialMonitorTest {
       Disposer.dispose(conn)
 
       // Underlying mock port disconnected and service reports READY (port exists, no connection)
-      waitUntil { !port.connected }
-      assertEquals(PortStatus.READY, portService.portStatus("/dev/ttyUSB0"))
+      waitUntil { portService.portStatus("/dev/ttyUSB0") == PortStatus.READY }
+      assertFalse(port.connected)
     }
 
 

@@ -31,13 +31,17 @@ import org.jetbrains.vuejs.lang.typescript.service.plugin.VueTSPluginBundledLoad
 import org.jetbrains.vuejs.lang.typescript.service.vueTSPluginPackageName
 
 @TestOnly
-fun configureVueService(project: Project, disposable: Disposable, serviceSettings: VueLSMode) {
-  val vueSettings = VueSettings.instance(project)
-  val old = vueSettings.serviceType
-  vueSettings.serviceType = serviceSettings
+fun configureVueService(
+  project: Project,
+  disposable: Disposable,
+  serviceType: VueLSMode,
+) {
+  val settings = VueSettings.instance(project)
+  val oldServiceType = settings.serviceType
+  settings.serviceType = serviceType
 
   Disposer.register(disposable) {
-    vueSettings.serviceType = old
+    settings.serviceType = oldServiceType
   }
 }
 

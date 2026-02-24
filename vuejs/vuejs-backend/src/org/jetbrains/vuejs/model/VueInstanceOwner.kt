@@ -39,7 +39,7 @@ import com.intellij.polySymbols.PolySymbolProperty
 import com.intellij.polySymbols.js.JS_PROPERTIES
 import com.intellij.polySymbols.js.JsSymbolSymbolKind
 import com.intellij.polySymbols.js.PROP_JS_PROPERTY_SIGNATURE
-import com.intellij.polySymbols.js.PROP_JS_SYMBOL_KIND
+import com.intellij.polySymbols.js.JsSymbolKindProperty
 import com.intellij.polySymbols.js.jsType
 import com.intellij.polySymbols.js.symbols.asJSSymbol
 import com.intellij.polySymbols.js.symbols.getJSPropertySymbols
@@ -590,6 +590,7 @@ interface VueTypeProvider {
 data class VueInstancePropertySymbol(
   override val name: String,
   private val typeProvider: VueTypeProvider? = null,
+  @PolySymbol.Property(JsSymbolKindProperty::class)
   private val jsKind: JsSymbolSymbolKind = JsSymbolSymbolKind.Property,
   private val isReadOnly: Boolean = false,
   private val navigationTarget: NavigationTarget? = null,
@@ -604,12 +605,6 @@ data class VueInstancePropertySymbol(
   override val modifiers: Set<PolySymbolModifier>
     get() =
       if (isReadOnly) setOf(PolySymbolModifier.READONLY) else emptySet()
-
-  override fun <T : Any> get(property: PolySymbolProperty<T>): T? =
-    when (property) {
-      PROP_JS_SYMBOL_KIND -> property.tryCast(jsKind)
-      else -> super.get(property)
-    }
 
   override fun getNavigationTargets(project: Project): Collection<NavigationTarget> =
     listOfNotNull(navigationTarget ?: type?.sourceElement?.let { VueComponentSourceNavigationTarget(it) })

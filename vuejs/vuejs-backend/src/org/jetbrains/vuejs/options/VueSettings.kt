@@ -135,7 +135,7 @@ class VueSettings(private val project: Project) :
           )
 
           null -> createBundledPackageRef(
-            versionString = VueTSPluginVersion.defaultTSPlugin.versionString,
+            versionString = VueTSPluginVersion.DEFAULT.versionString,
             project = project,
           )
         }
@@ -222,8 +222,7 @@ private fun createBundledPackageRef(
 }
 
 private fun getDefaultTsPluginPackage(): TypeScriptPackageName {
-  val latest = VueTSPluginVersion.defaultTSPlugin
-  return getLoader(latest)
+  return getLoader(VueTSPluginVersion.DEFAULT)
     .packageDescriptor
     .serverPackage
 }

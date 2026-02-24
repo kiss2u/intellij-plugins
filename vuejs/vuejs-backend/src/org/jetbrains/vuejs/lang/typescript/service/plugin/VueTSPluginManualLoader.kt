@@ -19,8 +19,8 @@ internal object VueTSPluginManualLoader : TSPluginLoader(
 }
 
 private val vueTSPluginManualPackageVersion = PackageVersion.bundled<VueTSPluginPackageDescriptor>(
-  version = VueTSPluginVersion.defaultTSPlugin.versionString,
+  version = VueTSPluginVersion.DEFAULT.versionString,
   pluginPath = vuePluginPath,
-  localPath = "vue-language-tools/typescript-plugin/${VueTSPluginVersion.defaultTSPlugin.versionString}",
+  localPath = "vue-language-tools/typescript-plugin/${VueTSPluginVersion.DEFAULT.versionString}",
   isBundledEnabled = { true },
 )

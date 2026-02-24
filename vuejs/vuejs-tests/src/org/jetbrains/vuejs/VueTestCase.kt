@@ -51,13 +51,13 @@ abstract class VueTestCase(
   override fun beforeConfiguredTest(configuration: TestConfiguration) {
     val tsPluginVersion = when (testMode) {
       VueTestMode.DEFAULT,
-        -> if (useLatestPlugin())
-        VueTSPluginVersion.V3_2_4
+        -> if (useDefaultPlugin())
+        VueTSPluginVersion.DEFAULT
       else
-        VueTSPluginVersion.V3_0_10
+        VueTSPluginVersion.LEGACY
 
       VueTestMode.LEGACY_PLUGIN,
-        -> VueTSPluginVersion.V3_0_10
+        -> VueTSPluginVersion.LEGACY
 
       VueTestMode.NO_PLUGIN,
         -> return
@@ -85,7 +85,7 @@ abstract class VueTestCase(
     }
   }
 
-  private fun useLatestPlugin(): Boolean {
+  private fun useDefaultPlugin(): Boolean {
     val packageJson = myFixture.tempDirFixture.getFile("node_modules/vue/package.json")
                       ?: return true
 

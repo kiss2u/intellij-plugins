@@ -24,7 +24,7 @@ class VueTypeScriptServiceGetElementTypeTest :
     myFixture.configureVueDependencies(VueTestModule.VUE_3_5_0)
     TypeScriptServiceTestMixin.setUpTypeScriptService(myFixture) {
       it is VuePluginTypeScriptServiceBundled
-      && it.version == VueTSPluginVersion.V3_2_4
+      && it.version == VueTSPluginVersion.DEFAULT
     }
   }
 

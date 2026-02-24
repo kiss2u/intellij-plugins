@@ -27,10 +27,14 @@ internal fun decideVueLSBundledVersion(
   project: Project,
   context: VirtualFile,
 ): VueTSPluginVersion {
-  return if (isVue2(project, context))
-    VueTSPluginVersion.V3_0_10 // supports Vue
-  else
-    VueTSPluginVersion.V3_2_4  // supports only Vue 3+
+  return if (isVue2(project, context)) {
+    // supports Vue
+    VueTSPluginVersion.LEGACY
+  }
+  else {
+    // supports only Vue 3+
+    VueTSPluginVersion.DEFAULT
+  }
 }
 
 internal fun getVueTSPluginNodePackages(project: Project): List<JSBundledServiceNodePackage> {

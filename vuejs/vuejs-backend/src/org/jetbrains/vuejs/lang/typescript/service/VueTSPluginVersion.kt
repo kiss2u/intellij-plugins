@@ -7,13 +7,8 @@ enum class VueTSPluginVersion(
   @param:NlsSafe
   val versionString: String,
 ) {
-  V3_2_4("3.2.4"),
-  V3_0_10("3.0.10"),
+  DEFAULT("3.2.4"),
+  LEGACY("3.0.10"),
 
   ;
-
-  companion object {
-    internal val defaultTSPlugin: VueTSPluginVersion =
-      V3_2_4
-  }
 }

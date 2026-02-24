@@ -27,7 +27,7 @@ internal fun decideVueLSBundledVersion(
   project: Project,
   context: VirtualFile,
 ): VueTSPluginVersion {
-  return if (isVue2(project, context)) {
+  return if (isVue2(project, context) || VueServiceTestMixin.forceLegacyPluginUsage) {
     // supports Vue
     VueTSPluginVersion.LEGACY
   }

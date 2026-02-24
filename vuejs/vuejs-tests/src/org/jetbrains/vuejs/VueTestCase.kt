@@ -1,7 +1,6 @@
 // Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package org.jetbrains.vuejs
 
-import com.intellij.javascript.nodejs.PackageJsonData
 import com.intellij.javascript.testFramework.web.WebFrameworkTestCase
 import com.intellij.javascript.testFramework.web.WebFrameworkTestModule
 import com.intellij.lang.javascript.HybridTestMode
@@ -13,7 +12,6 @@ import com.intellij.testFramework.runInEdtAndWait
 import org.jetbrains.vuejs.index.VUE_MODULE
 import org.jetbrains.vuejs.lang.VueTestModule
 import org.jetbrains.vuejs.lang.getVueTestDataPath
-import org.jetbrains.vuejs.lang.typescript.service.VueTSPluginVersion
 import org.jetbrains.vuejs.lang.typescript.service.plugin.VuePluginTypeScriptServiceBundled
 
 enum class VueTestMode {
@@ -49,19 +47,8 @@ abstract class VueTestCase(
   }
 
   override fun beforeConfiguredTest(configuration: TestConfiguration) {
-    val tsPluginVersion = when (testMode) {
-      VueTestMode.DEFAULT,
-        -> if (useDefaultPlugin())
-        VueTSPluginVersion.DEFAULT
-      else
-        VueTSPluginVersion.LEGACY
-
-      VueTestMode.LEGACY_PLUGIN,
-        -> VueTSPluginVersion.LEGACY
-
-      VueTestMode.NO_PLUGIN,
-        -> return
-    }
+    val tsPluginVersion = getRequiredTypescriptPluginVersion(myFixture, testMode)
+                          ?: return
 
     val service = TypeScriptServiceTestMixin.setUpTypeScriptService(myFixture) {
       it is VuePluginTypeScriptServiceBundled
@@ -83,16 +70,6 @@ abstract class VueTestCase(
     runInEdtAndWait {
       FileDocumentManager.getInstance().saveAllDocuments()
     }
-  }
-
-  private fun useDefaultPlugin(): Boolean {
-    val packageJson = myFixture.tempDirFixture.getFile("node_modules/vue/package.json")
-                      ?: return true
-
-    val version = PackageJsonData.getOrCreate(packageJson).version
-                  ?: return true
-
-    return version.major != 2
   }
 
   override val testDataRoot: String

@@ -9,15 +9,8 @@ import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.util.LineSeparator
 import junit.framework.TestCase
 import org.jetbrains.vuejs.lang.vueRelativeTestDataPath
-import org.jetbrains.vuejs.options.VueLSMode
-import org.jetbrains.vuejs.options.configureVueService
 
 class VueTypeScriptWithTslintTest : TypeScriptServiceWithTslintTestBase() {
-  override fun setUp() {
-    super.setUp()
-    configureVueService(project, testRootDisposable, VueLSMode.AUTO)
-  }
-
   override fun getBasePath(): String {
     return vueRelativeTestDataPath() + "/linters/tslint/"
   }

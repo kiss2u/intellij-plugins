@@ -297,7 +297,7 @@ abstract class VueRenameTestBase(
 
   @Test
   fun testDefinePropsExtInterfaceFromUsage2() =
-    doRenameTest(mainFile = "MyLocalButton.vue", newName = "newName")
+    doRenameTest(mainFile = "definePropsInterface.vue", newName = "newName")
 
   @Test
   fun testDefinePropsExtInterfaceExtUsageFromDefinition() =

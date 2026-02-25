@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import MyLocalButton from './MyLocalButton.vue'
+interface MyProps {
+  newName: string
+}
+const props = defineProps<MyProps>()
 </script>
 
 <template>
-  <my-local-button new-name="foo"></my-local-button>
-  <my-local-button newName="foo"></my-local-button>
-  <my-local-button OptionsApiWithType="foo"></my-local-button>
-  <my-local-button :new-name="'foo'"></my-local-button>
-  <my-local-button :newName="'foo'"></my-local-button>
-  <my-local-button :OptionsApiWithType="'foo'"></my-local-button>
-  <my-local-button v-bind:new-name="'foo'"></my-local-button>
-  <my-local-button v-bind:newName="'foo'"></my-local-button>
-  <my-local-button v-bind:OptionsApiWithType="'foo'"></my-local-button>
+  {{ newName }}
+  {{ props.newName }}
+  <define-props-interface-from-definition new-name="foo"></define-props-interface-from-definition>
+  <define-props-interface-from-definition newName="foo"></define-props-interface-from-definition>
+  <define-props-interface-from-definition OptionsApiWithType="foo"></define-props-interface-from-definition>
+  <define-props-interface-from-definition :new-name="'foo'"></define-props-interface-from-definition>
+  <define-props-interface-from-definition :newName="'foo'"></define-props-interface-from-definition>
+  <define-props-interface-from-definition :OptionsApiWithType="'foo'"></define-props-interface-from-definition>
+  <define-props-interface-from-definition v-bind:new-name="'foo'"></define-props-interface-from-definition>
+  <define-props-interface-from-definition v-bind:newName="'foo'"></define-props-interface-from-definition>
+  <define-props-interface-from-definition v-bind:OptionsApiWithType="'foo'"></define-props-interface-from-definition>
 </template>

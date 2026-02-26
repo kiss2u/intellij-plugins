@@ -80,7 +80,7 @@ private class Angular2GotoRelatedToolbarSettingsListener : AdvancedSettingsChang
   ) {
     if (id == "angular.gtr.toolbar.enable") {
       EditorFactory.getInstance().allEditors.forEach {
-        (it as? EditorImpl)?.refreshEditorFloatingToolbar()
+        (it as? EditorImpl)?.recreateEditorFloatingToolbar()
       }
     }
   }

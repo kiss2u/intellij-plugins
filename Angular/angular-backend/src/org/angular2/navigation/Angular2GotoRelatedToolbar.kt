@@ -17,6 +17,7 @@ import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.actionSystem.impl.ActionButtonWithText
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.EditorKind
@@ -35,6 +36,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.presentation.java.SymbolPresentationUtil.getSymbolPresentableText
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ui.JBUI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.angular2.entities.source.Angular2SourceUtil
 import org.angular2.lang.Angular2Bundle
 import org.angular2.lang.Angular2LangUtil.isAngular2Context
@@ -50,7 +53,7 @@ internal class Angular2GotoRelatedToolbarProvider : FloatingToolbarProvider {
     Angular2GotoRelatedItemActionGroup()
   }
 
-  override fun isApplicable(dataContext: DataContext): Boolean {
+  override suspend fun isApplicableAsync(dataContext: DataContext): Boolean {
     return angular2GTRToolbarCanBeShown(dataContext)
   }
 
@@ -98,15 +101,20 @@ internal class BrowsersToolbarSuppressor : OpenInBrowserFloatingToolbarSuppresso
   }
 }
 
-private fun angular2GTRToolbarCanBeShown(dataContext: DataContext): Boolean {
-  val editor = dataContext.getData(CommonDataKeys.EDITOR)
-               ?: return false
-  val file = CommonDataKeys.PSI_FILE.getData(dataContext)
-             ?: return false
-  return isInsideMainEditor(dataContext)
-         && editor.editorKind == EditorKind.MAIN_EDITOR
-         && isAngular2Context(file)
-         && AdvancedSettings.getBoolean("angular.gtr.toolbar.enable")
+private suspend fun angular2GTRToolbarCanBeShown(dataContext: DataContext): Boolean {
+  return withContext(Dispatchers.Default) {
+    readAction {
+      val editor = dataContext.getData(CommonDataKeys.EDITOR)
+                   ?: return@readAction false
+      val file = CommonDataKeys.PSI_FILE.getData(dataContext)
+                 ?: return@readAction false
+
+      isInsideMainEditor(dataContext)
+      && editor.editorKind == EditorKind.MAIN_EDITOR
+      && isAngular2Context(file)
+      && AdvancedSettings.getBoolean("angular.gtr.toolbar.enable")
+    }
+  }
 }
 
 private class Angular2GotoRelatedItemActionGroup : ActionGroup() {

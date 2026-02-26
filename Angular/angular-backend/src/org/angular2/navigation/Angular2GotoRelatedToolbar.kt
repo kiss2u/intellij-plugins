@@ -90,7 +90,7 @@ private class Angular2GotoRelatedToolbarSettingsListener : AdvancedSettingsChang
  * Should suppress [com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserEditorContextBarGroupAction]
  */
 internal class BrowsersToolbarSuppressor : OpenInBrowserFloatingToolbarSuppressor {
-  override fun isSuppressed(
+  override suspend fun isSuppressed(
     provider: FloatingToolbarProvider,
     dataContext: DataContext,
   ): Boolean {

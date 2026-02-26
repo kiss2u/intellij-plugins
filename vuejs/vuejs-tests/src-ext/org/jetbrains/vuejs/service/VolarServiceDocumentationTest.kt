@@ -18,7 +18,9 @@ import org.junit.Test
  * @see com.intellij.lang.javascript.typescript.service.TypeScriptServiceDocumentationTest
  */
 class VolarServiceDocumentationTest : VueLspServiceTestBase() {
-  override fun getBasePath(): String = vueRelativeTestDataPath() + "/service/documentation"
+  override fun getBasePath(): String {
+    return "${vueRelativeTestDataPath()}/service/documentation"
+  }
 
   override fun setUp() {
     super.setUp()
@@ -31,20 +33,32 @@ class VolarServiceDocumentationTest : VueLspServiceTestBase() {
   }
 
   @Test
-  fun testNullChecks() = defaultQuickNavigateTest()
+  fun testNullChecks() {
+    defaultQuickNavigateTest()
+  }
 
   @Test
-  fun testTypeNarrowing() = defaultQuickNavigateTest()
+  fun testTypeNarrowing() {
+    defaultQuickNavigateTest()
+  }
 
   @Test
-  fun testQualifiedReference() = defaultQuickNavigateTest()
+  fun testQualifiedReference() {
+    defaultQuickNavigateTest()
+  }
 
   @Test
-  fun testGenericType() = defaultQuickNavigateTest()
+  fun testGenericType() {
+    defaultQuickNavigateTest()
+  }
 
-  fun testRefFunction() = defaultQuickNavigateTest()
+  fun testRefFunction() {
+    defaultQuickNavigateTest()
+  }
 
-  fun testRefUnwrapping() = defaultQuickNavigateTest()
+  fun testRefUnwrapping() {
+    defaultQuickNavigateTest()
+  }
 
   fun testDefineEmits() {
     defaultDocTest()
@@ -62,14 +76,17 @@ class VolarServiceDocumentationTest : VueLspServiceTestBase() {
     assertCorrectService()
 
     val doc = JSAbstractDocumentationTest.getQuickNavigateText(myFixture)
-    JSAbstractDocumentationTest.checkExpected(doc, testDataPath + "/" + getTestName(false) + ".expected.html")
+    JSAbstractDocumentationTest.checkExpected(
+      doc,
+      "$testDataPath/${getTestName(false)}.expected.html",
+    )
   }
 
   private fun defaultDocTest() {
     myFixture.configureVueDependencies(VueTestModule.VUE_3_4_0)
 
     myFixture.addFileToProject("tsconfig.json", tsconfig)
-    myFixture.configureByFile(getTestName(false) + "." + extension)
+    myFixture.configureByFile("${getTestName(false)}.$extension")
     waitUntilFileOpenedByLspServer(project, file.virtualFile)
     assertCorrectService()
 

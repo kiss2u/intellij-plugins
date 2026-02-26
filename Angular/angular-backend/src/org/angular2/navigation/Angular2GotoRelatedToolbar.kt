@@ -1,6 +1,6 @@
 package org.angular2.navigation
 
-import com.intellij.ide.browsers.actions.OpenInBrowserBaseGroupAction.OpenInBrowserFloatingToolbarSuppressor
+import com.intellij.ide.browsers.actions.OpenInBrowserFloatingToolbarSuppressor
 import com.intellij.lang.javascript.psi.ecma6.TypeScriptClass
 import com.intellij.navigation.GotoRelatedItem
 import com.intellij.openapi.Disposable

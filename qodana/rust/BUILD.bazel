@@ -42,8 +42,7 @@ jvm_library(
     "@community//platform/execution",
     "@community//platform/platform-impl:ide-impl",
     "@community//libraries/io",
-  ],
-  runtime_deps = ["//rustrover/plugin"]
+  ]
 )
 
 jvm_library(
@@ -103,10 +102,7 @@ jvm_library(
     "//rustrover/integrationTestFramework:integration-testFramework",
     "//rustrover/integrationTestFramework:integration-testFramework_test_lib",
   ],
-  runtime_deps = [
-    "//rustrover/plugin:plugin_test_lib",
-    "@community//platform/platform-impl:ide-impl_test_lib",
-  ]
+  runtime_deps = ["@community//platform/platform-impl:ide-impl_test_lib"]
 )
 ### auto-generated section `build intellij.qodana.rust` end
 

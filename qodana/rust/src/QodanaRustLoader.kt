@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.rust.cargo.project.model.CargoProject
 import org.rust.cargo.project.model.CargoProjectsService
 import org.rust.cargo.project.model.cargoProjects
@@ -177,6 +178,10 @@ internal class QodanaRustLoader(private val project: Project, coroutineScope: Co
 
 internal class QodanaRustLoaderProjectActivity : ProjectActivity {
   override suspend fun execute(project: Project) {
+    if (!PlatformUtils.isRustRover()) {
+      QodanaRustLoader.log.debug("QodanaRustLoader will not run: not a RustRover IDE")
+      return
+    }
     if (!PlatformUtils.isQodana()) {
       QodanaRustLoader.log.debug("QodanaRustLoader will not run: not a Qodana environment")
       return
@@ -198,6 +203,13 @@ class QodanaRustLoaderActivityTracker : ActivityTracker {
       QodanaRustLoader.log.error("QodanaRustLoaderProjectActivity extension not found")
       return
     }
-    activity.execute(project)
+
+    val timeout = QodanaRustRegistry.configurationTimeout
+    val completed = withTimeoutOrNull(timeout) {
+      activity.execute(project)
+    }
+    if (completed == null) {
+      QodanaRustLoader.log.error("Qodana Rust configuration timed out after $timeout")
+    }
   }
 }

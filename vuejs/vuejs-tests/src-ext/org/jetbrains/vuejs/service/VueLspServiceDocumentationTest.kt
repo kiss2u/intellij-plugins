@@ -17,7 +17,7 @@ import org.junit.Test
 /**
  * @see com.intellij.lang.javascript.typescript.service.TypeScriptServiceDocumentationTest
  */
-class VolarServiceDocumentationTest : VueLspServiceTestBase() {
+class VueLspServiceDocumentationTest : VueLspServiceTestBase() {
   override fun getBasePath(): String {
     return "${vueRelativeTestDataPath()}/service/documentation"
   }

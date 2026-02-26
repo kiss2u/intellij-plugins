@@ -10,7 +10,7 @@ import org.jetbrains.vuejs.libraries.LibrariesTestSuite
 import org.jetbrains.vuejs.pug.PugTemplateTest
 import org.jetbrains.vuejs.pug.VuePugFoldingTest
 import org.jetbrains.vuejs.service.VueLspServiceDocumentationTest
-import org.jetbrains.vuejs.service.VolarServiceTest
+import org.jetbrains.vuejs.service.VueLspTypeScriptServiceTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -64,7 +64,7 @@ import org.junit.runners.Suite
   VueTypeScriptDuplicateTest::class,
   VueIntroduceVariableTest::class,
   VueTypeScriptLineMarkersTest::class,
-  VolarServiceTest::class,
+  VueLspTypeScriptServiceTest::class,
   VueLspServiceDocumentationTest::class,
   VueIntegrationHighlightingTest::class,
   VueNpmIntegrationCompletionTest::class,

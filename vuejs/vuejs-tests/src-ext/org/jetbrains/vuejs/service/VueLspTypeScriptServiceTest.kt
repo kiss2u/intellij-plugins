@@ -22,7 +22,7 @@ import org.junit.Test
 import kotlin.io.path.Path
 import kotlin.io.path.readText
 
-class VolarServiceTest : VueLspServiceTestBase() {
+class VueLspTypeScriptServiceTest : VueLspServiceTestBase() {
 
   override fun getBasePath(): String {
     return "${vueRelativeTestDataPath()}/service/volar"

@@ -515,13 +515,11 @@ open class PlatformioProjectResolver : ExternalSystemProjectResolver<PlatformioE
 
       fun extractCompilerSwitches(key: String, extraRawSwitches: List<String>): MutableList<String> {
         val builder = CidrSwitchBuilder()
-
         when (val rawSwitches = jsonConfig[key]) {
           is String -> builder.parseAndAdd(rawSwitches, switchFormat)
           is List<*> -> rawSwitches.forEach { builder.parseAndAdd(it.toString(), switchFormat) }
         }
-        builder.addAllRaw(extraRawSwitches)
-        return builder.build().getList(switchFormat).toMutableList()
+        return builder.args.toMutableList().apply { addAll(extraRawSwitches) }
       }
 
       val includeSwitches: List<String> = jsonConfig["includes"]

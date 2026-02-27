@@ -36,7 +36,7 @@ internal class TestConfigureLanguages {
     val cLanguage = languages.single { !it.languageKind.isCpp }
 
     // Assert the switch is properly parsed and has the correct content when unescaped
-    val unescapedSwitches = cLanguage.compilerSwitches?.parseToRaw()
+    val unescapedSwitches = cLanguage.compilerSwitches
     assertThat(unescapedSwitches).contains("-DCHIP_ADDRESS_RESOLVE_IMPL_INCLUDE_HEADER=<lib/address_resolve/AddressResolve_DefaultImpl.h>")
   }
 
@@ -58,16 +58,26 @@ internal class TestConfigureLanguages {
 
     val cLanguage = languages.single { !it.languageKind.isCpp }
 
-    val unescapedSwitches = cLanguage.compilerSwitches?.parseToRaw()
+    val unescapedSwitches = cLanguage.compilerSwitches
     assertThat(unescapedSwitches).contains("-I$pathString")
   }
 
-  private fun List<String>.parseToRaw(): List<String> {
-    val switchFormat = CPPCompilerSwitchesUtil.getFlagsFormat(CPPTestUtil.getTestCPPEnvironment())
-    val builder = CidrSwitchBuilder()
-    this.forEach {
-      builder.parseAndAdd(it, switchFormat)
-    }
-    return builder.build().getList(CidrCompilerSwitches.Format.RAW)
+  @Test
+  fun testSwitchWithQuotes() {
+    val builder = ExternalResolveConfigurationBuilder("test-env", "PlatformIO", dir.toFile())
+    val workspace = project.service<PlatformioWorkspace>()
+
+    val jsonConfig = mapOf(
+      "compiler_type" to "gcc",
+      "defines" to listOf("BOARD_NAME=\"AFROFLIGHT_F103CB\""),
+    )
+
+    val languages = PlatformioProjectResolver.configureLanguages(jsonConfig, builder, workspace)
+
+    val cLanguage = languages.single { !it.languageKind.isCpp }
+
+    // Assert the switch is properly parsed and has the correct content when unescaped
+    val unescapedSwitches = cLanguage.compilerSwitches
+    assertThat(unescapedSwitches).contains("-DBOARD_NAME=\"AFROFLIGHT_F103CB\"")
   }
 }
